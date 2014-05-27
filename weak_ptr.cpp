@@ -1,4 +1,3 @@
-#include <iostream>
 #include <gtest/gtest.h>
 #include <memory> //C++ 11 smart pointers
 namespace BoostTest{
@@ -9,10 +8,10 @@ public:
     class CycleA{
     public:
         CycleA(){
-            std::cout<<"CycleA created"<<std::endl;
+            printf("CycleA created\n");
         }
         ~CycleA(){
-            std::cout<<"CycleA destroyed"<<std::endl;
+            printf("CycleA destroyed\n");
         }
         std::weak_ptr<CycleB> b;
         int a_value;
@@ -21,10 +20,10 @@ public:
     class CycleB{
     public:
         CycleB(){
-            std::cout<<"CycleB created"<<std::endl;
+            printf("CycleB created\n");
         }
         ~CycleB(){
-            std::cout<<"CycleB destroyed"<<std::endl;
+            printf("CycleB destroyed\n");
         }
         std::weak_ptr<CycleA> a;
         int b_value;
@@ -51,7 +50,7 @@ TEST_F(WeakPtr,cycle){
     
     EXPECT_EQ(a.use_count(),1);
     EXPECT_EQ(b.use_count(),1);
-    std::cout<<"Both CycleA and CycleB WILL BE freed!"<<std::endl;
+    printf("Both CycleA and CycleB WILL BE freed!\n");
 }
 
 
