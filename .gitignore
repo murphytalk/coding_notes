@@ -19,3 +19,22 @@
 *.exe
 *.out
 *.app
+
+# Temp files
+*~
+*.bak
+
+# CMake files
+CMakeFiles/
+CMakeCache.txt*
+CMakeLists.txt*
+*.cmake
+
+# Project files
+*.iml
+.idea/
+.kdev4/
+kdev/
+build/
+
+
