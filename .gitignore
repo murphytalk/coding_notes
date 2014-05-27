@@ -27,7 +27,7 @@
 # CMake files
 CMakeFiles/
 CMakeCache.txt*
-CMakeLists.txt*
+CMakeLists.txt.*
 *.cmake
 
 # Project files
