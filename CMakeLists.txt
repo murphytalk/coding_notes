@@ -33,6 +33,14 @@ set(CXX_FLAGS
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -DDEBUG")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 
+if(APPLE)
+   include_directories(~/works/gtest/include)
+   link_directories(~/works/gtest)	
+   set(GTEST_MAIN_LIBRARIES "gtest_main")
+   set(GTEST_LIBRARIES "gtest")
+else(APPLE)
+   find_package(GTest REQUIRED)
+endif(APPLE)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
   add_definitions(-std=c++11 -DGTEST_USE_OWN_TR1_TUPLE=1)
@@ -43,7 +51,6 @@ endif(CMAKE_COMPILER_IS_GNUCXX)
 string(REPLACE ";" " " CMAKE_CXX_FLAGS "${CXX_FLAGS}")
 
 find_package(Boost COMPONENTS timer system filesystem REQUIRED)
-find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
 
 #include all .cpp/.h files
