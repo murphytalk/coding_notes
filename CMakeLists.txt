@@ -63,8 +63,10 @@ add_executable(${TARGET} ${the_SRC})
 
 
 if(CMAKE_COMPILER_IS_GNUCXX)
-  target_link_libraries(${TARGET} ${Boost_LIBRARIES} ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} pthread)
+   set(EXTRA_LIB "pthread")
 else(CMAKE_COMPILER_IS_GNUCXX)
-  target_link_libraries(${TARGET} ${Boost_LIBRARIES} ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} c++)
+   set(EXTRA_LIB "c++")
 endif(CMAKE_COMPILER_IS_GNUCXX)
+
+target_link_libraries(${TARGET} ${Boost_LIBRARIES} ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${EXTRA_LIB})
 
