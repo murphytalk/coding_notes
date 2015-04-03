@@ -35,7 +35,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 
 if(APPLE)
    include_directories(~/works/gtest/include)
-   link_directories(~/works/gtest)	
+   link_directories(~/works/gtest)
    set(GTEST_MAIN_LIBRARIES "gtest_main")
    set(GTEST_LIBRARIES "gtest")
 else(APPLE)
@@ -54,9 +54,9 @@ find_package(Boost COMPONENTS timer system filesystem REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
 
 #include all .cpp/.h files
-file(GLOB the_SRC
-	"*.h"
-	"*.cpp"
+file(GLOB_RECURSE the_SRC
+	"src/*.h"
+	"src/*.cpp"
 )
 
 add_executable(${TARGET} ${the_SRC})
@@ -69,4 +69,3 @@ else(CMAKE_COMPILER_IS_GNUCXX)
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
 target_link_libraries(${TARGET} ${Boost_LIBRARIES} ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${EXTRA_LIB})
-
