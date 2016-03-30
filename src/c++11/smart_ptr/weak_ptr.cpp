@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <memory> //C++ 11 smart pointers
-namespace BoostTest{
+namespace Cxx11Test{
 
 class WeakPtr: public ::testing::Test{
 public:
