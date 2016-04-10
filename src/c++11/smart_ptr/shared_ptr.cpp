@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <iostream>
 #include <memory> //C++ 11 smart pointers
 namespace Cxx11Test{
 
@@ -8,10 +9,10 @@ public:
     class CycleA{
     public:
         CycleA(){
-            printf("CycleA created\n");
+            std::cout<<"CycleA created"<<std::endl;
         }
         ~CycleA(){
-            printf("CycleA destroyed\n");
+            std::cout<<"CycleA destroyed"<<std::endl;
         }
         std::shared_ptr<CycleB> b;
     };
@@ -19,10 +20,10 @@ public:
     class CycleB{
     public:
         CycleB(){
-            printf("CycleB created\n");
+            std::cout<<"CycleB created"<<std::endl;
         }
         ~CycleB(){
-            printf("CycleB destroyed\n");
+            std::cout<<"CycleB destroyed"<<std::endl;
         }
         std::shared_ptr<CycleA> a;
     };
@@ -38,7 +39,7 @@ TEST_F(SharedPtr,cycle){
     b->a = a; 
     EXPECT_EQ(a.use_count(),2);
     EXPECT_EQ(b.use_count(),2);
-    printf("Both CycleA and CycleB won't be freed!\n");
+    std::cout<<"Both CycleA and CycleB won't be freed!"<<std::endl;
 }
 
 

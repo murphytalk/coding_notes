@@ -8,10 +8,10 @@ public:
     class CycleA{
     public:
         CycleA(){
-            printf("CycleA created\n");
+            std::cout<<"CycleA created"<<std::endl;
         }
         ~CycleA(){
-            printf("CycleA destroyed\n");
+            std::cout<<"CycleA destroyed"<<std::endl;
         }
         std::weak_ptr<CycleB> b;
         int a_value;
@@ -20,10 +20,10 @@ public:
     class CycleB{
     public:
         CycleB(){
-            printf("CycleB created\n");
+            std::cout<<"CycleB created"<<std::endl;
         }
         ~CycleB(){
-            printf("CycleB destroyed\n");
+            std::cout<<"CycleB destroyed"<<std::endl;
         }
         std::weak_ptr<CycleA> a;
         int b_value;
@@ -50,7 +50,7 @@ TEST_F(WeakPtr,cycle){
     
     EXPECT_EQ(a.use_count(),1);
     EXPECT_EQ(b.use_count(),1);
-    printf("Both CycleA and CycleB WILL BE freed!\n");
+    std::cout<<"Both CycleA and CycleB WILL BE freed!"<<std::endl;
 }
 
 
