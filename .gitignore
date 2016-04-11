@@ -33,8 +33,9 @@ CMakeLists.txt.*
 # Project files
 *.iml
 .idea/
+*.kdev4
 .kdev4/
 kdev/
 build/
-
+kb/
 
