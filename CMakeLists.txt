@@ -10,43 +10,14 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Debug")
 endif()
 
-if(NOT ${WIN32})
-    include_directories(/usr/local/include)
-    set(CXX_FLAGS
-      -g
-      # -DVALGRIND
-      # -DMUDUO_STD_STRING
-      -DCHECK_PTHREAD_RETURN_VALUE
-      -D_FILE_OFFSET_BITS=64
-      -Wall
-      -Wextra
-      -Werror
-      #-Wconversion
-      -Wno-unused-parameter
-      #-Wold-style-cast
-      -Woverloaded-virtual
-      -Wpointer-arith
-      -Wshadow
-      -Wwrite-strings
-      -march=native
-      # -MMD
-      # -rdynamic
-      )
-    set(CMAKE_CXX_FLAGS_DEBUG "-O0 -DDEBUG")
-    set(CMAKE_CXX_FLAGS_RELEASE "-O2")
-endif()    
+# When other libraries are using a shared version of runtime libraries
+option(
+  cpp_note_force_shared_crt
+  "Use shared (DLL) run-time lib even when Google Test is built as static lib."
+  OFF)
 
-if(CMAKE_COMPILER_IS_GNUCXX)
-  add_definitions(-std=c++11 -DGTEST_USE_OWN_TR1_TUPLE=1)
-else(CMAKE_COMPILER_IS_GNUCXX)
-  if(APPLE)
-    add_definitions(-std=c++11 -stdlib=libc++ -DGTEST_USE_OWN_TR1_TUPLE=1)
-  endif(APPLE)
-endif(CMAKE_COMPILER_IS_GNUCXX)
-
-if(NOT WIN32)
-  string(REPLACE ";" " " CMAKE_CXX_FLAGS "${CXX_FLAGS}")
-endif()
+include(cmake/internal_utils.cmake)
+fix_default_compiler_settings_()
 
 ################################
 # Include all .cpp/.h files
