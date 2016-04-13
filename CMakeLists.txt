@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 2.8)
 
+project( C++Notes )
+enable_testing()
+
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-set(TARGET cpp_notes)
-project(${TARGET} CXX)
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Debug")
@@ -19,14 +19,11 @@ option(
 include(cmake/internal_utils.cmake)
 fix_default_compiler_settings_()
 
-################################
-# Include all .cpp/.h files
-################################
-file(GLOB_RECURSE the_SRC
-	"src/*.h"
-	"src/*.cpp"
+file(GLOB_RECURSE LEECODE_SRC
+	"leecode/*.h"
+	"leecode/*.cpp"
 )
-add_executable(${TARGET} ${the_SRC})
+
 
 ################################
 #### FIND REQUIRED PACKAGES ####
@@ -40,14 +37,6 @@ if(NOT ${GTEST_FOUND})
   MESSAGE(FATAL_ERROR "** Google Test Not Found!")
 endif()
 include_directories(${GTEST_INCLUDE_DIRS})
-if(WIN32)
-  TARGET_LINK_LIBRARIES(${TARGET} optimized ${GTEST_RELEASE_LIB})
-  TARGET_LINK_LIBRARIES(${TARGET} debug ${GTEST_DEBUG_LIB})
-  TARGET_LINK_LIBRARIES(${TARGET} optimized ${GTEST_RELEASE_LIB_MAIN})
-  TARGET_LINK_LIBRARIES(${TARGET} debug ${GTEST_DEBUG_LIB_MAIN})
-else(WIN32)
-  TARGET_LINK_LIBRARIES(${TARGET} ${GTEST_BOTH_LIBRARIES})  
-endif(WIN32)
 
 #
 # Boost
@@ -59,8 +48,6 @@ else(WIN32)
     find_package(Boost COMPONENTS timer system filesystem date_time REQUIRED)
 endif(WIN32)
 
-
-
 if(CMAKE_COMPILER_IS_GNUCXX)
    set(EXTRA_LIB "pthread")
 else(CMAKE_COMPILER_IS_GNUCXX)
@@ -69,4 +56,5 @@ else(CMAKE_COMPILER_IS_GNUCXX)
   endif(APPLE)
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
-target_link_libraries(${TARGET} ${Boost_LIBRARIES} ${GTEST_BOTH_LIBRARIES} ${EXTRA_LIB})
+add_subdirectory( cpp_notes )
+add_subdirectory( leecode )

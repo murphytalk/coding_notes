@@ -37,4 +37,6 @@ CMakeLists.txt.*
 kdev/
 build/
 
+vc/
+
 
