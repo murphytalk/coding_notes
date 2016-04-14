@@ -19,12 +19,6 @@ option(
 include(cmake/internal_utils.cmake)
 fix_default_compiler_settings_()
 
-file(GLOB_RECURSE LEECODE_SRC
-	"leecode/*.h"
-	"leecode/*.cpp"
-)
-
-
 ################################
 #### FIND REQUIRED PACKAGES ####
 ################################
@@ -57,4 +51,4 @@ else(CMAKE_COMPILER_IS_GNUCXX)
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
 add_subdirectory( cpp_notes )
-add_subdirectory( leecode )
+add_subdirectory( leetcode )
