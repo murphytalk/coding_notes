@@ -5,6 +5,31 @@
 
 using namespace std;
 class No_151 : public ::testing::Test{
+private:
+	/*use pointer of pointer but not pointer reference
+	  so it can be used in c too.
+	
+	  Before the function is called:
+
+	  pDest     => the start of current dest buffer 
+	  pSrcStart => the space before a word
+	  *ppSrcEnd => after a word (ususally a space)
+
+	  After the function is called:
+
+	  *ppDest     => after the end of word(plus a space) just copied to the destination buffer
+
+	*/
+	inline int copy_word(char** ppDest,char* pSrcStart,char* pSrcEnd) {
+		char *pb = *ppDest;
+		int n = pSrcEnd - (pSrcStart + 1);
+		strncpy(*ppDest, pSrcStart + 1, n);
+		pb += n;
+		*pb++ = ' ';
+		*ppDest = pb;
+		return n + 1;
+	}
+
 public:
 	void reverseWords(string &s) {
 		char *start = const_cast<char*>(s.c_str());
@@ -24,29 +49,20 @@ public:
 		const char *p1 = const_cast<const char*>(start);
 		char *p2 = end;
 		char *p = p2;
-		int n;
 		int actual_size = 0;
 
 		while (p >= p1) {
 			--p;
 			if (*p == ' ') {
 				//found a word
-				n = p2 - (p + 1);
-				strncpy(pb, p + 1, n);
-				pb += n;
-				*pb++ = ' ';
-				actual_size += n+1;
+				actual_size += copy_word(&pb, p, p2);
 				//if there are more spaces, skip them
 				for (; *(p - 1) == ' '&& p > p1; --p);
 				p2 = p;  //both pointed to space
 			}
 		}
 		if (p2 != p) {
-			n = p2 - (p + 1);
-			strncpy(pb, p + 1, n);
-			pb += n;
-			*pb++ = ' ';
-			actual_size += n + 1;
+			actual_size += copy_word(&pb, p, p2);
 		}
 		--actual_size;
 		s.replace(s.begin(), s.end(), buf, buf + actual_size);
@@ -80,22 +96,14 @@ public:
 			--p;
 			if (*p == ' ') {
 				//found a word
-				n = p2 - (p + 1);
-				strncpy(pb, p + 1, n);
-				pb += n;
-				*pb++ = ' ';
-				actual_size += n + 1;
+				actual_size += copy_word(&pb, p, p2);
 				//if there are more spaces, skip them
 				for (; *(p - 1) == ' '&& p > p1; --p);
 				p2 = p;  //both pointed to space
 			}
 		}
 		if (p2 != p) {
-			n = p2 - (p + 1);
-			strncpy(pb, p + 1, n);
-			pb += n;
-			*pb++ = ' ';
-			actual_size += n + 1;
+			actual_size += copy_word(&pb, p, p2);
 		}
 		strncpy(s, buf, --actual_size);
 		s[actual_size] = 0;
