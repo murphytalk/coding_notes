@@ -23,3 +23,26 @@ macro(fix_default_compiler_settings_)
     endforeach()
   endif()
 endmacro()
+
+macro(add_src_libs_ target)
+  ################################
+  # Include all .cpp/.h files
+  ################################
+  unset(the_SRC)
+  file(GLOB_RECURSE the_SRC
+    "src/*.h"
+    "src/*.cpp"
+    )
+  add_executable(${target} ${the_SRC})
+
+  if(WIN32)
+    TARGET_LINK_LIBRARIES(${target} optimized ${GTEST_RELEASE_LIB})
+    TARGET_LINK_LIBRARIES(${target} debug ${GTEST_DEBUG_LIB})
+    TARGET_LINK_LIBRARIES(${target} optimized ${GTEST_RELEASE_LIB_MAIN})
+    TARGET_LINK_LIBRARIES(${target} debug ${GTEST_DEBUG_LIB_MAIN})
+  else(WIN32)
+    TARGET_LINK_LIBRARIES(${target} ${GTEST_BOTH_LIBRARIES})  
+  endif(WIN32)
+
+  target_link_libraries(${target} ${Boost_LIBRARIES} ${GTEST_BOTH_LIBRARIES} ${EXTRA_LIB})
+endmacro()

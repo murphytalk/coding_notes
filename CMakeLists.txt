@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project( C++Notes )
+project( CodingNotes )
 enable_testing()
 
 # Find includes in corresponding build directories
@@ -52,3 +52,4 @@ endif(CMAKE_COMPILER_IS_GNUCXX)
 
 add_subdirectory( cpp_notes )
 add_subdirectory( leetcode )
+#add_subdirectory( algo )
