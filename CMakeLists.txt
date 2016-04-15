@@ -52,4 +52,4 @@ endif(CMAKE_COMPILER_IS_GNUCXX)
 
 add_subdirectory( cpp_notes )
 add_subdirectory( leetcode )
-#add_subdirectory( algo )
+add_subdirectory( algo )
