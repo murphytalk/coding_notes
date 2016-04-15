@@ -16,7 +16,7 @@ option(
   "Use shared (DLL) run-time lib even when Google Test is built as static lib."
   OFF)
 
-include(cmake/internal_utils.cmake)
+include(CMake/internal_utils.cmake)
 fix_default_compiler_settings_()
 
 ################################
