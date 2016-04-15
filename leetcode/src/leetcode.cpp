@@ -2,8 +2,77 @@
 #include <string>
 #include <vector>
 #include <cstdlib>
+#include <unordered_map>
+#include <unordered_set>
+#include <algorithm>
+#include <iostream>
 
 using namespace std;
+
+/*
+  https://leetcode.com/problems/anagrams/
+
+  Given an array of strings, group anagrams together.
+
+  For example, given: ["eat", "tea", "tan", "ate", "nat", "bat"],
+  Return:
+	[
+		["ate", "eat","tea"],
+		["nat","tan"],
+		["bat"]
+	]
+
+  Note:
+
+	- For the return value, each inner list's elements must follow the lexicographic order.
+	- All inputs will be in lower-case.
+*/
+class GroupAnagrams : public ::testing::Test {
+public:
+	vector<vector<string>> groupAnagrams(vector<string>& strs) {
+		unordered_multimap<string, string> m(1024);
+		unordered_set<string> keys;
+
+		for (const auto& s : strs) {
+			string k = s;
+			sort(k.begin(), k.end());
+			keys.insert(k);
+			m.insert(make_pair(k, s));
+		}
+
+		vector<vector<string>> r;
+		for (const auto& k : keys) {
+			auto range = m.equal_range(k);
+			vector<string> v;
+			for (auto iter = range.first; iter != range.second; ++iter) {
+				v.push_back(iter->second);
+			}
+			sort(v.begin(), v.end());
+			r.push_back(v);
+		}
+		return r;
+	}
+};
+
+TEST_F(GroupAnagrams, test) {
+	vector<string> s = { "eat", "tea", "tan", "ate", "nat", "bat" };
+	auto r = groupAnagrams(s);
+	/*
+	for (const auto& i : r) {
+		for (const auto& k : i) {
+			cout << k << " ";
+		}
+		cout << endl;
+	}
+	*/
+	const vector<string> v1 = { "ate", "eat", "tea" };
+	const vector<string> v2 = { "nat","tan" };
+	const vector<string> v3 = { "bat" };
+
+	ASSERT_TRUE(find(r.begin(), r.end(), v1) != r.end());
+	ASSERT_TRUE(find(r.begin(), r.end(), v2) != r.end());
+	ASSERT_TRUE(find(r.begin(), r.end(), v3) != r.end());
+}
 
 /*
    https://leetcode.com/problems/reverse-words-in-a-string/
