@@ -8,7 +8,7 @@ The language used is C++ (C++ 11 features used), the dependencies are:
 
 # Problems and solutions
 
-## [Leetcode](http://www.leetcode.org)
+## [Leetcode](https://leetcode.com/)
 
 ###  [#49 Group Anagrams](https://leetcode.com/problems/anagrams/) 
 
