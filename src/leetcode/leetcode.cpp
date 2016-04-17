@@ -1,7 +1,8 @@
-#include <gtest/gtest.h>
+#include "catch.hpp"
 #include <string>
 #include <vector>
 #include <cstdlib>
+#include <cstring>
 #include <unordered_map>
 #include <unordered_set>
 #include <algorithm>
@@ -29,7 +30,7 @@ namespace LeetCode{
     - For the return value, each inner list's elements must follow the lexicographic order.
     - All inputs will be in lower-case.
 */
-class GroupAnagrams : public ::testing::Test {
+class GroupAnagrams{
 private:
     inline static int char_val(const char& c) {
         return c - 'a';
@@ -88,27 +89,28 @@ public:
     }
 };
 
-TEST_F(GroupAnagrams, eq1) {
+TEST_CASE("Group anagrams: customized equal","[leetcode]") {
     string s1 = "eat";
     string s2 = "tea";
     string s3 = "ate";
     string s4 = "tan";
-    ASSERT_TRUE(eq(s1,s2));
-    ASSERT_TRUE(eq(s1, s3));
-    ASSERT_TRUE(eq(s2, s3));
-    ASSERT_FALSE(eq(s1, s4));
+    REQUIRE(GroupAnagrams::eq(s1,s2));
+    REQUIRE(GroupAnagrams::eq(s1, s3));
+    REQUIRE(GroupAnagrams::eq(s2, s3));
+    REQUIRE_FALSE(GroupAnagrams::eq(s1, s4));
+
+    {
+        string s1 = "duh";
+        string s2 = "ill";
+        REQUIRE_FALSE(GroupAnagrams::eq(s1, s2));
+    }
 }
 
-TEST_F(GroupAnagrams, eq2) {
-    string s1 = "duh";
-    string s2 = "ill";
-    ASSERT_FALSE(eq(s1, s2));
-}
 
-
-TEST_F(GroupAnagrams, test1) {
+TEST_CASE("Group anagrams: test case 1","[leetcode]") {
     vector<string> s = { "eat", "tea", "tan", "ate", "nat", "bat" };
-    auto r = groupAnagrams(s);
+    GroupAnagrams t;
+    auto r = t.groupAnagrams(s);
     
     set<vector<string>> expected = {
         { "ate", "eat", "tea" },
@@ -118,10 +120,10 @@ TEST_F(GroupAnagrams, test1) {
 
     set<vector<string>> result;
     copy(r.begin(), r.end(), inserter(result, result.begin()));
-    ASSERT_EQ(result, expected);
+    REQUIRE(result == expected);
 }
 
-TEST_F(GroupAnagrams, duplicated) {
+TEST_CASE("Group anagrams: duplicated words test case","[leetcode]") {
     vector<string> s = {
         "hos", "boo", "nay", "deb", "wow", "bop", "bob", "brr", "hey", "rye", "eve", "elf", "pup", "bum", "iva", "lyx",
         "yap", "ugh", "hem", "rod", "aha", "nam", "gap", "yea", "doc", "pen", "job", "dis", "max", "oho", "jed", "lye", 
@@ -135,17 +137,18 @@ TEST_F(GroupAnagrams, duplicated) {
         { "lye" },{ "ram" },{ "nap" },{ "elf" },{ "qua" },{ "pup","pup" },{ "let" },{ "gym" },{ "nam" },{ "bye" },{ "lon" } 
     };
 
-    auto r = groupAnagrams(s);
-
+    GroupAnagrams t;
+    auto r = t.groupAnagrams(s);
     set<vector<string>> result;
     copy(r.begin(), r.end(), inserter(result, result.begin()));
-    ASSERT_EQ(result, expected);
+    REQUIRE(result == expected);
 }
 
 
-TEST_F(GroupAnagrams, all_single) {
+TEST_CASE("Group anagrams: all single words test case","[leetcode]") {
     vector<string> s = {"cab", "tin", "pew", "duh", "may", "ill", "buy", "bar", "max", "doc"};
-    auto r = groupAnagrams(s);
+    GroupAnagrams t;
+    auto r = t.groupAnagrams(s);
 
     set<vector<string>> expected = { 
         { "cab" },{ "tin" },{ "pew" },{ "duh" },{ "may" },{ "ill" },
@@ -153,14 +156,15 @@ TEST_F(GroupAnagrams, all_single) {
     };
     set<vector<string>> result;
     copy(r.begin(), r.end(), inserter(result, result.begin()));
-    ASSERT_EQ(result, expected);
+    REQUIRE(result == expected);
 }
 
 
-TEST_F(GroupAnagrams, empty) {
+TEST_CASE("Group anagrams: empty input test case","[leetcode]") {
     vector<string> s = { "" };
-    auto r = groupAnagrams(s);
-    ASSERT_EQ(r.size(),1);
+    GroupAnagrams t;
+    auto r = t.groupAnagrams(s);
+    REQUIRE(r.size() == 1);
 }
 
 
@@ -184,7 +188,7 @@ TEST_F(GroupAnagrams, empty) {
    - How about multiple spaces between two words?
      Reduce them to a single space in the reversed string.
 */
-class ReverseWordsInString : public ::testing::Test{
+class ReverseWordsInString{
 private:
     inline void reverseWord(char *s, int len) {
         char c;
@@ -258,53 +262,56 @@ public:
     }
 };
 
-TEST_F(ReverseWordsInString,the_sky_is_blue){
-    std::string s1 = "the sky is blue";
-    const std::string s2 = "blue is sky the";
+TEST_CASE("Reverse words in string: test cases","[leetcode]") {
+    ReverseWordsInString t;
 
-    reverseWords(s1);
-    EXPECT_EQ(s1,s2);
+    SECTION("this sky is blue"){
+        std::string s1 = "the sky is blue";
+        const std::string s2 = "blue is sky the";
+        
+        t.reverseWords(s1);
+        REQUIRE(s1 == s2);
+    }
+
+    SECTION("all spaces"){
+        std::string s1 = "  ";
+        const std::string s2 = "";
+
+        t.reverseWords(s1);
+        REQUIRE(s1 == s2);
+    }
+
+    SECTION("one"){
+        std::string s1 = "one";
+        const std::string s2 = "one";
+
+        t.reverseWords(s1);
+        REQUIRE(s1 == s2);
+    }
+
+    SECTION("space one") {
+        std::string s1 = " 1";
+        const std::string s2 = "1";
+
+        t.reverseWords(s1);
+        REQUIRE(s1 == s2);
+    }
+
+    SECTION("a") {
+        std::string s1 = "a";
+        const std::string s2 = "a";
+
+        t.reverseWords(s1);
+        REQUIRE(s1 == s2);
+    }
+
+    SECTION("lots of space in the_middle") {
+        std::string s1 = "   a   b ";
+        const std::string s2 = "b a";
+        
+        t.reverseWords(s1);
+        REQUIRE(s1 == s2);
+    }
 }
-
-TEST_F(ReverseWordsInString, all_spaces) {
-    std::string s1 = "  ";
-    const std::string s2 = "";
-
-    reverseWords(s1);
-    EXPECT_EQ(s1, s2);
-}
-
-TEST_F(ReverseWordsInString, one) {
-    std::string s1 = "one";
-    const std::string s2 = "one";
-
-    reverseWords(s1);
-    EXPECT_EQ(s1, s2);
-}
-
-TEST_F(ReverseWordsInString, space_one) {
-    std::string s1 = " 1";
-    const std::string s2 = "1";
-
-    reverseWords(s1);
-    EXPECT_EQ(s1, s2);
-}
-
-TEST_F(ReverseWordsInString, a) {
-    std::string s1 = "a";
-    const std::string s2 = "a";
-
-    reverseWords(s1);
-    EXPECT_EQ(s1, s2);
-}
-
-TEST_F(ReverseWordsInString, lots_of_space_in_the_middle) {
-    std::string s1 = "   a   b ";
-    const std::string s2 = "b a";
-
-    reverseWords(s1);
-    EXPECT_EQ(s1, s2);
-}
-
 
 }; //namespace LeetCode

@@ -6,8 +6,8 @@ macro(fix_default_compiler_settings_)
     foreach (flag_var
              CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
              CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
-      if (NOT BUILD_SHARED_LIBS AND NOT cpp_note_force_shared_crt)
-        # When Google Test is built as a shared library, it should also use
+      if (NOT BUILD_SHARED_LIBS AND NOT force_shared_crt)
+        # if any dependencies are built as a shared library, it should also use
         # shared runtime libraries.  Otherwise, it may end up with multiple
         # copies of runtime library data in different modules, resulting in
         # hard-to-find crashes. When it is built as a static library, it is
@@ -34,15 +34,6 @@ macro(add_src_libs_ target)
     "src/*.cpp"
     )
   add_executable(${target} ${the_SRC})
-
-  if(WIN32)
-    TARGET_LINK_LIBRARIES(${target} optimized ${GTEST_RELEASE_LIB})
-    TARGET_LINK_LIBRARIES(${target} debug ${GTEST_DEBUG_LIB})
-    TARGET_LINK_LIBRARIES(${target} optimized ${GTEST_RELEASE_LIB_MAIN})
-    TARGET_LINK_LIBRARIES(${target} debug ${GTEST_DEBUG_LIB_MAIN})
-  else(WIN32)
-    TARGET_LINK_LIBRARIES(${target} ${GTEST_BOTH_LIBRARIES})  
-  endif(WIN32)
-
-  target_link_libraries(${target} ${Boost_LIBRARIES} ${GTEST_BOTH_LIBRARIES} ${EXTRA_LIB})
+  
+  target_link_libraries(${target} ${Boost_LIBRARIES} ${EXTRA_LIB})
 endmacro()

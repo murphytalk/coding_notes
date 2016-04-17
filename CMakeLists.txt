@@ -12,7 +12,7 @@ endif()
 
 # When other libraries are using a shared version of runtime libraries
 option(
-  cpp_note_force_shared_crt
+  force_shared_crt
   "Use shared (DLL) run-time lib even when Google Test is built as static lib."
   OFF)
 
@@ -23,15 +23,6 @@ fix_default_compiler_settings_()
 #### FIND REQUIRED PACKAGES ####
 ################################
 SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake" ${CMAKE_MODULE_PATH})
-#
-# Google Test
-# 
-find_package(GTestLocal)
-if(NOT ${GTEST_FOUND})
-  MESSAGE(FATAL_ERROR "** Google Test Not Found!")
-endif()
-include_directories(${GTEST_INCLUDE_DIRS})
-
 #
 # Boost
 #
@@ -50,6 +41,6 @@ else(CMAKE_COMPILER_IS_GNUCXX)
   endif(APPLE)
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
-add_subdirectory( cpp_notes )
-add_subdirectory( leetcode )
-add_subdirectory( algo )
+set(NOTES notes)
+project(${NOTES} CXX)
+add_src_libs_ (${NOTES})
