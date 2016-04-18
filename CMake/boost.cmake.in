@@ -1,21 +1,28 @@
 if(WIN32)
-        if( EXISTS $ENV{BOOST_ROOT} )
-            set(BOOST_ROOT $ENV{BOOST_ROOT})
-            # On Windows, VC++ supports auto-linking, it will know which library to link from the boost header file included.
-            # Only need to tell VC++ where to find the lib
-            link_directories("${BOOST_ROOT}\\stage\\lib")
-        else( EXISTS $ENV{BOOST_ROOT} )
-            MESSAGE(FATAL_ERROR "** Please setup environment variable BOOST_ROOT **")
-        endif()
+  FIND_PATH(P "boost\\config.hpp"
+    PATHS
+    "$ENV{BOOST_ROOT}"
+    "${CMAKE_CURRENT_SOURCE_DIR}\\..\\boost"
+    NO_DEFAULT_PATH
+    )  
+  if(P)
+    set(BOOST_ROOT ${P})
+    # On Windows, VC++ supports auto-linking, it will know which library to link from the boost header file included.
+    # Only need to tell VC++ where to find the lib
+    link_directories("${BOOST_ROOT}\\stage\\lib")
+  else()
+    MESSAGE(FATAL_ERROR "** Cannot find boost, please setup environment variable BOOST_ROOT **")
+  endif()  
+        
 else(WIN32)
-        include(CheckCXXCompilerFlag)
-        CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-        CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
-        if(COMPILER_SUPPORTS_CXX11)
-            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-        elseif(COMPILER_SUPPORTS_CXX0X)
-            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-        else()
-                message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
-        endif()
+  include(CheckCXXCompilerFlag)
+  CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+  CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
+  if(COMPILER_SUPPORTS_CXX11)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  elseif(COMPILER_SUPPORTS_CXX0X)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+  else()
+    message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+  endif()
 endif()
