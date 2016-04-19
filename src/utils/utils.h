@@ -29,13 +29,14 @@ template<typename T>
 class basic_bitset{
 private:
     typedef unsigned char BITMAP_DATA_TYPE;
+	static const uint8_t N = sizeof(BITMAP_DATA_TYPE) * 8;
 	BITMAP_DATA_TYPE* bitmap;
 	T bit_size;
 	T byte_size;
 public:
 	basic_bitset(T bits, bool clear_buffer = true){
 		bit_size = bits;
-        byte_size = 1 + (bits/sizeof(BITMAP_DATA_TYPE));
+        byte_size = 1 + (bits/N);
         bitmap = new BITMAP_DATA_TYPE[byte_size];
 		if(clear_buffer){
 			clear();
@@ -59,13 +60,11 @@ public:
 		T actual_bit_size;
 		if (check(bit_size - 1)) {
 			actual_bit_size = bit_size;
-			offset = 0;
 		}
 		else{
 			//the left most bit is 0,
 			//we should skip it to avoid output a leading zero
 			actual_bit_size = bit_size - 1;
-			offset = 1;
 		}
 		
 		str.resize(actual_bit_size);
@@ -91,8 +90,8 @@ public:
 
         T b,bit;
 
-        b   = v/sizeof(BITMAP_DATA_TYPE);
-        bit = v%sizeof(BITMAP_DATA_TYPE);
+        b   = v/N;
+        bit = v%N;
 
         bitmap[b]|=1<<bit;
     }
@@ -102,8 +101,8 @@ public:
 		
 		T b,bit;
 
-        b   = v/sizeof(BITMAP_DATA_TYPE);
-        bit = v%sizeof(BITMAP_DATA_TYPE);
+        b   = v/N;
+        bit = v%N;
 
         return (bitmap[b]>>bit)&0x01;
     }
