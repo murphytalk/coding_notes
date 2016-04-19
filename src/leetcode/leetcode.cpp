@@ -90,15 +90,16 @@ public:
 };
 
 TEST_CASE("Group anagrams: customized equal","[leetcode]") {
-    string s1 = "eat";
-    string s2 = "tea";
-    string s3 = "ate";
-    string s4 = "tan";
-    REQUIRE(GroupAnagrams::eq(s1,s2));
-    REQUIRE(GroupAnagrams::eq(s1, s3));
-    REQUIRE(GroupAnagrams::eq(s2, s3));
-    REQUIRE_FALSE(GroupAnagrams::eq(s1, s4));
-
+	{
+		string s1 = "eat";
+		string s2 = "tea";
+		string s3 = "ate";
+		string s4 = "tan";
+		REQUIRE(GroupAnagrams::eq(s1,s2));
+		REQUIRE(GroupAnagrams::eq(s1, s3));
+		REQUIRE(GroupAnagrams::eq(s2, s3));
+		REQUIRE_FALSE(GroupAnagrams::eq(s1, s4));
+	}
     {
         string s1 = "duh";
         string s2 = "ill";
