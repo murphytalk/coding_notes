@@ -56,13 +56,30 @@ public:
 
 
 	void to_str(std::string& str) {
-		str.resize(bit_size);
-		//for (T i = bit_size-1; i >=0; --i)
+		T actual_bit_size;
+		if (check(bit_size - 1)) {
+			actual_bit_size = bit_size;
+			offset = 0;
+		}
+		else{
+			//the left most bit is 0,
+			//we should skip it to avoid output a leading zero
+			actual_bit_size = bit_size - 1;
+			offset = 1;
+		}
+		
+		str.resize(actual_bit_size);
 		int k;
-		for (T i = 0;i < bit_size; ++i) {
-			k = bit_size - i - 1;
+		for (T i = 0;i < actual_bit_size ; ++i) {
+			k = actual_bit_size - i - 1 ;
 			str[i] = check(k) ? '1' : '0';
 		}
+	}
+
+	inline std::string to_str() {
+		std::string s;
+		to_str(s);
+		return s;
 	}
 	
 	void clear(){

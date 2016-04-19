@@ -47,8 +47,13 @@ TEST_CASE("bitset: string", "[utils]") {
 	}
 
 	SECTION("restore to string"){
-		std::string s2;
-		t.to_str(s2);
-		REQUIRE(s1 == s2);
+		REQUIRE(s1 == t.to_str());
 	}
+}
+
+TEST_CASE("bitset: string should not have leading 0", "[utils]") {
+	const std::string s = "10";
+	bitset t(3);
+	t.set(1);
+	REQUIRE(t.to_str() == s);
 }
