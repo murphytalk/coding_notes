@@ -1,9 +1,9 @@
-Collection of my coding notes and solutions to various small problems, a reminder to myself.  
+Collection of my notes on coding and solutions to various small problems, a reminder to myself.
 
 The language used is C++ (C++ 11 features used), the dependencies are:
 
- 1. boost.
- 1. [Catch](https://github.com/philsquared/Catch) unit test. See catch's docs on [command line options and arguments](https://github.com/philsquared/Catch/blob/master/docs/command-line.md).
+ 1. [boost](http://www.boost.org/).
+ 1. [Catch](https://github.com/philsquared/Catch) unit test. See Catch's docs on [command line options and arguments](https://github.com/philsquared/Catch/blob/master/docs/command-line.md).
 
 
 # Problems and solutions
@@ -12,10 +12,17 @@ The language used is C++ (C++ 11 features used), the dependencies are:
 
 ###  [#49 Group Anagrams](https://leetcode.com/problems/anagrams/) 
 
-Use a hash map to group Anagrams, while provides a hash code function to ensure same Anagrams will get same  hash code. The idea is that since only the character but not the ordering matters,  use the first 26 prime numbers to represent the 26 lower case character and multiplication represent the fact that only characters matter but their ordering does not.
- 
-###  [#151 Reverse words in a string](https://leetcode.com/problems/reverse-words-in-a-string/)  
+Use a hash map to group anagrams, but instead of using a sorted string as key (so the default string hash code function would return same hash code for all subjects of the same anagram, it will work but the run time will be penalized for the sorting of every key), the solution implments a customized hash code function which uses the first 26 prime numbers to represent the 26 lower case letters and calculates the hash code by mulitplying them, to reflect the fact that 1) we only care about different letters 2) ordering does not matter.
 
-Implemented an in-place `O(1)` space solution.
+Beats 99.75% of C++ submissions.
+
+ ![Screenshot](img/leetcode/Anagrams.PNG)
+ 
+###  [#151 Reverse words in a string](https://leetcode.com/problems/reverse-words-in-a-string/)
+
+An in-place `O(1)` space solution, beats 94.29% of C++ submissions.
+
+ ![Screenshot](img/leetcode/RevserseWordsInString.PNG)
+ 
 
 
