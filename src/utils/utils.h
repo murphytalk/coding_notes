@@ -44,10 +44,11 @@ public:
 	}
 
 
-	basic_bitset(const std::string& str) : basic_bitset(str.size()) {
+	basic_bitset(const std::string& str) : basic_bitset(str.size(), false) {
 		T i = 0;
 		for (auto iter = str.rbegin();iter != str.rend();++iter,++i) {
-			if(*iter=='1') set(i);
+			//set(i, *iter == '1'?1:0);
+			if (*iter == '1') set(i); else clear(i);
 		}
 	}
 
@@ -85,24 +86,35 @@ public:
         memset(bitmap,0,byte_size);
     }
 
-    void set(T v){
-		if (v<0 || v>bit_size) return;
+	void set(T index) {
+		if (index<0 || index>bit_size) return;
 
-        T b,bit;
+		T b, bit;
 
-        b   = v/N;
-        bit = v%N;
+		b = index / N;
+		bit = index%N;
 
-        bitmap[b]|=1<<bit;
-    }
+		bitmap[b] |= 1 << bit;
+	}
 
-    bool check(T v){
-		if (v<0 || v>bit_size) return false;
+    void clear(T index){
+		if (index<0 || index>bit_size) return;
+
+		T b, bit;
+
+		b = index / N;
+		bit = index%N;
+
+		bitmap[b] &= ~(1 << bit);
+	}
+
+    bool check(T index){
+		if (index<0 || index>bit_size) return false;
 		
 		T b,bit;
 
-        b   = v/N;
-        bit = v%N;
+        b   = index/N;
+        bit = index%N;
 
         return (bitmap[b]>>bit)&0x01;
     }
