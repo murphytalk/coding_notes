@@ -73,7 +73,7 @@ public:
             if (pos == index.end()) {
                 r.push_back(item);
                 r.back().push_back(s);
-                index.insert(make_pair(k, r.size()-1));
+                index.insert(make_pair(s, r.size()-1));
             }
             else {
                 V& v = r[pos->second];

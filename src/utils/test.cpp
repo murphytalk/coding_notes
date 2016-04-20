@@ -26,6 +26,16 @@ TEST_CASE("bitset: even numbers under 101 are set", "[utils]") {
 		REQUIRE(!s.check(-1));
 		REQUIRE(!s.check(1000));
 	}
+
+	SECTION("clear bits") {
+		for (uint32_t i = 0; i <= bitsize; i += 2) {
+			s.clear(i);
+		}
+
+		for (uint32_t i = 0; i <= bitsize; i += 2) {
+			REQUIRE(!s.check(i));
+		}
+	}
 }
 
 TEST_CASE("bitset: string", "[utils]") {

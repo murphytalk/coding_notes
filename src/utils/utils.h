@@ -43,12 +43,10 @@ public:
 		}
 	}
 
-
-	basic_bitset(const std::string& str) : basic_bitset(str.size(), false) {
-		T i = 0;
+	basic_bitset(const std::string& str) : basic_bitset(str.size()) {
+		T i = 0;		
 		for (auto iter = str.rbegin();iter != str.rend();++iter,++i) {
-			//set(i, *iter == '1'?1:0);
-			if (*iter == '1') set(i); else clear(i);
+			if (*iter == '1') set(i);
 		}
 	}
 
@@ -87,7 +85,7 @@ public:
     }
 
 	void set(T index) {
-		if (index<0 || index>bit_size) return;
+		if (index<0 || index>=bit_size) return;
 
 		T b, bit;
 
@@ -98,7 +96,7 @@ public:
 	}
 
     void clear(T index){
-		if (index<0 || index>bit_size) return;
+		if (index<0 || index>=bit_size) return;
 
 		T b, bit;
 
@@ -109,7 +107,7 @@ public:
 	}
 
     bool check(T index){
-		if (index<0 || index>bit_size) return false;
+		if (index<0 || index>=bit_size) return false;
 		
 		T b,bit;
 
