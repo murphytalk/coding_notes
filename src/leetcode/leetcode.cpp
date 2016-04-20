@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <algorithm>
-#include <iostream>
+#include "../utils/utils.h"
 
 using namespace std;
 
@@ -391,6 +391,69 @@ TEST_CASE("Search Range: duplication test case", "[leetcode]") {
 		r = s.searchRange(nums, 8);
 		REQUIRE(r[0] == 3);
 		REQUIRE(r[1] == 4);
+	}
+}
+
+class AddBinary {
+public:
+	string addBinary(string a, string b) {
+		const auto n1 = a.size();
+		const auto n2 = b.size();
+		//we might need to carry a 1 from lower bit
+		const auto n = max(n1, n2) + 1; 
+		Utils::bitset A(a);
+		Utils::bitset B(b);
+		Utils::bitset result (n);
+		
+		char aa, bb , carry = 0 , add;
+		for (size_t i = 0;i < n;++i) {
+			aa = A.check(i);
+			bb = B.check(i);
+			add = carry + aa + bb;
+
+			switch (add) {
+			case 0:
+				carry = 0;
+				break;
+			case 1:
+				carry = 0;
+				result.set(i);
+				break;
+			case 2:
+				carry = 1;
+				break;
+			case 3:
+				//1 + 1 = 10
+				carry = 1;
+				result.set(i);
+				break;
+			}
+		}
+
+		return result.to_str();
+	}
+};
+
+TEST_CASE("Add binary: test cases", "[leetcode]") {
+	AddBinary a;
+	SECTION("0 + 0 = 0") {
+		REQUIRE(a.addBinary("0", "0") == "0");
+	}
+
+	SECTION("0 + 1 = 1") {
+		REQUIRE(a.addBinary("0", "1") == "1");
+	}
+
+	SECTION("1 + 1 = 10") {
+		REQUIRE(a.addBinary("1", "1") == "10");
+	}
+
+	SECTION("11 + 1 = 100") {
+		REQUIRE(a.addBinary("11", "1") == "100");
+	}
+
+	SECTION("1111 + 1111 = 11110") {
+		REQUIRE(a.addBinary("1111", "1111") == "11110");
 	}
 }
 
