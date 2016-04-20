@@ -488,11 +488,6 @@ public:
 		char* pb = const_cast<char*>(pb_start) + n2 - 1;
 		size_t i = 0;
 		for (; i < full_steps; ++i) {
-			/*
-			pa -= 8;
-			pb -= 8;
-			add = carry + s2i(pa) + s2i(pb);
-			*/
 			add = carry + step_back(pa, pa_start) + step_back(pb, pb_start);
 			carry = add > 0xff;
 			result.set(i, add & 0xff);

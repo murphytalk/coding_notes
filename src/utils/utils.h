@@ -68,11 +68,11 @@ public:
 			actual_bit_size = bit_size - 1;
 		}
 		
-		str.resize(actual_bit_size);
+		str.resize(actual_bit_size,'0');
 		int k;
 		for (T i = 0;i < actual_bit_size ; ++i) {
 			k = actual_bit_size - i - 1 ;
-			str[i] = check(k) ? '1' : '0';
+			if(check(k)) str[i] =  '1';
 		}
 	}
 
