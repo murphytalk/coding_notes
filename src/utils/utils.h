@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <string>
 #include <algorithm>
+#include <fstream>
+
 namespace Utils{
 
 typedef bool (*CMP_INT_FUNC)(int,int);
@@ -146,5 +148,24 @@ public:
 
 uint32_t nChooseK(uint32_t n,uint32_t k);
 uint32_t comb_index(const uint32_t comb);
+
+std::string get_data_dir();
+
+template<typename LINE>
+bool load_test_data(char *file_name,LINE line_callback,const char comment = '#'){    
+    get_data_dir();
+    std::ifstream infile(file_name);
+    if(!infile.is_open())  return false;
+
+    std::string line;
+    while (std::getline(infile, line)){
+        if(line[0] != comment){
+            line_callback(line);
+        }
+    }
+    
+    return true;
+}
+
 }
 

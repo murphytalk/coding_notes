@@ -3,6 +3,8 @@
 #include <vector>
 #include <cstdlib>
 #include <cstring>
+#include <memory>
+#include <iostream>
 #include <unordered_map>
 #include <unordered_set>
 #include <algorithm>
@@ -634,6 +636,38 @@ TEST_CASE("Add binary: test cases 2", "[leetcode]") {
 
 }
 
+TEST_CASE("Add binary: big test cases", "[leetcode]") {
+    AddBinary  add1;
+    AddBinary2 add2;
+
+    string a,b;
+    
+    if(!Utils::load_test_data("/home/murphy/work/cpp_notes/data/leetcode-add-binary.txt",[&](string& s){
+       if(a.size()==0){
+           a=s;
+       }
+       else{
+           b=s;
+       }
+    })){
+        INFO("cannot find test file");
+        REQUIRE(false);
+    }
+    else{
+        string s1,s2;
+        SECTION("solution 1"){
+           add1.addBinary(a,b); 
+        }
+        SECTION("solution 2"){
+           add2.addBinary(a,b); 
+        }
+        SECTION("solution 1 == solution 2"){
+            REQUIRE(add1.addBinary(a,b)==add2.addBinary(a,b));
+        }
+     }
+    
+    
+}
 
 }; //namespace LeetCode
 

@@ -33,4 +33,8 @@ uint32_t comb_index(const uint32_t comb)
 	return value;
 }
 
+std::string get_data_dir(){
+    return "";
+}
+
 }
