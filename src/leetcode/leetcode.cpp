@@ -401,6 +401,7 @@ public:
 		const auto n2 = b.size();
 		//we might need to carry a 1 from lower bit
 		const auto n = max(n1, n2) + 1; 
+#if 0
 		Utils::bitset A(a);
 		Utils::bitset B(b);
 		Utils::bitset result (n);
@@ -430,6 +431,48 @@ public:
 			}
 		}
 
+#else
+		Utils::bitset result(n);
+		auto a_pos = a.rbegin();
+		auto b_pos = b.rbegin();
+		char aa,bb,add, carry = 0;
+
+		auto _get_str_bit = [](string::reverse_iterator& pos, string::reverse_iterator end, char& v) {
+			if (pos == end) {
+				v = (char)0;				
+			}
+			else {
+				v = (char) (*pos - '0');
+				++pos;
+			}
+		};
+
+		for (size_t i = 0; i < n; ++i) {
+			_get_str_bit(a_pos, a.rend(), aa);
+			_get_str_bit(b_pos, b.rend(), bb);
+
+			add = carry + aa + bb;
+
+			switch (add) {
+			case 0:
+				carry = 0;
+				break;
+			case 1:
+				carry = 0;
+				result.set(i);
+				break;
+			case 2:
+				carry = 1;
+				break;
+			case 3:
+				//1 + 1 = 10
+				carry = 1;
+				result.set(i);
+				break;
+			}
+
+		}
+#endif
 		return result.to_str();
 	}
 };
@@ -458,3 +501,4 @@ TEST_CASE("Add binary: test cases", "[leetcode]") {
 }
 
 }; //namespace LeetCode
+
