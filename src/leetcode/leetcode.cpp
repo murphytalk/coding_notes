@@ -462,7 +462,7 @@ public:
 		}
 	}
 
-	static inline uint8_t s2i(char*p, int step = 8) {
+	static inline uint8_t s2i(char const *p, int step = 8) {
 		uint8_t value = 0;
 		uint8_t c;
 		for (int i = 0; i < step; ++p,++i) {
