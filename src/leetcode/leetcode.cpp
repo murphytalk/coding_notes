@@ -69,8 +69,7 @@ public:
         vector<V> r;
         V item;
         for (const auto& s : strs) {
-            string k = s;
-            auto pos = index.find(k);
+            auto pos = index.find(s);
             if (pos == index.end()) {
                 r.push_back(item);
                 r.back().push_back(s);
