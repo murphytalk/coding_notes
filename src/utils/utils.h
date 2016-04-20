@@ -95,6 +95,10 @@ public:
 		bitmap[b] |= 1 << bit;
 	}
 
+	inline void set(T byteIndex, uint8_t value) {
+		bitmap[byteIndex] = value;
+	}
+
     void clear(T index){
 		if (index<0 || index>=bit_size) return;
 
