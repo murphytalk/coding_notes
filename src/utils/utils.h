@@ -149,11 +149,13 @@ public:
 uint32_t nChooseK(uint32_t n,uint32_t k);
 uint32_t comb_index(const uint32_t comb);
 
-std::string get_data_dir();
+/* 
+   the data directory is data under this project's root directory 
+*/
+std::string get_data_file_path(const char* filename);
 
 template<typename LINE>
 bool load_test_data(char const *file_name,LINE line_callback,const char comment = '#'){    
-    get_data_dir();
     std::ifstream infile(file_name);
     if(!infile.is_open())  return false;
 

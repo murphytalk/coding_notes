@@ -75,7 +75,7 @@ public:
             if (pos == index.end()) {
                 r.push_back(item);
                 r.back().push_back(s);
-                index.insert(make_pair(s, r.size()-1));
+                index.insert(make_pair(s, (int)r.size()-1));
             }
             else {
                 V& v = r[pos->second];
@@ -192,9 +192,9 @@ TEST_CASE("Group anagrams: empty input test case","[leetcode]") {
 */
 class ReverseWordsInString{
 private:
-    inline void reverseWord(char *s, int len) {
+    inline void reverseWord(char *s, size_t len) {
         char c;
-        int i, j;
+        size_t i, j;
         for (i = 0, j = len - 1; i<j; ++i, --j) {
             c = s[i];
             s[i] = s[j];
@@ -215,8 +215,8 @@ private:
      * 
      * also handles extra spaces
     */
-    int _reverseWords(char *s) {
-        int len = strlen(s);
+    size_t _reverseWords(char *s) {
+        auto len = strlen(s);
         char *start = s;
         char *end = start + len - 1;
 
@@ -228,13 +228,13 @@ private:
             return 0;
         }
 
-        int size = ++end - start;
+        auto size = ++end - start;
 
         reverseWord(start, size);
         char *p1 = start, *p2 = start;
         char *dest = s;
         size = 0;
-        int n = 0;
+        size_t n = 0;
         while (p2 <= end) {
             ++p2;
             if (*p2 == ' ' || p2 >= end) {
@@ -338,9 +338,9 @@ public:
 			range.push_back(-1);
 		}
 		else {
-			range.push_back(low - nums.begin());
+			range.push_back((int)(low - nums.begin()));
 			auto up = upper_bound(low, nums.end(), target);
-			range.push_back(up - nums.begin() - 1);
+			range.push_back((int)(up - nums.begin() - 1));
 		}
 		return range;
 	}
@@ -399,10 +399,10 @@ TEST_CASE("Search Range: duplication test case", "[leetcode]") {
 class AddBinary {
 public:
 	virtual string addBinary(string a, string b) {
-		const auto n1 = a.size();
-		const auto n2 = b.size();
+		const uint32_t n1 = (uint32_t)a.size();
+		const uint32_t n2 = (uint32_t)b.size();
 		//we might need to carry a 1 from lower bit
-		const auto n = max(n1, n2) + 1;
+		const uint32_t n = max(n1, n2) + 1;
 		Utils::bitset result(n);
 		auto a_pos = a.rbegin();
 		auto b_pos = b.rbegin();
@@ -430,7 +430,7 @@ public:
 				break;
 			case 1:
 				carry = 0;
-				result.set(i);
+				result.set((uint32_t)i);
 				break;
 			case 2:
 				carry = 1;
@@ -438,7 +438,7 @@ public:
 			case 3:
 				//1 + 1 = 10
 				carry = 1;
-				result.set(i);
+				result.set((uint32_t)i);
 				break;
 			}
 
@@ -451,10 +451,10 @@ class AddBinary2 : public AddBinary{
 public:
 	static inline uint8_t step_back(char*& p, const char* start) {
 		if (p < start) return 0;
-		int n = p - start;
+		auto n = p - start;
 		if (n < 8) {
 			p -= n+1;
-			return s2i(p+1,n + 1);
+			return s2i(p+1,(int)n + 1);
 		}
 		else {
 			p -= 8;
@@ -473,31 +473,31 @@ public:
 	}
 
 	virtual string addBinary(string a, string b) {
-		auto n1 = a.size();
-		auto n2 = b.size();
+		uint32_t n1 = (uint32_t)a.size();
+		uint32_t n2 = (uint32_t)b.size();
 		//we might need to carry a 1 from lower bit
 		const auto n = max(n1, n2) + 1;
 		Utils::bitset result(n);
 
 		const auto full_steps = n / 8;
 
-		uint32_t add = 0, carry = 0;
+		uint16_t add = 0, carry = 0;
 		const char* pa_start = a.c_str();
 		const char* pb_start = b.c_str();
-		char* pa = const_cast<char*>(pa_start) + n1 -1 ;
+		char* pa = const_cast<char*>(pa_start) + n1 - 1;
 		char* pb = const_cast<char*>(pb_start) + n2 - 1;
 		size_t i = 0;
 		for (; i < full_steps; ++i) {
 			add = carry + step_back(pa, pa_start) + step_back(pb, pb_start);
 			carry = add > 0xff;
-			result.set(i, add & 0xff);
+			result.set((uint32_t)i, add & 0xff);
 		}
 
-		n1 = pa - pa_start + 1;
-		n2 = pb - pb_start + 1;
+		n1 = (uint32_t)(pa - pa_start + 1);
+		n2 = (uint32_t)(pb - pb_start + 1);
 		add = carry + s2i(const_cast<char*>(pa_start), n1) +s2i(const_cast<char*>(pb_start), n2);
 		carry = add > 0xff;
-		result.set(i, add & 0xff);
+		result.set((uint32_t)i, add & 0xff);
 
 		return result.to_str();
 	}
@@ -636,21 +636,16 @@ TEST_CASE("Add binary: big test cases", "[leetcode]") {
     AddBinary2 add2;
 
     string a,b;
-    
-    if(!Utils::load_test_data("/home/murphy/work/cpp_notes/data/leetcode-add-binary.txt",[&](string& s){
-       if(a.size()==0){
-           a=s;
-       }
-       else{
-           b=s;
-       }
-    })){
-        INFO("cannot find test file");
+	string file = Utils::get_data_file_path("leetcode-add-binary.txt");
+    if(!Utils::load_test_data(file.c_str(),
+							  [&](string& s){ if(a.size()==0) a=s; else b=s; })){
+        INFO("Cannot find test file "<<file);
+		INFO("To generate it run: scripts/gen_long_bit_string.py >> " << file);
         REQUIRE(false);
     }
     else{
         string s1,s2;
-        SECTION("solution 1"){
+        SECTION("solution 1"){ //only to find runtime 
            add1.addBinary(a,b); 
         }
         SECTION("solution 2"){

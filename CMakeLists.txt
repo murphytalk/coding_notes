@@ -14,7 +14,7 @@ endif()
 option(
   force_shared_crt
   "Use shared (DLL) run-time lib even when Google Test is built as static lib."
-  OFF)
+  ON)
 
 include(CMake/internal_utils.cmake)
 fix_default_compiler_settings_()

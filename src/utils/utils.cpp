@@ -1,4 +1,6 @@
 #include "utils.h"
+#include <boost/filesystem/path.hpp>
+namespace fs = boost::filesystem;
 namespace Utils{
 
 CMP_INT_FUNC cmp_int = [](int x,int y){return x<y;};
@@ -33,8 +35,12 @@ uint32_t comb_index(const uint32_t comb)
 	return value;
 }
 
-std::string get_data_dir(){
-    return "";
+std::string get_data_file_path(const char* filename)
+{
+	// code_notes_root/src/utils
+	const auto& mypath = fs::path(__FILE__);
+	auto path = mypath.parent_path().parent_path().parent_path() / "data"/ filename;
+	return path.string();
 }
 
 }
