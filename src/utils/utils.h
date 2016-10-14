@@ -126,6 +126,8 @@ public:
 
 typedef basic_bitset<uint32_t> bitset;
 
+/* Gosper's hack - #175 in HAKMEM
+*/
 template<typename T>
 class GosperHack{
 private:

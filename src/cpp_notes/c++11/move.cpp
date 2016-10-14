@@ -3,6 +3,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <queue>
 
 using namespace std;
 
@@ -85,5 +86,12 @@ namespace Cxx11Test{
 		//won't compile if don't use std::move due to miss Rvalue(const RValue&) => needed by vector
 		v.push_back(std::move(r1));
 		v.push_back(std::move(r2));
+	}
+
+	TEST_CASE("C++ 11 move - queue", "[c++11]") {
+		queue<Rvalue> q;
+		Rvalue r(100, "data100");
+		//if r is defined as const then the following won't compile
+		q.push(std::move(r));
 	}
 }

@@ -6,6 +6,8 @@ namespace Utils{
 CMP_INT_FUNC cmp_int = [](int x,int y){return x<y;};
 
 
+//https://en.wikipedia.org/wiki/Binomial_coefficient
+//how many ways to choose a k-element set out of a n-element set
 uint32_t nChooseK( uint32_t n, uint32_t k )
 {
     if (k > n) return 0;
