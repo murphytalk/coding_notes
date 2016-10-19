@@ -66,6 +66,10 @@ class StockFactory : boost::noncopyable
 {
 protected:
         std::map<std::string,std::weak_ptr<Stock>> _stocks;
+        
+        virtual void newStock(std::shared_ptr<Stock>& stock, const std::string& symbol){
+            stock.reset(new Stock(symbol));
+        }
 public:
         //not thread-safe
         std::shared_ptr<Stock> get(const std::string& symbol)
@@ -75,7 +79,8 @@ public:
             std::weak_ptr<Stock>& s = _stocks[symbol];
             stock = s.lock();
             if(!stock){
-                stock.reset(new Stock(symbol));
+                newStock(stock,symbol);
+                //update the weak pointer in map
                 s = stock;
             }
             return stock;
