@@ -6,6 +6,21 @@ The language used is C++ (C++ 11 features used), the dependencies are:
  1. [boost](http://www.boost.org/).
  1. [Catch](https://github.com/philsquared/Catch) unit test. See Catch's docs on [command line options and arguments](https://github.com/philsquared/Catch/blob/master/docs/command-line.md).
 
+All examples/tests are tagged, run this to list all tags:
+
+```
+./note -t 
+```
+Run this to list all examples/tests:
+
+```
+./note -l
+```
+This will run all examples/tests whose name start with "Add" and are tagged with "leetcode". `-d y` is to show how much test is used for each test:
+
+```
+./notes 'Add*' '[leetcode]'  -d y
+```
 
 # Problems and solutions
 
