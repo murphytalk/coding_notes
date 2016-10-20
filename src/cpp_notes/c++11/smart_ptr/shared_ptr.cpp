@@ -50,6 +50,13 @@ TEST_CASE("shared_ptr circular refrence","[c++11][smartptr]"){
     INFO("Both CycleA and CycleB won't be freed!");
 }
 
+/*  
+ * A stock factory which can return the same Stock object for the same stock symbol
+ * 
+ * There are several generations of attempts trying to solve problems the previous attempt didn't solve.
+ * See the test cases below the factory implementations
+ * 
+ */
 
 class Stock{
 public:
@@ -94,10 +101,14 @@ class StockFactory2 : public StockFactory
 public:
    void delStock(Stock* stock){
        if(stock){
-           _stocks.erase(stock->symbol);
+           removeSymbol(stock->symbol);
            std::cout<<"removed "<<stock->symbol<<" from _stocks"<<std::endl;
        }
        delete stock;
+   }
+   
+   void removeSymbol(const std::string& symbol){
+       _stocks.erase(symbol);
    }
 protected:
    
@@ -127,7 +138,35 @@ protected:
     }
 };
 
-TEST_CASE("Mem leak : _stocks never get freed","[c++11][smartptr]"){
+class StockFactory4 : public std::enable_shared_from_this<StockFactory4>, public StockFactory2{
+public:
+    StockFactory4(){
+        std::cout<<"StockFactory4 created"<<std::endl;
+    }
+    ~StockFactory4(){
+        std::cout<<"StockFactory4 destroyed"<<std::endl;
+    }
+protected:
+    virtual void newStock(std::shared_ptr<Stock>& stock, const std::string& symbol){
+        //each deleter will hold one count of StockFactory3 via boost::bind
+        //this guruantees StockFactory3 won't get freed before shared_ptr<Stock> does
+        stock.reset(new Stock(symbol),boost::bind(&StockFactory4::weakDelete,std::weak_ptr<StockFactory4>(shared_from_this()),_1));
+    }
+    
+    static void weakDelete(const std::weak_ptr<StockFactory4>& weakFactory,Stock *stock){
+        std::shared_ptr<StockFactory4> factory(weakFactory.lock());
+        if(factory){
+            std::cout<<"factory not destroyed yet"<<std::endl;
+            factory->removeSymbol(stock->symbol);
+        }
+        else{
+            std::cout<<"factory already destroyed"<<std::endl;
+        }
+        delete stock;
+    }
+};
+
+TEST_CASE("Mem leak : symbols map never get freed","[c++11][smartptr]"){
     StockFactory factory;
     
     REQUIRE(factory.size()==0);
@@ -138,7 +177,7 @@ TEST_CASE("Mem leak : _stocks never get freed","[c++11][smartptr]"){
         REQUIRE(amazon1.get() == amazon2.get());
     }
     std::cout<<"END"<<std::endl;
-    REQUIRE(factory.size()==1);
+    REQUIRE(factory.size()==1); //symbol is still there, althoug it maps an empty pointer
 }
     
 TEST_CASE("Solve mem leak by using deleter","[c++11][smartptr]"){
@@ -152,10 +191,10 @@ TEST_CASE("Solve mem leak by using deleter","[c++11][smartptr]"){
         REQUIRE(amazon1.get() == amazon2.get());
     }
     std::cout<<"END"<<std::endl;
-    REQUIRE(factory.size()==0);
+    REQUIRE(factory.size()==0); //all symbols are freed too
 }
 
-TEST_CASE("Solve possible earlier free of factory","[c++11][smartptr]"){
+TEST_CASE("Solve possible earlier free of factory: stock destroyed first","[c++11][smartptr]"){
     std::shared_ptr<StockFactory3> factory(new StockFactory3);
     
     REQUIRE(factory->size()==0);
@@ -169,5 +208,51 @@ TEST_CASE("Solve possible earlier free of factory","[c++11][smartptr]"){
     std::cout<<"factory count="<<factory.use_count()<<std::endl;
     std::cout<<"END"<<std::endl;
     REQUIRE(factory->size()==0);
+}
+
+TEST_CASE("Solve possible earlier free of factory but factory lives longer than expected: stock destroyed later","[c++11][smartptr]"){
+    std::shared_ptr<Stock> amazon1;
+    
+    std::cout<<"START"<<std::endl;
+    {
+        std::shared_ptr<StockFactory3> factory(new StockFactory3);
+        amazon1 = factory->get(std::string("AMZN"));
+        auto amazon2 = factory->get(std::string("AMZN"));
+        REQUIRE(amazon1.get() == amazon2.get());
+        std::cout<<"factory count="<<factory.use_count()<<std::endl;
+    }
+    //amazon1 still holds one count of factory, factory still living !!!! 
+    std::cout<<"END"<<std::endl;
+}
+
+TEST_CASE("Does not matter which is freed first: stock destroyed first","[c++11][smartptr]"){
+    std::shared_ptr<StockFactory4> factory(new StockFactory4);
+    
+    REQUIRE(factory->size()==0);
+    std::cout<<"START"<<std::endl;
+    {
+        auto amazon1 = factory->get(std::string("AMZN"));
+        auto amazon2 = factory->get(std::string("AMZN"));
+        REQUIRE(amazon1.get() == amazon2.get());
+        std::cout<<"factory count="<<factory.use_count()<<std::endl;
+    }
+    std::cout<<"factory count="<<factory.use_count()<<std::endl;
+    std::cout<<"END"<<std::endl;
+    REQUIRE(factory->size()==0);
+}
+
+TEST_CASE("Does not matter which is freed first: stock destroyed later","[c++11][smartptr]"){
+    std::shared_ptr<Stock> amazon1;
+    
+    std::cout<<"START"<<std::endl;
+    {
+        //factory count is only 1 (from shared this), stock holds weak pointer
+        std::shared_ptr<StockFactory4> factory(new StockFactory4); 
+        amazon1 = factory->get(std::string("AMZN"));
+        auto amazon2 = factory->get(std::string("AMZN"));
+        REQUIRE(amazon1.get() == amazon2.get());
+        std::cout<<"factory count="<<factory.use_count()<<std::endl;
+    }
+    std::cout<<"END"<<std::endl;
 }
 } 
