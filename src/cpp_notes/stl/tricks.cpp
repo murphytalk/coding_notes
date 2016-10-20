@@ -20,7 +20,7 @@ namespace CxxSTL{
             * if the element order does not matter, 
             * swapping the element to delete with the last one and then pop back could save some element moving
             */ 
-             auto it = find(v1.begin(),v1.end(),1000);
+            auto it = find(v1.begin(),v1.end(),1000);
             swap(*it,v2.back());
             v2.pop_back();
         }

@@ -65,15 +65,15 @@ public:
 class StockFactory : boost::noncopyable
 {
 protected:
-        std::map<std::string,std::weak_ptr<Stock>> _stocks;
+    std::map<std::string,std::weak_ptr<Stock>> _stocks;
         
-        virtual void newStock(std::shared_ptr<Stock>& stock, const std::string& symbol){
-            stock.reset(new Stock(symbol));
-        }
+    virtual void newStock(std::shared_ptr<Stock>& stock, const std::string& symbol){
+        stock.reset(new Stock(symbol));
+    }
 public:
-        //not thread-safe
-        std::shared_ptr<Stock> get(const std::string& symbol)
-        {
+    //not thread-safe
+    std::shared_ptr<Stock> get(const std::string& symbol)
+    {
             std::shared_ptr<Stock> stock;
             
             std::weak_ptr<Stock>& s = _stocks[symbol];
@@ -84,10 +84,26 @@ public:
                 s = stock;
             }
             return stock;
-        }
+    }
         
-        int size() const {return _stocks.size();}
-};        
+    int size() const {return _stocks.size();}
+};  
+
+class StockFactory2 : public StockFactory
+{
+protected:
+   void delStock(Stock* stock){
+       if(stock){
+           _stocks.erase(stock->symbol);
+           std::cout<<"removed "<<stock->symbol<<" from _stocks"<<std::endl;
+       }
+       delete stock;
+   }
+   
+    virtual void newStock(std::shared_ptr<Stock>& stock, const std::string& symbol){
+        stock.reset(new Stock(symbol),boost::bind(&StockFactory2::delStock,this,_1));
+    }
+};
 
 TEST_CASE("Mem leak : _stocks never get freed","[c++11][smartptr]"){
     StockFactory factory;
@@ -103,4 +119,18 @@ TEST_CASE("Mem leak : _stocks never get freed","[c++11][smartptr]"){
     REQUIRE(factory.size()==1);
 }
     
+TEST_CASE("Solve mem leak by using deleter","[c++11][smartptr]"){
+    StockFactory2 factory;
+    
+    REQUIRE(factory.size()==0);
+    std::cout<<"START"<<std::endl;
+    {
+        auto amazon1 = factory.get(std::string("AMZN"));
+        auto amazon2 = factory.get(std::string("AMZN"));
+        REQUIRE(amazon1.get() == amazon2.get());
+    }
+    std::cout<<"END"<<std::endl;
+    REQUIRE(factory.size()==0);
 }
+
+} 
