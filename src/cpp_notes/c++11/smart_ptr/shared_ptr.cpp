@@ -91,7 +91,7 @@ public:
 
 class StockFactory2 : public StockFactory
 {
-protected:
+public:
    void delStock(Stock* stock){
        if(stock){
            _stocks.erase(stock->symbol);
@@ -99,9 +99,31 @@ protected:
        }
        delete stock;
    }
+protected:
    
     virtual void newStock(std::shared_ptr<Stock>& stock, const std::string& symbol){
+        /*
+         * StockFactory2::delStock gets called while shared_ptr decides to delete the pointer.
+         * Potential problem : 
+         * the StockFactory2 pointer this could become invalid if StockFactory2 is freed earlier than Stock - see StockFactory3 for solution
+         */
         stock.reset(new Stock(symbol),boost::bind(&StockFactory2::delStock,this,_1));
+    }
+};
+
+class StockFactory3 : public std::enable_shared_from_this<StockFactory3>, public StockFactory2{
+public:
+    StockFactory3(){
+        std::cout<<"StockFactory3 created"<<std::endl;
+    }
+    ~StockFactory3(){
+        std::cout<<"StockFactory3 destroyed"<<std::endl;
+    }
+protected:
+    virtual void newStock(std::shared_ptr<Stock>& stock, const std::string& symbol){
+        //each deleter will hold one count of StockFactory3 via boost::bind
+        //this guruantees StockFactory3 won't get freed before shared_ptr<Stock> does
+        stock.reset(new Stock(symbol),boost::bind(&StockFactory2::delStock,shared_from_this(),_1));
     }
 };
 
@@ -133,4 +155,19 @@ TEST_CASE("Solve mem leak by using deleter","[c++11][smartptr]"){
     REQUIRE(factory.size()==0);
 }
 
+TEST_CASE("Solve possible earlier free of factory","[c++11][smartptr]"){
+    std::shared_ptr<StockFactory3> factory(new StockFactory3);
+    
+    REQUIRE(factory->size()==0);
+    std::cout<<"START"<<std::endl;
+    {
+        auto amazon1 = factory->get(std::string("AMZN"));
+        auto amazon2 = factory->get(std::string("AMZN"));
+        REQUIRE(amazon1.get() == amazon2.get());
+        std::cout<<"factory count="<<factory.use_count()<<std::endl;
+    }
+    std::cout<<"factory count="<<factory.use_count()<<std::endl;
+    std::cout<<"END"<<std::endl;
+    REQUIRE(factory->size()==0);
+}
 } 

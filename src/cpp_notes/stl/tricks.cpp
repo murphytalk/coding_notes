@@ -5,7 +5,7 @@
 using namespace std;
 
 namespace CxxSTL{
-    TEST_CASE("Efficiently remove one elment from vector","[stl]"){
+    TEST_CASE("Efficiently remove one elment from vector","[stl][trick]"){
         vector<int> v1,v2;
         for(int i=0;i<10000;++i){
             v1.push_back(i);
