@@ -31,6 +31,7 @@ if(WIN32)
     INCLUDE_DIRECTORIES(${BOOST_ROOT})
 else(WIN32)
     find_package(Boost COMPONENTS timer system filesystem date_time REQUIRED)
+    INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})	
 endif(WIN32)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
