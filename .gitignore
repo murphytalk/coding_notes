@@ -37,10 +37,13 @@ CMakeLists.txt.*
 .kdev4/
 kdev/
 build/
+kbuild/
 kb/
 vc/
+<<<<<<< HEAD
 .vs/
 \#*
-data/*.txt
 *.kate-swp
 .#*
+data/*.txt
+

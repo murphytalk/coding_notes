@@ -6,13 +6,12 @@
 #include <atomic>
 
 using namespace std;
-using namespace Utils;
 
 namespace UtilsTest {
 
 TEST_CASE("bitset: even numbers under 101 are set", "[utils]") {
 	const int bitsize = 101;
-	bitset s(bitsize);
+    Utils::bitset s(bitsize);
 
 	for (uint32_t i = 0; i < bitsize; i += 2) {
 		s.set(i);
@@ -49,7 +48,7 @@ TEST_CASE("bitset: even numbers under 101 are set", "[utils]") {
 TEST_CASE("bitset: string", "[utils]") {
 	//                       5    0
 	const std::string s1 = "1111010";
-	bitset t(s1);
+    Utils::bitset t(s1);
 
 	SECTION("check bits") {
 		REQUIRE(!t.check(0));
@@ -71,7 +70,7 @@ TEST_CASE("bitset: string", "[utils]") {
 
 TEST_CASE("bitset: string should not have leading 0", "[utils]") {
 	const std::string s = "10";
-	bitset t(3);
+    Utils::bitset t(3);
 	t.set(1);
 	REQUIRE(t.to_str() == s);
 }
@@ -83,7 +82,7 @@ TEST_CASE("bitset: string should not have leading 0", "[utils]") {
 
  - publisher 1 publishes publiser_count unique Message objects(tag=a), data starts from seed1;
  - publisher 2 publishes publiser_count unique Message objects(tag=b), data starts from seed2;
- 
+
  Verify:
 
  - consumer checks each recevied message:
@@ -108,7 +107,7 @@ TEST_CASE("blocking queue", "[utils]") {
 	const int seed2 = 10000;
 	const int publiser_count = 2048;
 
-	blocking_queue<Message> q;
+    Utils::blocking_queue<Message> q;
 
 	auto publisher_func = [&publiser_count,&tag_end,&q](const string& tag, const int seed) {
 		for (int i = 0; i < publiser_count; ++i) {

@@ -109,7 +109,7 @@ TEST_CASE("Reverse words in string: test cases","[leetcode]") {
     SECTION("this sky is blue"){
         std::string s1 = "the sky is blue";
         const std::string s2 = "blue is sky the";
-        
+
         t.reverseWords(s1);
         REQUIRE(s1 == s2);
     }
@@ -148,11 +148,9 @@ TEST_CASE("Reverse words in string: test cases","[leetcode]") {
     SECTION("lots of space in the_middle") {
         std::string s1 = "   a   b ";
         const std::string s2 = "b a";
-        
+
         t.reverseWords(s1);
         REQUIRE(s1 == s2);
     }
 }
-
-    
 }

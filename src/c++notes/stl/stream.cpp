@@ -9,7 +9,8 @@ using namespace std;
 namespace CxxSTL {
 
 /*
-The first line of the input contains ,where is the number of integers.The next line contains integers separated by a space.
+The first line of the input contains the total number of integers in the next line.
+The second line contains integers separated by a space.
 e.g. this input
 
  4

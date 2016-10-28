@@ -1,6 +1,7 @@
 #include "catch.hpp"
 #include <string>
 #include <vector>
+#include <set>
 #include <iterator>
 #include <cstdlib>
 #include <cstring>
@@ -54,7 +55,7 @@ public:
             return hash(x)==hash(y);
         }
     }
-    
+
     vector<vector<string>> groupAnagrams(vector<string>& strs) {
         typedef vector<string> V;
         auto _hash = [](const string & key) {
