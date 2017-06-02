@@ -43,5 +43,5 @@ before_script:
     - mkdir data && python scripts/gen_long_bit_string.py > data/leetcode-add-binary.txt
     - ./build.sh
 
-script: make && build/release/notes
+script: build/release/notes
 
