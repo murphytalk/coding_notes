@@ -1,4 +1,6 @@
 
+[![Build Status](https://travis-ci.org/murphytalk/coding_notes.svg?branch=master)](https://travis-ci.org/murphytalk/coding_notes)
+
 Collection of my notes on coding and solutions to various small problems, a reminder to myself.
 
 The language used is C++ (C++ 11 features used), the dependencies are:
