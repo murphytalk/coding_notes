@@ -1,6 +1,7 @@
 #include "catch.hpp"
 #include <string>
 #include <vector>
+#include <iterator>
 #include <cstdlib>
 #include <cstring>
 #include <unordered_map>

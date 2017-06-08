@@ -38,23 +38,23 @@ namespace Cxx11Test{
 			return *this;
         }
     };
-    
+
     Rvalue make_rvalue(int id,const char*s){
         std::cout<<"make rvalue:";
         return Rvalue(id,s);
     }
-    
+
     void accept_rvalue(Rvalue&& r){
         std::cout<<"rvalue ref :accepted id="<<r.id<<"("<<r.s << ")" <<std::endl;
 		cout << "end of accept_rvalue()"<<endl;
     }
-    
+
     void accept_rvalue(Rvalue& r){
         std::cout<<"lvalue ref :accepted id="<<r.id<<"("<<r.s << ")" <<std::endl;
 		cout << "end of accept_rvalue()"<<endl;
     }
 
-    
+
 	TEST_CASE("C++ 11 move assignment 1", "[c++11]") {
 		Rvalue r(200, "Orginal");
 		auto& v = r;
@@ -68,7 +68,7 @@ namespace Cxx11Test{
         Rvalue r(100,"Destination");
 		r = make_rvalue(1,"Source");
     }
-    
+
     TEST_CASE("C++ 11 rvalue reference","[c++11]"){
 		cout << "START" << endl;
 		//the following line won't compile if accept_rvalue is defined as accept_rvalue(Rvalue& r)
@@ -85,8 +85,6 @@ namespace Cxx11Test{
 		cout << "END" << endl;
     }
     
-    
-
 	TEST_CASE("C++ 11 move constructor 1", "[c++11]") {
 		vector<Rvalue> v;
 		//temp object will trigger rvalue move constructor

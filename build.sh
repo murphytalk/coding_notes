@@ -10,6 +10,11 @@ else
     BUILD_TYPE=${BUILD_TYPE:-debug}
 fi
 
+if [ ! -z "CLANG" ];then
+    export CC=clang
+    export CXX=clang++
+fi
+
 mkdir -p $BUILD_DIR/$BUILD_TYPE \
   && cd $BUILD_DIR/$BUILD_TYPE \
   && cmake \

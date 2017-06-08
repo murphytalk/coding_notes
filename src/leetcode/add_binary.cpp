@@ -11,16 +11,16 @@ namespace LeetCode{
 
 /*
   https://leetcode.com/problems/add-binary/
-  
+
   Given two binary strings, return their sum (also a binary string).
   For example,
     a = "11"
     b = "1"
   Return "100".
-  
-  There are two implementations below : 1) by bit 2) by byte, 
+
+  There are two implementations below : 1) by bit 2) by byte,
   for big test data 2) is 30x times faster than 1)
-  
+
  */
 class AddBinary {
 public:
@@ -271,19 +271,19 @@ TEST_CASE("Add binary: big test cases", "[leetcode]") {
     }
     else{
         string s1,s2;
-        SECTION("solution 1"){ //only to find runtime 
-           add1.addBinary(a,b); 
+        SECTION("solution 1"){ //only to find runtime
+           add1.addBinary(a,b);
         }
         SECTION("solution 2"){
-           add2.addBinary(a,b); 
+           add2.addBinary(a,b);
         }
         SECTION("solution 1 == solution 2"){
             REQUIRE(add1.addBinary(a,b)==add2.addBinary(a,b));
         }
      }
-    
-    
+
+
 }
-    
+
 
 }
