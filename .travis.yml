@@ -1,9 +1,9 @@
 language: cpp
 sudo: required
 dist: trusty
-compiler:
-- gcc
-- clang
+#compiler:
+#- gcc
+#- clang
 os:
 - linux
 python: 3.6
