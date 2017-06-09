@@ -42,7 +42,7 @@ before_install:
 
 before_script:
     - mkdir data && python scripts/gen_long_bit_string.py > data/leetcode-add-binary.txt
-    - ./build.sh
+    - ./build.sh VERBOSE=1
 
 script: build/release/notes
 
