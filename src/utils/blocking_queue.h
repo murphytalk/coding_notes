@@ -16,7 +16,7 @@ namespace Utils {
 	public:
 		T pop() {
 			std::unique_lock<std::mutex> lock(_mutex);
-			//only exit wait when queue is empty, to prevent spurious wakeup
+			//only stop waiting when queue is not empty, to prevent spurious wakeup
 			_cond.wait(lock, [this] {return !_q.empty(); });
 			assert(!_q.empty());
 			auto data = std::move(_q.front());

@@ -3,7 +3,7 @@
 #include <iostream>
 #include <map>
 #include <memory> //C++ 11 smart pointers
-#include <boost/bind.hpp>
+#include <functional>
 #include <boost/noncopyable.hpp>
 
 namespace Cxx11Test{
@@ -93,7 +93,7 @@ public:
             return stock;
     }
         
-    int size() const {return _stocks.size();}
+    size_t size() const {return _stocks.size();}
 };  
 
 class StockFactory2 : public StockFactory
@@ -118,7 +118,7 @@ protected:
          * Potential problem : 
          * the StockFactory2 pointer this could become invalid if StockFactory2 is freed earlier than Stock - see StockFactory3 for solution
          */
-        stock.reset(new Stock(symbol),boost::bind(&StockFactory2::delStock,this,_1));
+        stock.reset(new Stock(symbol),std::bind(&StockFactory2::delStock,this,std::placeholders::_1));
     }
 };
 
@@ -132,9 +132,9 @@ public:
     }
 protected:
     virtual void newStock(std::shared_ptr<Stock>& stock, const std::string& symbol){
-        //each deleter will hold one count of StockFactory3 via boost::bind
+        //each deleter will hold one count of StockFactory3 via std::bind
         //this guruantees StockFactory3 won't get freed before shared_ptr<Stock> does
-        stock.reset(new Stock(symbol),boost::bind(&StockFactory2::delStock,shared_from_this(),_1));
+        stock.reset(new Stock(symbol),std::bind(&StockFactory2::delStock,shared_from_this(),std::placeholders::_1));
     }
 };
 
@@ -148,9 +148,9 @@ public:
     }
 protected:
     virtual void newStock(std::shared_ptr<Stock>& stock, const std::string& symbol){
-        //each deleter will hold one count of StockFactory3 via boost::bind
+        //each deleter will hold one count of StockFactory3 via std::bind
         //this guruantees StockFactory3 won't get freed before shared_ptr<Stock> does
-        stock.reset(new Stock(symbol),boost::bind(&StockFactory4::weakDelete,std::weak_ptr<StockFactory4>(shared_from_this()),_1));
+        stock.reset(new Stock(symbol),std::bind(&StockFactory4::weakDelete,std::weak_ptr<StockFactory4>(shared_from_this()),std::placeholders::_1));
     }
     
     static void weakDelete(const std::weak_ptr<StockFactory4>& weakFactory,Stock *stock){
