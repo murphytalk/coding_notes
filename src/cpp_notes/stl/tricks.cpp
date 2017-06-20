@@ -25,4 +25,8 @@ namespace CxxSTL{
             v2.pop_back();
         }
     }
+
+	/* This is dirty but demostrates C++ data model
+	*/
+	
 }

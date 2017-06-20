@@ -281,8 +281,6 @@ TEST_CASE("Add binary: big test cases", "[leetcode]") {
             REQUIRE(add1.addBinary(a,b)==add2.addBinary(a,b));
         }
      }
-
-
 }
 
 

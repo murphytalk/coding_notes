@@ -45,7 +45,7 @@ public:
 		}
 	}
 
-	basic_bitset(const std::string& str) : basic_bitset(str.size()) {
+	basic_bitset(const std::string& str) : basic_bitset((T)str.size()) {
 		T i = 0;		
 		for (auto iter = str.rbegin();iter != str.rend();++iter,++i) {
 			if (*iter == '1') set(i);
