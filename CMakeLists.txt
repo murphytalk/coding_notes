@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.1)
 project( CodingNotes )
 enable_testing()
 
-#we need C++11
-set (CMAKE_CXX_STANDARD 11)
+#we need C++14
+set (CMAKE_CXX_STANDARD 14)
 
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
