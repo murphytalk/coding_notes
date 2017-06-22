@@ -1,9 +1,9 @@
 #include "catch.hpp"
-#include <iostream>
 #include <string>
 #include <utility>
 #include <vector>
 #include <queue>
+#include "src/utils/utils.h"
 
 using namespace std;
 
@@ -15,14 +15,14 @@ namespace Cxx11Test{
 		int id;
 		string s;
         Rvalue(int i,const char* p):id(i),s(p){
-           std::cout<<"created id="<<id<<"(" <<s<<")" << std::endl;
+           LOG<<"created id="<<id<<"(" <<s<<")" << std::endl;
         }
         ~Rvalue(){
-           std::cout<<"deleted id=" << id <<"("<<s<< ")" << std::endl;
+           LOG<<"deleted id=" << id <<"("<<s<< ")" << std::endl;
         }
 		Rvalue(const Rvalue& r) = delete;
         Rvalue(Rvalue&& r){
-           std::cout<<"move constructor,move resource ("<<r.s<< ") from id="<<r.id<<" to id="<<id << std::endl;
+           LOG<<"move constructor,move resource ("<<r.s<< ") from id="<<r.id<<" to id="<<id << std::endl;
 		   id = r.id;
 		   s = std::move(r.s);
         }
@@ -31,7 +31,7 @@ namespace Cxx11Test{
 			Rvalue r = make_rvalue(1,"Source");
 		*/
 		Rvalue& operator=(Rvalue&& r){
-			std::cout << "move assignment,move resource (" << r.s << ") from id=" << r.id << " to id=" << id << std::endl;
+			LOG << "move assignment,move resource (" << r.s << ") from id=" << r.id << " to id=" << id << std::endl;
             if(this!=&r){
 				s = std::move(r.s);
             }
@@ -40,49 +40,49 @@ namespace Cxx11Test{
     };
 
     Rvalue make_rvalue(int id,const char*s){
-        std::cout<<"make rvalue:";
+        LOG<<"make rvalue:";
         return Rvalue(id,s);
     }
 
     void accept_rvalue(Rvalue&& r){
-        std::cout<<"rvalue ref :accepted id="<<r.id<<"("<<r.s << ")" <<std::endl;
-		cout << "end of accept_rvalue()"<<endl;
+        LOG<<"rvalue ref :accepted id="<<r.id<<"("<<r.s << ")" <<std::endl;
+		LOG << "end of accept_rvalue()"<<endl;
     }
 
     void accept_rvalue(Rvalue& r){
-        std::cout<<"lvalue ref :accepted id="<<r.id<<"("<<r.s << ")" <<std::endl;
-		cout << "end of accept_rvalue()"<<endl;
+        LOG<<"lvalue ref :accepted id="<<r.id<<"("<<r.s << ")" <<std::endl;
+		LOG << "end of accept_rvalue()"<<endl;
     }
 
 
 	TEST_CASE("C++ 11 move assignment 1", "[c++11]") {
 		Rvalue r(200, "Orginal");
 		auto& v = r;
-		cout << "orginal addr " << &r << endl;
-		cout << "dest addr " << &v << endl;
+		LOG << "orginal addr " << &r << endl;
+		LOG << "dest addr " << &v << endl;
 	}
 
 
     TEST_CASE("C++ 11 move assignment 2","[c++11]"){
-        std::cout<<"The destination:";
+        LOG<<"The destination:";
         Rvalue r(100,"Destination");
 		r = make_rvalue(1,"Source");
     }
 
     TEST_CASE("C++ 11 rvalue reference","[c++11]"){
-		cout << "START" << endl;
+		LOG << "START" << endl;
 		//the following line won't compile if accept_rvalue is defined as accept_rvalue(Rvalue& r)
         accept_rvalue(Rvalue(1000,"Temp"));
-		cout << "end of calling accept_rvalue()" << endl;
-		cout << "END" << endl;
+		LOG << "end of calling accept_rvalue()" << endl;
+		LOG << "END" << endl;
     }
 
     TEST_CASE("C++ 11 lvalue reference","[c++11]"){
-		cout << "START" << endl;
+		LOG << "START" << endl;
         Rvalue r(1000,"Temp");
         accept_rvalue(r);
-		cout << "end of calling accept_rvalue()" << endl;
-		cout << "END" << endl;
+		LOG << "end of calling accept_rvalue()" << endl;
+		LOG << "END" << endl;
     }
     
 	TEST_CASE("C++ 11 move constructor 1", "[c++11]") {

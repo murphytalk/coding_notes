@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include <iostream>
+#include "src/utils/utils.h"
 
 namespace CxxTemplate{
 
@@ -19,7 +19,7 @@ struct Base
 
     void job()
     {
-        std::cout<<"Doing job ...";
+        LOG<<"Doing job ...";
         interface();
     }
     
@@ -30,7 +30,7 @@ struct Base
     
     static void static_job()
     {
-        std::cout<<"Doing static job ...";
+        LOG<<"Doing static job ...";
         static_func();
     }
  };
@@ -39,11 +39,11 @@ struct Derived1 : public Base<Derived1>
 {
     void implementation(){
         mark = 1;
-        std::cout<<"Derived1::interface"<<std::endl;
+        LOG<<"Derived1::interface"<<std::endl;
     }
     
     static void static_sub_func(){
-        std::cout<<"Derived1::static_sub_func"<<std::endl;
+        LOG<<"Derived1::static_sub_func"<<std::endl;
     }
 };
 
@@ -51,11 +51,11 @@ struct Derived2 : public Base<Derived2>
 {
     void implementation(){
         mark = 2;
-        std::cout<<"Derived2::interface"<<std::endl;
+        LOG<<"Derived2::interface"<<std::endl;
     }
     
     static void static_sub_func(){
-        std::cout<<"Derived2::static_sub_func"<<std::endl;
+        LOG<<"Derived2::static_sub_func"<<std::endl;
     }
 };
 

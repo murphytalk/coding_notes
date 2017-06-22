@@ -4,8 +4,17 @@
 #include <string>
 #include <algorithm>
 #include <fstream>
-
+#include <iostream>
+#if 0
+#include <boost/chrono/include.hpp>
+#define LOG std::cout<<boost::chrono::system_clock::now()
+#else
+#include <chrono>
+#include "../utils/date.h"
+#define LOG std::cout<<date::format("%F %T : ", std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now()))
+#endif
 namespace Utils{
+
 
 typedef bool (*CMP_INT_FUNC)(int,int);
 extern CMP_INT_FUNC cmp_int;

@@ -109,7 +109,7 @@ public:
 		int val;
 		unique_ptr<ListNode> next;
 		ListNode(int x, ListNode *n = nullptr) : val(x), next(n) {}
-		//~ListNode() { cout << val << endl; }
+		//~ListNode() { LOG << val << endl; }
 	};
 
 	inline void next(ListNode*& l, int& v) const {

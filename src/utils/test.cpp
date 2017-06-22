@@ -146,24 +146,24 @@ namespace UtilsTest {
 					if (++end_signals_rcv == 2) break; //we have 2 publishers 
 				}
 				else {
-					cout << "Invalid msg tag " << tag << " recieved!";
+					LOG << "Invalid msg tag " << tag << " recieved!";
 				}
 			}
 		};
 
 		{
 				thread consumer(consumer_func);
-				cout << "consumer started" << endl;
+				LOG << "consumer started" << endl;
 
 				thread publisher1(publisher_func, tag1, seed1);
 				thread publisher2(publisher_func, tag2, seed2);
 
 				publisher1.join();
-				cout << "publisher1 done" << endl;
+				LOG << "publisher1 done" << endl;
 				publisher2.join();
-				cout << "publisher2 done" << endl;
+				LOG << "publisher2 done" << endl;
 				consumer.join();
-				cout << "consumer done, count1=" << count1 << ",count2=" << count2 << endl;
+				LOG << "consumer done, count1=" << count1 << ",count2=" << count2 << endl;
 		}
 
 		REQUIRE(publiser_count == count1);
