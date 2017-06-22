@@ -1,9 +1,12 @@
 #include "catch.hpp"
 #include <string>
 #include <vector>
+#include <array>
 #include <cstdlib>
 #include <cstring>
 #include <algorithm>
+#include <memory>
+//#include <iostream>
 
 using namespace std;
 
@@ -88,6 +91,125 @@ TEST_CASE("Search Range: duplication test case", "[leetcode]") {
 		REQUIRE(r[1] == 4);
 	}
 }
+
+/*
+https://leetcode.com/problems/add-two-numbers/
+
+You are given two non-empty linked lists representing two non-negative integers. 
+The digits are stored in reverse order and each of their nodes contain a single digit. Add the two numbers and return it as a linked list.
+
+You may assume the two numbers do not contain any leading zero, except the number 0 itself.
+
+Input: (2 -> 4 -> 3) + (5 -> 6 -> 4)
+Output: 7 -> 0 -> 8
+*/
+class AddTwoNumbers {
+public:
+	struct ListNode {
+		int val;
+		unique_ptr<ListNode> next;
+		ListNode(int x, ListNode *n = nullptr) : val(x), next(n) {}
+		//~ListNode() { cout << val << endl; }
+	};
+
+	inline void next(ListNode*& l, int& v) const {
+		if (l == nullptr) {
+			v = 0;
+		}
+		else {
+			v = l->val;
+			l = l->next.get();
+		}
+	}
+
+	ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) const {
+		ListNode *p1 = l1, *p2 = l2;
+		ListNode *l = nullptr, *dummy_head = new ListNode(0), *last=dummy_head;
+		int v, carry = 0;
+		int p1v, p2v;
+
+		while( p1 != nullptr || p2 != nullptr){
+			next(p1, p1v);
+			next(p2, p2v);
+			if ((v = carry + p1v + p2v) > 9) {
+				l = new ListNode(v % 10);
+				carry = v / 10;
+			}
+			else {
+				l = new ListNode(v);
+				carry = 0;
+			}
+			last->next.reset(l);
+			last = l;
+		}
+
+		if ( carry > 0) {
+			last->next.reset(new ListNode(carry));
+		}
+
+
+		ListNode* ret = dummy_head->next.get();
+		dummy_head->next.release();
+		delete dummy_head;
+		return ret;
+	}
+
+	const vector<int> addTwoNumbersAsVec(ListNode* l1, ListNode* l2) const {
+		vector<int> result;
+
+		ListNode *l = addTwoNumbers(l1, l2);
+		for (ListNode *n = l; n != nullptr; n = n->next.get()){
+			result.push_back(n->val);
+		}
+		delete l;
+		return result;
+	}
+};
+
+TEST_CASE("Add Two Numbers", "[leetcode]") {
+	const AddTwoNumbers test;
+
+	SECTION("(2 -> 4 -> 3) + (5 -> 6 -> 4)") {
+		AddTwoNumbers::ListNode *l1 = new AddTwoNumbers::ListNode(2, new AddTwoNumbers::ListNode(4, new AddTwoNumbers::ListNode(3)));
+		AddTwoNumbers::ListNode *l2 = new AddTwoNumbers::ListNode(5, new AddTwoNumbers::ListNode(6, new AddTwoNumbers::ListNode(4)));
+
+		const vector<int> verify{ 7,0,8 };
+		REQUIRE(test.addTwoNumbersAsVec(l1, l2) == verify);
+	}
+
+	SECTION("(4 -> 3) + (5 ->6)") {
+		AddTwoNumbers::ListNode *l1 = new AddTwoNumbers::ListNode(2, new AddTwoNumbers::ListNode(4, new AddTwoNumbers::ListNode(3)));
+		AddTwoNumbers::ListNode *l2 = new AddTwoNumbers::ListNode(5, new AddTwoNumbers::ListNode(6));
+
+		const vector<int> verify{7,0,4};
+		REQUIRE(test.addTwoNumbersAsVec(l1,l2) == verify);
+	}
+
+	SECTION("(5) + (5)") {
+    	AddTwoNumbers::ListNode *l1 = new AddTwoNumbers::ListNode(5);
+    	AddTwoNumbers::ListNode *l2 = new AddTwoNumbers::ListNode(5);
+    
+    	const vector<int> verify{0,1};
+    	REQUIRE(test.addTwoNumbersAsVec(l1,l2) == verify);
+	}
+
+	SECTION("(1) + (9 -> 9)") {
+    	AddTwoNumbers::ListNode *l1 = new AddTwoNumbers::ListNode(1);
+    	AddTwoNumbers::ListNode *l2 = new AddTwoNumbers::ListNode(9,new AddTwoNumbers::ListNode(9));
+    
+    	const vector<int> verify{0,0,1};
+    	REQUIRE(test.addTwoNumbersAsVec(l1,l2) == verify);
+	}
+
+	SECTION("(9 -> 1 -> 6) + (0)") {
+		AddTwoNumbers::ListNode *l1 = new AddTwoNumbers::ListNode(9, new AddTwoNumbers::ListNode(1, new AddTwoNumbers::ListNode(6)));
+		AddTwoNumbers::ListNode *l2 = new AddTwoNumbers::ListNode(0);
+
+		const vector<int> verify{ 9,1,6 };
+		REQUIRE(test.addTwoNumbersAsVec(l1, l2) == verify);
+	}
+};
+
 
 
 }; //namespace LeetCode
