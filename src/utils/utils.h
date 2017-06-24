@@ -11,7 +11,7 @@
 #else
 #include <chrono>
 #include "../utils/date.h"
-#define LOG std::cout<<date::format("%F %T : ", std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now()))
+#define LOG std::cout<<date::format("%F %T ", std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now()))
 #endif
 namespace Utils{
 
@@ -20,6 +20,8 @@ typedef bool (*CMP_INT_FUNC)(int,int);
 extern CMP_INT_FUNC cmp_int;
 
 /*
+  Very similar to std::bitset 
+
   A buffer whose bit can be set or checked by the bit index. 
   Computational complexity : O(n) = c
   Space complexity : O(n) = n 
