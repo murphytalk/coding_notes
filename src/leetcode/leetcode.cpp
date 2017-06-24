@@ -6,7 +6,7 @@
 #include <cstring>
 #include <algorithm>
 #include <memory>
-//#include <iostream>
+#include <iterator>
 
 using namespace std;
 
@@ -34,9 +34,9 @@ public:
 			range.push_back(-1);
 		}
 		else {
-			range.push_back((int)(low - nums.begin()));
+			range.push_back((int)distance(nums.begin(),low));
 			auto up = upper_bound(low, nums.end(), target);
-			range.push_back((int)(up - nums.begin() - 1));
+			range.push_back((int)distance(nums.begin(),up)-1);
 		}
 		return range;
 	}
