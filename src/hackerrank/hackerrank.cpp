@@ -120,14 +120,18 @@ It returs a pair where expected output is the first and our output is the second
 */
 static pair<string, string> hacker_ranker_tester(const char* iff, const char* off, function<void(ifstream&,ostringstream&)> test){
 	ifstream f(Utils::get_data_file_path(iff), ifstream::in);
-	ostringstream o;
-	
-	test(f,o);
+	if (!f) return make_pair("missing file in data folder",iff);
 
 	//read expected output
 	ifstream e(Utils::get_data_file_path(off), ifstream::in);
+	if (!f) return make_pair("missing file in data folder",off);
+
 	ostringstream ss;
 	ss << e.rdbuf();
+
+	ostringstream o;
+	test(f,o);
+
 	return make_pair(ss.str(), o.str());
 }
 
