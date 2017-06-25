@@ -1,12 +1,15 @@
 #include "catch.hpp"
 #include <string>
 #include <vector>
+#include <deque>
 #include <array>
 #include <cstdlib>
 #include <cstring>
 #include <algorithm>
 #include <memory>
 #include <iterator>
+#include <bitset>
+#include <unordered_map>
 
 using namespace std;
 
@@ -210,6 +213,88 @@ TEST_CASE("Add Two Numbers", "[leetcode]") {
 	}
 };
 
+/*
+https://leetcode.com/problems/longest-substring-without-repeating-characters/#/description
+
+Given a string, find the length of the longest substring without repeating characters.
+
+Examples:
+
+Given "abcabcbb", the answer is "abc", which the length is 3.
+
+Given "bbbbb", the answer is "b", with the length of 1.
+
+Given "pwwkew", the answer is "wke", with the length of 3. Note that the answer must be a substring, "pwke" is a subsequence and not a substring.
+*/
+static int lengthOfLongestSubstring(string s) {
+	if (s.empty()) return 0;
+
+	typedef string::size_type S;
+	pair<S, S> prev;
+	pair<S, S> current;
+	//bitset<255> ascii;
+	unordered_map<char, S> ascii;
+	#define SUBSTR_LEN(p) (p.second-p.first)
+
+	for (S i = 0; i < s.size(); ++i) {
+		auto previous_hit = ascii.find(s[i]);
+		if (previous_hit!=ascii.end() && previous_hit->second != string::npos) {
+			//repeat char found! 
+			if (SUBSTR_LEN(current) > SUBSTR_LEN(prev)) {
+				prev = current;
+			}
+
+			//the new substr should start from the next char of the previous occurance, see test case "dvdf"
+			current.first = previous_hit->second + 1;
+			//and all hits before that should be cleared
+			for (auto& kv : ascii) {
+				if (kv.second < previous_hit->second) kv.second = string::npos;
+			}
+			previous_hit->second = i;
+			current.second = i;
+		}
+		else {
+			ascii[s[i]] = i;
+			current.second = i;
+		}
+	}
+
+
+	S _from, _to;
+	if (SUBSTR_LEN(current) > SUBSTR_LEN(prev)) {
+		_from = current.first;
+		_to = current.second;
+	}
+	else {
+		_from = prev.first;
+		_to = prev.second;
+	}
+	return (int)(_to - _from + 1);
+}
+
+TEST_CASE("longest substring: empty string", "[leetcode]") {
+	REQUIRE(lengthOfLongestSubstring("") == 0);
+}
+
+TEST_CASE("longest substring: dvdf", "[leetcode]") {
+	REQUIRE(lengthOfLongestSubstring("dvdf") == 3);
+}
+
+TEST_CASE("longest substring: 1dvdfab1", "[leetcode]") {
+	REQUIRE(lengthOfLongestSubstring("1dvdfab1") == 6);
+}
+
+TEST_CASE("longest substring: abcabcbb", "[leetcode]") {
+	REQUIRE(lengthOfLongestSubstring("abcabcbb") == 3);
+}
+
+TEST_CASE("longest substring: bbbbbbbbbb", "[leetcode]") {
+	REQUIRE(lengthOfLongestSubstring("bbbbbbbbbb") == 1);
+}
+
+TEST_CASE("longest substring: pwwkew", "[leetcode]") {
+	REQUIRE(lengthOfLongestSubstring("pwwkew") == 3);
+}
 
 
 }; //namespace LeetCode
