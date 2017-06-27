@@ -7,6 +7,7 @@
 #include <sstream>
 #include <functional>
 #include <deque>
+#include <list>
 #include "src/utils/utils.h"
 
 using namespace std;
@@ -122,12 +123,13 @@ static pair<string, string> hacker_ranker_tester(const char* iff, const char* of
 	ifstream f(Utils::get_data_file_path(iff), ifstream::in);
 	if (!f) return make_pair("missing file in data folder",iff);
 
-	//read expected output
-	ifstream e(Utils::get_data_file_path(off), ifstream::in);
-	if (!f) return make_pair("missing file in data folder",off);
-
 	ostringstream ss;
-	ss << e.rdbuf();
+	if (off != nullptr) {
+		//read expected output
+		ifstream e(Utils::get_data_file_path(off), ifstream::in);
+		if (!f) return make_pair("missing file in data folder",off);
+		ss << e.rdbuf();
+	}
 
 	ostringstream o;
 	test(f,o);
@@ -258,5 +260,147 @@ TEST_CASE("Max value in contiguous subarray : Test Case 1", "[hackerrank]") {
 	auto r = contiguous_subarray_test("hackerrank-contiguous-subarray-1-input.txt", "hackerrank-contiguous-subarray-1-output.txt");
 	REQUIRE(r.first == r.second);
 }
+
+/*
+https://www.hackerrank.com/challenges/attending-workshops
+
+https://en.wikipedia.org/wiki/Interval_scheduling
+
+A student signed up for workshops and wants to attend the maximum number of workshops where no two workshops overlap.
+
+Input Format
+
+Input from stdin is handled by the locked code in the editor; you simply need to write your functions to meet the specifications of the problem statement above.
+*/
+
+struct Workshop {
+	int start_time;//HHMM
+	int end_time;
+	int duration;
+};
+
+struct Available_Workshops {
+	const int n;
+	Workshop* workshops;
+	Available_Workshops(int _n) :n(_n) {
+		workshops = new Workshop[n];
+	}
+	~Available_Workshops() {
+		delete[]workshops;
+	}
+};
+
+static Available_Workshops* initialize(int start_time[], int duration[], int n) {
+	Available_Workshops* w = new Available_Workshops(n);
+	for (int i = 0; i<n; ++i) {
+		w->workshops[i].start_time = start_time[i];
+		w->workshops[i].duration = duration[i];
+		w->workshops[i].end_time = start_time[i] + duration[i];
+	}
+	return w;
+}
+
+static bool clashing(const Workshop& w1, const Workshop& w2) {
+	return (w1.start_time >= w2.start_time && w1.start_time <= w2.end_time) ||
+		(w2.start_time >= w1.start_time && w2.start_time <= w1.end_time);
+}
+
+static void add(map<int, int>& count, int w) {
+	auto i = count.find(w);
+	if (i == count.end()) {
+		count[w] = 1;
+	}
+	else {
+		i->second += 1;
+	}
+}
+
+static int CalculateMaxWorkshops(Available_Workshops* ptr) {
+	//find how many clashing each workshop has
+	map<int, int> clashingCount; //workshop => clashings
+	for (int i = 0; i<ptr->n; ++i) {
+		for (int k = 0; k<ptr->n; ++k) {
+			if (i == k /*|| i>k*/) continue;
+			const Workshop& w_i = ptr->workshops[i];
+			const Workshop& w_k = ptr->workshops[k];
+			if (clashing(w_i, w_k)) {
+				add(clashingCount, i);
+				//add(clashingCount,k);
+			}
+		}
+	}
+	vector<size_t> available;
+	for (int current = 0; current<ptr->n; ++current) {
+		//current is picked as workshop must attend this round
+		set<int> selected;
+		selected.insert(current);
+
+		//choose one meets the following conditions:
+		//a) does not clash with any of the selected workshop
+		//b) has the least clashings 
+		deque<int> candidates;
+		for (int i = 0; i < ptr->n; ++i) {
+			if (selected.find(i) != selected.end()) continue; //ignore already selected workshop
+			if (clashing(ptr->workshops[i], ptr->workshops[current])) continue;
+			candidates.push_back(i);
+		}
+		while(!candidates.empty()) {
+			std::make_heap(candidates.begin(), candidates.end(), [&](int w1, int w2) {return clashingCount[w1] > clashingCount[w2];});
+			int new_selected = candidates.front();
+			selected.insert(new_selected);
+			candidates.pop_front();
+
+			//remove all those clashing with the new selected workshop
+			candidates.erase(remove_if(candidates.begin(), candidates.end(), [&](int w) {return clashing(ptr->workshops[new_selected], ptr->workshops[w]);}),candidates.end());
+
+		}
+		available.push_back(selected.size());
+	}
+	std::make_heap(available.begin(), available.end());
+	return (int)available.front();
+}
+
+
+static pair<string, string> attending_workshop_test(const char* iff) {
+	return hacker_ranker_tester(iff, nullptr, [](ifstream& f, ostringstream& o) {
+		int n; // number of workshops
+		f >> n;
+		// create arrays of unknown size n
+		int* start_time = new int[n];
+		int* duration = new int[n];
+
+		for (int i = 0; i < n; i++) {
+			f >> start_time[i];
+		}
+		for (int i = 0; i < n; i++) {
+			f >> duration[i];
+		}
+
+		Available_Workshops * ptr;
+		ptr = initialize(start_time, duration, n);
+		o << CalculateMaxWorkshops(ptr);
+	});
+}
+
+TEST_CASE("Attending workshops : Test Case 0", "[hackerrank]") {
+	auto r = attending_workshop_test("hackerrank-attending-workshops-0-input.txt");
+	REQUIRE("4" == r.second);
+}
+
+TEST_CASE("Attending workshops : Test Case 1", "[hackerrank]") {
+	auto r = attending_workshop_test("hackerrank-attending-workshops-4-input.txt");
+	REQUIRE("5" == r.second);
+}
+
+TEST_CASE("Attending workshops : Test Case 4", "[hackerrank]") {
+	auto r = attending_workshop_test("hackerrank-attending-workshops-4-input.txt");
+	REQUIRE("2" == r.second);
+}
+
+TEST_CASE("Attending workshops : Test Case 11", "[hackerrank]") {
+	auto r = attending_workshop_test("hackerrank-attending-workshops-11-input.txt");
+	REQUIRE("716" == r.second);
+}
+
 
 }

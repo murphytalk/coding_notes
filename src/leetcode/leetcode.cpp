@@ -230,9 +230,8 @@ static int lengthOfLongestSubstring(string s) {
 	if (s.empty()) return 0;
 
 	typedef string::size_type S;
-	pair<S, S> prev;
+	pair<S, S> prev = { 0,0 };
 	pair<S, S> current;
-	//bitset<255> ascii;
 	unordered_map<char, S> ascii;
 	#define SUBSTR_LEN(p) (p.second-p.first)
 
@@ -247,9 +246,13 @@ static int lengthOfLongestSubstring(string s) {
 			//the new substr should start from the next char of the previous occurance, see test case "dvdf"
 			current.first = previous_hit->second + 1;
 			//and all hits before that should be cleared
+#if 1
 			for (auto& kv : ascii) {
 				if (kv.second < previous_hit->second) kv.second = string::npos;
 			}
+#else
+			for (S k = prev.first; k < previous_hit->second && k < current.first; ++k) ascii[s[k]] = string::npos;
+#endif
 			previous_hit->second = i;
 			current.second = i;
 		}
@@ -286,6 +289,10 @@ TEST_CASE("longest substring: 1dvdfab1", "[leetcode]") {
 
 TEST_CASE("longest substring: abcabcbb", "[leetcode]") {
 	REQUIRE(lengthOfLongestSubstring("abcabcbb") == 3);
+}
+
+TEST_CASE("longest substring: aa", "[leetcode]") {
+	REQUIRE(lengthOfLongestSubstring("aa") == 1);
 }
 
 TEST_CASE("longest substring: bbbbbbbbbb", "[leetcode]") {
