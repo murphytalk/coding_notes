@@ -308,19 +308,19 @@ static int CalculateMaxWorkshops(Available_Workshops* ptr) {
 	deque<int> candidates(ptr->n);
 	for (int i = 0; i < ptr->n; ++i) candidates[i]=i;
 
-	set<int> selected;
+	int selected = 0;
 	sort(candidates.begin(), candidates.end(), [&ptr](int w1, int w2) {return ptr->workshops[w1].end_time < ptr->workshops[w2].end_time;});
 	
 	while (!candidates.empty()) {
 		int earliest_end = candidates.front(); //select the one that ends earliest
-		selected.insert(earliest_end);
+		++selected;
 		candidates.pop_front();
 
 		//remove all those clashing with the new selected workshop
 		candidates.erase(remove_if(candidates.begin(), candidates.end(), [&](int w) {return clashing(ptr->workshops[earliest_end], ptr->workshops[w]); }), candidates.end());
 	}
 	
-	return (int)selected.size();
+	return selected;
 }
 
 
