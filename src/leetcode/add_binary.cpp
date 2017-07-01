@@ -270,15 +270,15 @@ TEST_CASE("Add binary: big test cases", "[leetcode]") {
         REQUIRE(false);
     }
     else{
-        string s1,s2;
+        static string s1,s2;
         SECTION("solution 1"){ //only to find runtime
-           add1.addBinary(a,b);
+           s1=add1.addBinary(a,b);
         }
         SECTION("solution 2"){
-           add2.addBinary(a,b);
+           s2=add2.addBinary(a,b);
         }
         SECTION("solution 1 == solution 2"){
-            REQUIRE(add1.addBinary(a,b)==add2.addBinary(a,b));
+			REQUIRE(s1 == s2);
         }
      }
 }

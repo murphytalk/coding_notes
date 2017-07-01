@@ -33,7 +33,7 @@ struct Base
         LOG<<"Doing static job ...";
         static_func();
     }
- };
+};
 
 struct Derived1 : public Base<Derived1>
 {

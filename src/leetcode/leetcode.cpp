@@ -10,6 +10,7 @@
 #include <iterator>
 #include <bitset>
 #include <unordered_map>
+#include "../utils/utils.h"
 
 using namespace std;
 
@@ -226,7 +227,7 @@ Given "bbbbb", the answer is "b", with the length of 1.
 
 Given "pwwkew", the answer is "wke", with the length of 3. Note that the answer must be a substring, "pwke" is a subsequence and not a substring.
 */
-static int lengthOfLongestSubstring(string s) {
+static int lengthOfLongestSubstring_use_map(string s) {
 	if (s.empty()) return 0;
 
 	typedef string::size_type S;
@@ -275,6 +276,53 @@ static int lengthOfLongestSubstring(string s) {
 	return (int)(_to - _from + 1);
 }
 
+
+static int lengthOfLongestSubstring(string s) {
+	if (s.empty()) return 0;
+
+	typedef string::size_type S;
+	pair<S, S> prev;
+	pair<S, S> current;
+	const int SIZE = 255 + 1;
+	S ascii[SIZE];
+	fill(ascii, ascii + SIZE, string::npos);
+	#define SUBSTR_LEN(p) (p.second-p.first)
+
+	S n = s.size();
+	for (S i = 0; i < n; ++i) {
+		auto& previous_hit = ascii[s[i]];
+		if (previous_hit != string::npos) {
+			//repeat char found! 
+			if (SUBSTR_LEN(current) > SUBSTR_LEN(prev)) {
+				prev = current;
+			}
+
+			//the new substr should start from the next char of the previous occurance, see test case "dvdf"
+			current.first = previous_hit + 1;
+			//and all hits before that should be cleared
+			replace_if(ascii, ascii + SIZE, [&previous_hit](S s) {return s < previous_hit; }, string::npos);
+			previous_hit = i;
+			current.second = i;
+		}
+		else {
+			ascii[s[i]] = i;
+			current.second = i;
+		}
+	}
+
+
+	S _from, _to;
+	if (SUBSTR_LEN(current) > SUBSTR_LEN(prev)) {
+		_from = current.first;
+		_to = current.second;
+	}
+	else {
+		_from = prev.first;
+		_to = prev.second;
+	}
+	return (int)(_to - _from + 1);
+}
+
 TEST_CASE("longest substring: empty string", "[leetcode]") {
 	REQUIRE(lengthOfLongestSubstring("") == 0);
 }
@@ -284,7 +332,7 @@ TEST_CASE("longest substring: dvdf", "[leetcode]") {
 }
 
 TEST_CASE("longest substring: 1dvdfab1", "[leetcode]") {
-	REQUIRE(lengthOfLongestSubstring("1dvdfab1") == 6);
+	REQUIRE(lengthOfLongestSubstring_use_map("1dvdfab1") == 6);
 }
 
 TEST_CASE("longest substring: abcabcbb", "[leetcode]") {
@@ -303,6 +351,29 @@ TEST_CASE("longest substring: pwwkew", "[leetcode]") {
 	REQUIRE(lengthOfLongestSubstring("pwwkew") == 3);
 }
 
+TEST_CASE("longest substring: long string", "[leetcode]") {
+	string file = Utils::get_data_file_path("leetcode-longest-substr.txt");
+	string longstr;
+    if(!Utils::load_test_data(file.c_str(),
+							  [&longstr](string& s){ longstr=s; })){
+        INFO("Cannot find test file "<<file);
+		INFO("To generate it run: scripts/gen_long_tring.py >> " << file);
+        REQUIRE(false);
+    }
+	else {
+		static int n1, n2;
+		SECTION("Use map") {
+			n1=lengthOfLongestSubstring_use_map(longstr);
+		}
+		SECTION("Use array") {
+			n2=lengthOfLongestSubstring(longstr);
+		}
+		SECTION("Use array == use map") {
+			//map performs better : 0.023s vs 0.043s
+			REQUIRE(n1==n2);
+		}
+	}
+}
 
 }; //namespace LeetCode
 

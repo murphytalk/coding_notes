@@ -44,7 +44,7 @@ before_install:
     - eval "${MATRIX_EVAL}"
 
 before_script:
-    - (cd data; for i in *.7z;do 7z x $i;done) && python scripts/gen_long_bit_string.py > data/leetcode-add-binary.txt
+    - (cd data; for i in *.7z;do 7z x $i;done) && scripts/gen.sh
     - ./build.sh VERBOSE=1
 
 script: build/release/notes
