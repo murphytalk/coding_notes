@@ -13,71 +13,96 @@ using namespace std;
 namespace DS{
 
 template<typename T>
-struct TreeNode {
-	TreeNode* left;
-	TreeNode* right;
-	T data;
-	TreeNode(TreeNode *l, TreeNode *r, T d) :left(l), right(r), data(d) {}
-	TreeNode(T d) :TreeNode(nullptr, nullptr, d) {}
-	~TreeNode() { LOG << "Deleted tree node " << data <<endl; }
-};
+class Tree{
+public:
+    struct Node{
+    	Node* left;
+    	Node* right;
+    	T data;
+    	Node(Node *l, Node *r, T d) :left(l), right(r), data(d) {}
+    	Node(T d) :Node(nullptr, nullptr, d) {}
+    	~Node() { LOG << "Deleted tree node " << data <<endl; }
+    };
 
+	Node* root;
+	Tree(Node* r) :root(r) {}
+	~Tree(){
+		free_tree(root);
+		LOG << "Tree deleted" << endl;
+	}
+private:
+	void free_tree(Node* node){
+		if (node == nullptr) return;
+		if (node->left) free_tree(node->left);
+		if (node->right) free_tree(node->right);
+		delete node;
+
+	}
+};
 
 /*
            1
+		 /   \
 		2     3
-      4   5      6
-	 7   8 9   10
+	   / \     \
+      4   5     6
+	 /   / \    / 
+	7   8   9  10
 */
 
-static TreeNode<int>* make_tree() {
-	auto root = new TreeNode<int>(1);
-	auto n2 = new TreeNode<int>(2);
-	auto n3 = new TreeNode<int>(3);
-	auto n4 = new TreeNode<int>(4);
-	auto n5 = new TreeNode<int>(5);
+static Tree<int>::Node* create_tree() {
+	auto root = new Tree<int>::Node(1);
+	auto n2 = new Tree<int>::Node(2);
+	auto n3 = new Tree<int>::Node(3);
+	auto n4 = new Tree<int>::Node(4);
+	auto n5 = new Tree<int>::Node(5);
 
 	root->left = n2;
 	root->right = n3;
 
 	n2->left = n4;
 	n2->right = n5;
-	n3->right= new TreeNode<int>(6);
-	n3->right->left= new TreeNode<int>(10);
+	n3->right= new Tree<int>::Node(6);
+	n3->right->left= new Tree<int>::Node(10);
 
-	n4->left = new TreeNode<int>(7);
-	n5->left = new TreeNode<int>(8);
-	n5->right= new TreeNode<int>(9);
+	n4->left = new Tree<int>::Node(7);
+	n5->left = new Tree<int>::Node(8);
+	n5->right= new Tree<int>::Node(9);
 
 	return root;
 }
 
-static void free_tree(TreeNode<int>* root) {
-	if (root == nullptr) return;
-	if (root->left) free_tree(root->left);
-	if (root->right) free_tree(root->right);
-	delete root;
-}
-
-static void inorder_DFS_recursion(TreeNode<int>* node, function<void(int)> output){
+static void inorder_DFS_recursion(Tree<int>::Node* node, function<void(int)> output){
 	if (node->left)  inorder_DFS_recursion(node->left ,output);
 	output(node->data);
 	if (node->right) inorder_DFS_recursion(node->right,output);
 }
 
-static void inorder_DFS_stack(TreeNode<int>* node, function<void(int)> output) {
-	stack<TreeNode<int>*> s;
+static void inorder_DFS_stack(Tree<int>::Node* node, function<void(int)> output) {
+	stack<Tree<int>::Node*> s;
 
+	struct push_left {
+		stack<Tree<int>::Node*>& s;
+		push_left(stack<Tree<int>::Node*>& _s) :s(_s) {}
+		void operator()(Tree<int>::Node* n){
+			while (n != nullptr) {
+				s.push(n);
+				n = n->left;
+			}
+		}
+	};
+	
+	push_left p(s);
+	
 	auto n = node;
-	while (n != nullptr) {
-		s.push(n);
-		n = n->left;
-	}
+	p(n);
 	while (s.size() > 0) {
 		n = s.top();
-		s.pop();
 		output(n->data);
-		if (n->right) output(n->right->data);
+		s.pop();
+		if (n->right) {
+			p(n->right);
+		}
 	}
 }
 
@@ -88,43 +113,48 @@ struct Output {
 };
 
 TEST_CASE("Tree : inorder DFS"){
-	TreeNode<int>* root = make_tree();
-	char expected[] = "7 4 8 5 2 1 3 10 6 ";
+	const Tree<int> tree(create_tree());
+	const char expected[] = "7 4 2 8 5 9 1 3 10 6 ";
 
 	SECTION("Use recursion") {
 		Output<int> output;
-		inorder_DFS_recursion(root, ref(output));
+		inorder_DFS_recursion(tree.root, ref(output));
 		REQUIRE(output.s.str() == expected );
 	}
 
 	SECTION("Use stack") {
 		Output<int> output;
-		inorder_DFS_stack(root, ref(output));
+		inorder_DFS_stack(tree.root, ref(output));
 		REQUIRE(output.s.str() == expected);
 	}
-
-
-	free_tree(root);
 }
 
-static void BFS_deque(TreeNode<int>* node, function<void(int)> output) {
-	deque<TreeNode<int>*> q;
-	q.push_back(node);
+static void BFS_deque(Tree<int>::Node* node, function<void(int)> output) {
+	deque<Tree<int>::Node*> q;
 
-
-	if (node->left) q.push_back(node->left);
-	if (node->right) q.push_back(node->right);
-	node = node->left;
+	auto n = node;
+	while (n != nullptr) {
+		output(n->data);
+		if (n->left)  q.push_back(n->left);
+		if (n->right) q.push_back(n->right);
+		if (q.empty()) {
+			n = nullptr;
+		}
+		else {
+			n = q.front();
+			q.pop_front();
+		}
+	}
 }
 
-static void BFS_recursion(TreeNode<int>* node, function<void(int)> output) {
+static void BFS_recursion(Tree<int>::Node* node, function<void(int)> output) {
 	//use a local functor class to simulate inner function
 	struct bfs {
 		typedef enum {LEFT=0,RIGHT=10} POSITION;
 		//(level, accumulated position,node)
-		typedef tuple<int, int, TreeNode<int>*> NODE;
+		typedef tuple<int, int, Tree<int>::Node*> NODE;
 		vector<NODE> nodes;
-		void operator()(int level,int pos,TreeNode<int>* node) {
+		void operator()(int level,int pos,Tree<int>::Node* node) {
 			nodes.push_back(make_tuple(level++,pos,node));
 			if (node->left) (*this)(level,pos+LEFT,node->left);
 			if (node->right) (*this)(level,pos+RIGHT,node->right);
@@ -154,16 +184,20 @@ static void BFS_recursion(TreeNode<int>* node, function<void(int)> output) {
 
 
 TEST_CASE("Tree : BFS"){
-	TreeNode<int>* root = make_tree();
-	char expected[] = "1 2 3 4 5 6 7 8 9 10 ";
+	const Tree<int> forrest(create_tree());
+	const char expected[] = "1 2 3 4 5 6 7 8 9 10 ";
 	
 	SECTION("Use recursion") {
 		Output<int> output;
-		BFS_recursion(root, ref(output));
+		BFS_recursion(forrest.root, ref(output));
 		REQUIRE(output.s.str() == expected);
 	}
 
-	free_tree(root);
+	SECTION("Use deque") {
+		Output<int> output;
+		BFS_deque(forrest.root, ref(output));
+		REQUIRE(output.s.str() == expected);
+	}
 }
 
 }
