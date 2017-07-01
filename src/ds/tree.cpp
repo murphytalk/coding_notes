@@ -150,7 +150,7 @@ static void BFS_deque(Tree<int>::Node* node, function<void(int)> output) {
 static void BFS_recursion(Tree<int>::Node* node, function<void(int)> output) {
 	//use a local functor class to simulate inner function
 	struct bfs {
-		typedef enum {LEFT=0,RIGHT=10} POSITION;
+		enum {LEFT=0,RIGHT=10};
 		//(level, accumulated position,node)
 		typedef tuple<int, int, Tree<int>::Node*> NODE;
 		vector<NODE> nodes;

@@ -10,6 +10,7 @@
 #include <list>
 #include <memory>
 #include "src/utils/utils.h"
+#include "src/ds/list.h"
 
 using namespace std;
 
@@ -45,68 +46,35 @@ public:
 	virtual int get(int) = 0; //get function
 };
 
-struct Node {
-	Node* next;
-	Node* prev;
-	int value;
-	int key;
-	Node(Node* p, Node* n, int k, int val) :prev(p), next(n), key(k), value(val) {};
-	Node(int k, int val) :prev(nullptr), next(nullptr), key(k), value(val) {};
-};
 
-class LRUCache : public Cache<Node*> {
-	Node* tail; // double linked list tail pointer
-	Node* head; // double linked list head pointer
+typedef pair<int, int> ListPayload;
+#define PAYLOAD_KEY(payload) payload.first
+#define PAYLOAD_VALUE(payload) payload.second
+#define PAYLOAD(key,value) make_pair(key,value)
 
-	Node* delete_node(Node *n){ //but not free it
-		if (!n) return nullptr;
-		Node* prev = n->prev;
-		Node* next = n->next;
-		if (prev) {
-			prev->next = next;
-		}
-		if (next) {
-			next->prev = prev;
-		}
-		if (n == head) {
-			head = next;
-		}
-		if (n == tail) {
-			tail = prev;
-		}
-		return n;
-	}
-	void add_to_head(Node *n) {
-		if (head) head->prev = n;
-		n->prev = nullptr;
-		n->next = head;
-		head = n;
-	}
+class LRUCache : public Cache<Utils::linked_list<ListPayload>::node*> {
+	typedef Utils::linked_list<ListPayload>::node Node;
+	Utils::linked_list<ListPayload> the_list;
+
 	void add(int new_key, int new_value, bool evict) {
 		if (evict) {
-			mp.erase(mp.find(tail->key));
-			delete delete_node(tail);
+			mp.erase(mp.find(PAYLOAD_KEY(the_list.tail->payload)));
+			delete the_list.delete_node(the_list.tail);
 		}
-		Node* newest = new Node(new_key, new_value);
+		Node* newest = new Node(PAYLOAD(new_key, new_value));
 		mp.insert(make_pair(new_key, newest));
-		add_to_head(newest);
-		if (tail == nullptr) tail = newest;
-	}
-	void move_to_head(Node *same) {
-		delete_node(same);
-		add_to_head(same);
+		the_list.add_to_head(newest);
+		if (the_list.tail == nullptr) the_list.tail = newest;
 	}
 public:
 	LRUCache(int n) {
-		tail = nullptr;
-		head = nullptr;
 		cp = n;
 	}
 	~LRUCache() {
 		for_each(mp.begin(), mp.end(), [](MAP::value_type& n) {delete n.second; });
 	}
 	int get(int key) {
-		return  get_from_map(key, [](Node* n){ return n->value;});
+		return  get_from_map(key, [](Node* n){ return PAYLOAD_VALUE(n->payload);});
 	}
 	void set(int key, int value) {
 		if (cp == 0) return;
@@ -117,8 +85,8 @@ public:
 			add(key, value, mp.size() >= cp);
 		}
 		else {
-			same->value = value;
-			move_to_head(same);
+			PAYLOAD_VALUE(same->payload) = value;
+			the_list.move_to_head(same);
 		}
 	}
 };
