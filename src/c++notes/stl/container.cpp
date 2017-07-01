@@ -31,6 +31,7 @@ TEST_CASE("Reverse interator", "[stl]") {
 
 }
 
+TEST_CASE("vector emplace_back", "[stl][c++11]") {
 	struct President
 	{
 		std::string name;
@@ -50,7 +51,6 @@ TEST_CASE("Reverse interator", "[stl]") {
 		President& operator=(const President& other) = default;
 	};
 
-TEST_CASE("vector emplace_back", "[stl][c++11]") {
 	std::vector<President> elections;
 	LOG << "emplace_back:\n";
 	elections.emplace_back("Nelson Mandela", "South Africa", 1994);

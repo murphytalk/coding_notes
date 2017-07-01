@@ -101,7 +101,7 @@ public:
 		cp = n;
 	}
 	int get(int key) {
-		return  get_from_map(key, [](list<pair<int,int>>::iterator n){ return n->second;});
+		return  get_from_map(key, [](list<ListPayload>::iterator n){ return n->second;});
 	}
 	void set(int key, int value) {
 		if (cp == 0) return;

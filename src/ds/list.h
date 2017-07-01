@@ -10,11 +10,22 @@ public:
         node* next;
         node* prev;
         T payload;
-        node(node* p, node* n, T py) :prev(p), next(n), payload(py) {};
+        node(node* n, T py):next(n),prev(nullptr), payload(py) {};
+		node(node* p, node* n, T py) :node(n, py) { prev = p; };
         node(T p):node(nullptr, nullptr, p){}
     };
 
 	linked_list() :_tail(nullptr), _head(nullptr) {}
+	linked_list(node* h):_head(h){
+		node* n = h;
+		node* p = nullptr;
+		while (n) {
+			if (p && n->prev == nullptr) n->prev = p;
+			p = n;
+			n = n->next;
+		}
+		_tail = p;
+	}
 	~linked_list() {
 		if (_head) {
 			node* cur = _head;
@@ -27,7 +38,7 @@ public:
 		}
 	}
 
- 	node* detach_node_from_list(node *n){ //but not free it
+ 	const node* detach_node_from_list(const node *n){ //but not free it
 		if (!n) return nullptr;
 		node* prev = n->prev;
 		node* next = n->next;
@@ -66,6 +77,15 @@ public:
 		detach_node_from_list(same);
 		add_to_head(same);
 	}
+
+	void insert_after(node* after, node* new_node) {
+		node* next = after->next;
+		after->next = new_node;
+		new_node->prev = after;
+		new_node->next = next;
+		if (next) next->prev = new_node;
+	}
+
 	inline const node* tail() { return _tail; }
 	inline const node* head() { return _head; }
 private:
