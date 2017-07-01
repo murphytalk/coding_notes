@@ -7,6 +7,7 @@
 #include <sstream>
 #include <functional>
 #include <deque>
+#include <list>
 #include <memory>
 #include "src/utils/utils.h"
 
@@ -28,26 +29,35 @@ The following lines can either contain or commands.
 An input line starting with will be followed by a to be found in the cache. An input line starting with will be followed by the and respectively to be inserted/replaced in the cache.
 */
 
+template<typename T>
 class Cache {
 protected:
-	struct Node {
-		Node* next;
-		Node* prev;
-		int value;
-		int key;
-		Node(Node* p, Node* n, int k, int val) :prev(p), next(n), key(k), value(val) {};
-		Node(int k, int val) :prev(nullptr), next(nullptr), key(k), value(val) {};
-	};
+	typedef map<int, T> MAP;
+	MAP mp; //map the key to the node in the linked list
 
-	map<int, Node*> mp; //map the key to the node in the linked list
 	int cp;  //capacity
-	Node* tail; // double linked list tail pointer
-	Node* head; // double linked list head pointer
+	int get_from_map(int key, function<int(T)> get_value) {
+		auto pos = mp.find(key);
+		return pos == mp.end() ? -1 : get_value(pos->second);
+	}
+public:
 	virtual void set(int, int) = 0; //set function
 	virtual int get(int) = 0; //get function
 };
 
-class LRUCache : public Cache {
+struct Node {
+	Node* next;
+	Node* prev;
+	int value;
+	int key;
+	Node(Node* p, Node* n, int k, int val) :prev(p), next(n), key(k), value(val) {};
+	Node(int k, int val) :prev(nullptr), next(nullptr), key(k), value(val) {};
+};
+
+class LRUCache : public Cache<Node*> {
+	Node* tail; // double linked list tail pointer
+	Node* head; // double linked list head pointer
+
 	Node* delete_node(Node *n){ //but not free it
 		if (!n) return nullptr;
 		Node* prev = n->prev;
@@ -93,11 +103,10 @@ public:
 		cp = n;
 	}
 	~LRUCache() {
-		for_each(mp.begin(), mp.end(), [](map<int, Node*>::value_type& n) {delete n.second; });
+		for_each(mp.begin(), mp.end(), [](MAP::value_type& n) {delete n.second; });
 	}
 	int get(int key) {
-		auto pos = mp.find(key);
-		return pos == mp.end() ? -1 : pos->second->value;
+		return  get_from_map(key, [](Node* n){ return n->value;});
 	}
 	void set(int key, int value) {
 		if (cp == 0) return;
@@ -114,12 +123,46 @@ public:
 	}
 };
 
+//use std::list
+class LRUCache2 : public Cache<list<pair<int,int>>::iterator> {
+	//key,value pair
+	list<pair<int,int>> the_list;
+public:
+	LRUCache2(int n) {
+		cp = n;
+	}
+	int get(int key) {
+		return  get_from_map(key, [](list<pair<int,int>>::iterator n){ return n->second;});
+	}
+	void set(int key, int value) {
+		if (cp == 0) return;
+		auto it = mp.find(key);
+		if (it == mp.end()) {
+			//key not cached before
+			if (mp.size() >= cp) {
+				//cache is full, evict the tail
+				mp.erase(mp.find(the_list.back().first));
+				the_list.pop_back();
+			}
+			//add to head
+			the_list.push_front(make_pair(key, value));
+			mp.insert(make_pair(key,the_list.begin()));
+		}
+		else {
+			//move to head
+			the_list.erase(it->second);
+			the_list.push_front(make_pair(key, value));
+			it->second = the_list.begin();
+		}
+	}
+};
+
 /*
 Hacker ranker gives test data in STDIN and checks result in STDOUT.
 This helper feeds the input/output downloaded from hacker ranker to a user defined function.
 It returs a pair where expected output is the first and our output is the second.
 */
-static pair<string, string> hacker_ranker_tester(const char* iff, const char* off, function<void(ifstream&,ostringstream&)> test){
+static pair<string, string> hacker_rank_tester(const char* iff, const char* off, function<void(ifstream&,ostringstream&)> test){
 	ifstream f(Utils::get_data_file_path(iff), ifstream::in);
 	if (!f) return make_pair("missing file in data folder",iff);
 
@@ -137,11 +180,12 @@ static pair<string, string> hacker_ranker_tester(const char* iff, const char* of
 	return make_pair(ss.str(), o.str());
 }
 
+template<typename T>
 static pair<string,string> lru_cache_test(const char* iff, const char* off){
-	return hacker_ranker_tester(iff, off, [](ifstream& f, ostringstream& o) {
+	return hacker_rank_tester(iff, off, [](ifstream& f, ostringstream& o) {
     	int n, capacity, i;
     	f >> n >> capacity;
-    	LRUCache l(capacity);
+    	T l(capacity);
     	for (i = 0; i<n; i++) {
     		string command;
     		f >> command;
@@ -161,12 +205,22 @@ static pair<string,string> lru_cache_test(const char* iff, const char* off){
 
 TEST_CASE("LRU Cache", "[hackerrank]"){
 	SECTION("Test case 1") {
-		auto r = lru_cache_test("hackerrank-lru-cache-1-input.txt", "hackerrank-lru-cache-1-output.txt");
+		auto r = lru_cache_test<LRUCache>("hackerrank-lru-cache-1-input.txt", "hackerrank-lru-cache-1-output.txt");
+		REQUIRE(r.first == r.second);
+	}
+
+	SECTION("Test case 1 : use std::list") {
+		auto r = lru_cache_test<LRUCache2>("hackerrank-lru-cache-1-input.txt", "hackerrank-lru-cache-1-output.txt");
 		REQUIRE(r.first == r.second);
 	}
 
 	SECTION("Test case 2") {
-		auto r = lru_cache_test("hackerrank-lru-cache-2-input.txt", "hackerrank-lru-cache-2-output.txt");
+		auto r = lru_cache_test<LRUCache>("hackerrank-lru-cache-2-input.txt", "hackerrank-lru-cache-2-output.txt");
+		REQUIRE(r.first == r.second);
+	}
+
+	SECTION("Test case 2 : use std::list") {
+		auto r = lru_cache_test<LRUCache2>("hackerrank-lru-cache-2-input.txt", "hackerrank-lru-cache-2-output.txt");
 		REQUIRE(r.first == r.second);
 	}
 }
@@ -234,7 +288,7 @@ static void printKMax(int arr[], int n, int k,ostringstream& out) {
 }
 
 static pair<string,string> contiguous_subarray_test(const char* iff, const char* off){
-	return hacker_ranker_tester(iff, off, [](ifstream& f, ostringstream& o) {
+	return hacker_rank_tester(iff, off, [](ifstream& f, ostringstream& o) {
 		int t;
 		f >> t;
 		while (t > 0) {
@@ -325,7 +379,7 @@ static int CalculateMaxWorkshops(Available_Workshops* ptr) {
 
 
 static pair<string, string> attending_workshop_test(const char* iff) {
-	return hacker_ranker_tester(iff, nullptr, [](ifstream& f, ostringstream& o) {
+	return hacker_rank_tester(iff, nullptr, [](ifstream& f, ostringstream& o) {
 		int n; // number of workshops
 		f >> n;
 		// create arrays of unknown size n
