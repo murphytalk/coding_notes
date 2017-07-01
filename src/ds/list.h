@@ -1,5 +1,6 @@
 #ifndef _LIST_H
 #define _LIST_H
+
 namespace Utils{
 
 template<typename T>
@@ -12,13 +13,21 @@ public:
         node(node* p, node* n, T py) :prev(p), next(n), payload(py) {};
         node(T p):node(nullptr, nullptr, p){}
     };
-    
-	node* tail; // double linked list tail pointer
-	node* head; // double linked list head pointer
 
-	linked_list() :tail(nullptr), head(nullptr) {}
+	linked_list() :_tail(nullptr), _head(nullptr) {}
+	~linked_list() {
+		if (_head) {
+			node* cur = _head;
+			node* next;
+			while (cur) {
+				next = cur->next;
+				delete cur;
+				cur = next;
+			}
+		}
+	}
 
- 	node* delete_node(node *n){ //but not free it
+ 	node* detach_node_from_list(node *n){ //but not free it
 		if (!n) return nullptr;
 		node* prev = n->prev;
 		node* next = n->next;
@@ -28,31 +37,40 @@ public:
 		if (next) {
 			next->prev = prev;
 		}
-		if (n == head) {
-			head = next;
+		if (n == _head) {
+			_head = next;
 		}
-		if (n == tail) {
-			tail = prev;
+		if (n == _tail) {
+			_tail = prev;
 		}
 		return n;
 	}
 
+	inline void delete_node(node* n) {
+		delete detach_node_from_list(n);
+	}
+
+	inline void delete_tail() {
+		delete_node(_tail);
+	}
+
 	void add_to_head(node *n) {
-		if (head) head->prev = n;
+		if (_head) _head->prev = n;
 		n->prev = nullptr;
-		n->next = head;
-		head = n;
+		n->next = _head;
+		_head = n;
+		if (_tail == nullptr) _tail = n;
 	} 
 
 	void move_to_head(node *same) {
-		delete_node(same);
+		detach_node_from_list(same);
 		add_to_head(same);
 	}
-/*
-	inline const node* tail() { return tail; }
-	inline const node* head() { return head; }
+	inline const node* tail() { return _tail; }
+	inline const node* head() { return _head; }
 private:
-*/
+	node* _tail; // double linked list tail pointer
+	node* _head; // double linked list head pointer
 };
     
 }

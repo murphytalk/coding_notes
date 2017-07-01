@@ -51,27 +51,28 @@ typedef pair<int, int> ListPayload;
 #define PAYLOAD_KEY(payload) payload.first
 #define PAYLOAD_VALUE(payload) payload.second
 #define PAYLOAD(key,value) make_pair(key,value)
-
+/*
+ostream& operator<<(ostream&o, const ListPayload& payload) {
+	o << "[key=" << PAYLOAD_KEY(payload) << ",value=" << PAYLOAD_VALUE(payload) << "]";
+	return o;
+}
+*/
 class LRUCache : public Cache<Utils::linked_list<ListPayload>::node*> {
 	typedef Utils::linked_list<ListPayload>::node Node;
 	Utils::linked_list<ListPayload> the_list;
 
 	void add(int new_key, int new_value, bool evict) {
 		if (evict) {
-			mp.erase(mp.find(PAYLOAD_KEY(the_list.tail->payload)));
-			delete the_list.delete_node(the_list.tail);
+			mp.erase(mp.find(PAYLOAD_KEY(the_list.tail()->payload)));
+			the_list.delete_tail();
 		}
 		Node* newest = new Node(PAYLOAD(new_key, new_value));
 		mp.insert(make_pair(new_key, newest));
 		the_list.add_to_head(newest);
-		if (the_list.tail == nullptr) the_list.tail = newest;
 	}
 public:
 	LRUCache(int n) {
 		cp = n;
-	}
-	~LRUCache() {
-		for_each(mp.begin(), mp.end(), [](MAP::value_type& n) {delete n.second; });
 	}
 	int get(int key) {
 		return  get_from_map(key, [](Node* n){ return PAYLOAD_VALUE(n->payload);});
@@ -92,9 +93,9 @@ public:
 };
 
 //use std::list
-class LRUCache2 : public Cache<list<pair<int,int>>::iterator> {
+class LRUCache2 : public Cache<list<ListPayload>::iterator> {
 	//key,value pair
-	list<pair<int,int>> the_list;
+	list<ListPayload> the_list;
 public:
 	LRUCache2(int n) {
 		cp = n;
