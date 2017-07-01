@@ -354,10 +354,9 @@ TEST_CASE("longest substring: pwwkew", "[leetcode]") {
 TEST_CASE("longest substring: long string", "[leetcode]") {
 	string file = Utils::get_data_file_path("leetcode-longest-substr.txt");
 	string longstr;
-    if(!Utils::load_test_data(file.c_str(),
-							  [&longstr](string& s){ longstr=s; })){
+    if(!Utils::load_test_data(file.c_str(), [&longstr](string& s){ longstr=s; })){
         INFO("Cannot find test file "<<file);
-		INFO("To generate it run: scripts/gen_long_tring.py >> " << file);
+		INFO("To generate it run: scripts/gen_long_tring.py > " << file);
         REQUIRE(false);
     }
 	else {

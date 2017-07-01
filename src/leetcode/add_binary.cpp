@@ -266,7 +266,7 @@ TEST_CASE("Add binary: big test cases", "[leetcode]") {
     if(!Utils::load_test_data(file.c_str(),
 							  [&](string& s){ if(a.size()==0) a=s; else b=s; })){
         INFO("Cannot find test file "<<file);
-		INFO("To generate it run: scripts/gen_long_bit_string.py >> " << file);
+		INFO("To generate it run: scripts/gen_long_bit_string.py > " << file);
         REQUIRE(false);
     }
     else{
