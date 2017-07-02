@@ -32,6 +32,11 @@ TEST_CASE("Reverse interator", "[stl]") {
 }
 
 TEST_CASE("vector emplace_back", "[stl][c++11]") {
+	/*
+	The following code uses emplace_back to append an object of type President to a std::vector. 
+	It demonstrates how emplace_back forwards parameters to the President constructor and shows 
+	how using emplace_back avoids the extra copy or move operation required when using push_back.
+	*/
 	struct President
 	{
 		std::string name;
@@ -41,12 +46,15 @@ TEST_CASE("vector emplace_back", "[stl][c++11]") {
 		President(std::string p_name, std::string p_country, int p_year)
 			: name(std::move(p_name)), country(std::move(p_country)), year(p_year)
 		{
-			LOG << "I am being constructed.\n";
+			LOG << name<<" is being constructed.\n";
 		}
 		President(President&& other)
 			: name(std::move(other.name)), country(std::move(other.country)), year(other.year)
 		{
-			LOG << "I am being moved.\n";
+			LOG << name <<" is being moved.\n";
+		}
+		~President() {
+			LOG << "President " << name << " is gone" << endl;
 		}
 		President& operator=(const President& other) = default;
 	};
@@ -56,10 +64,10 @@ TEST_CASE("vector emplace_back", "[stl][c++11]") {
 	elections.emplace_back("Nelson Mandela", "South Africa", 1994);
 
 	std::vector<President> reElections;
-	LOG << "\npush_back:\n";
+	LOG << "push_back:\n";
 	reElections.push_back(President("Franklin Delano Roosevelt", "the USA", 1936));
 
-	LOG << "\nContents:\n";
+	LOG << "Contents:\n";
 	for (President const& president : elections) {
 		LOG << president.name << " was elected president of "
 			<< president.country << " in " << president.year << ".\n";

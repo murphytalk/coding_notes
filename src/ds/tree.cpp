@@ -25,7 +25,7 @@ public:
     };
 
     node* root;
-    tree(node* r) :root(r) {}
+    tree(node* r = nullptr) :root(r) {}
     ~tree(){
         free_tree(root);
         LOG << "Tree deleted" << endl;
@@ -38,6 +38,52 @@ private:
         delete node;
 
     }
+};
+
+template<typename T>
+class BST : public tree<T> {
+	typedef typename tree<T>::node node; //gcc and clang needs this
+	node* _insert(node* n,const T data) {
+		if (n == nullptr) return new node(data);
+		if (data < n->data) {
+			n->left = _insert(n->left, data);
+		}
+		else if (data > n->data) {
+			n->right= _insert(n->right, data);
+		}
+		return n;
+	}
+	
+	node* _search(node* n, const T data) {
+		if (n == nullptr) return nullptr;
+		if (data < n->data) {
+			return _search(n->left, data);
+		}
+		else if (data > n->data) {
+			return _search(n->right, data);
+		}
+		else return n;
+	}
+public:
+	node* insert(const T data) {
+		//gcc needs this to access parent template class member ...
+		//vc is more forgiving
+		//see https://stackoverflow.com/questions/6592512/templates-parent-class-member-variables-not-visible-in-inherited-class
+		auto p =_insert(this->root,data);
+		if (this->root == nullptr) this->root = p;
+		return p;
+	}
+
+	void del(const T data) {
+		auto p = search(data);
+		if (p) {
+
+		}
+	}
+
+	node* search(const T data) {
+		return _search(this->root, data);
+	}
 };
 
 /*
@@ -241,7 +287,43 @@ TEST_CASE("Tree : mirror") {
     REQUIRE(output2.s.str() == "6 10 3 1 9 5 8 2 4 7 " );
 }
 
+TEST_CASE("Tree : BST insert/search/delete") {
+/* 
+	    50
+	  /     \
+	30      70
+   /  \    /  \ 
+ 20   40  60   80 
+*/
+	BST<int> bst;
+	int data[] = {50, 30, 20, 40, 70, 60, 80};
+	for_each(data, data + sizeof(data) / sizeof(int), [&bst](int d) {bst.insert(d);});
 
+	SECTION("insert") {
+		Output<int> output;
+		BFS_deque(bst.root, ref(output));
+		REQUIRE(output.s.str() == "50 30 70 20 40 60 80 ");
+	}
+
+	SECTION("search") {
+		REQUIRE(bst.search(50) == bst.root);
+		REQUIRE(bst.search(30) == bst.root->left);
+		REQUIRE(bst.search(20) == bst.root->left->left);
+		REQUIRE(bst.search(80) == bst.root->right->right);
+		REQUIRE(bst.search(99) == nullptr);
+	}
+#if 0
+	SECTION("delete 20") {
+		Output<int> output;
+		bst.del(20);
+		BFS_deque(bst.root, ref(output));
+		REQUIRE(output.s.str() == "50 30 70 40 60 80 ");
+		Output<int> output2;
+		inorder_DFS_recursion(bst.root, ref(output));
+		REQUIRE(output.s.str() == "30 40 50 60 70 80 ");
+	}
+#endif
+}
 
 
 }

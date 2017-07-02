@@ -300,11 +300,9 @@ Input from stdin is handled by the locked code in the editor; you simply need to
 struct Workshop {
 	int start_time;
 	int end_time;
-	/*
 	~Workshop() {
-		LOG << "del workshopt start=" << start_time << ",end=" << end_time << endl;
+		//LOG << "del workshopt start=" << start_time << ",end=" << end_time << endl;
 	}
-	*/
 };
 
 struct Available_Workshops {
