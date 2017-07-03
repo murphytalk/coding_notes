@@ -88,11 +88,78 @@ TEST_CASE("concurrency : std::lock","[c++11]"){
 TEST_CASE("thread : start thread with functor", "[c++11]") {
 	class SayHello {
 	public:
-		void operator()() { LOG << "Hello!" << endl; }
+		void operator()() { LOG << "Hello from functor!" << endl; }
 	};
 
 	thread t { SayHello() }; 
 	t.join();
+}
+
+static void thread_func(string const& msg) {
+	LOG << msg << endl;
+}
+
+TEST_CASE("thread : start thread with std::bind", "[c++11]") {
+	thread t(bind(thread_func,"Hello from std::bind!"));
+	t.join();
+}
+
+TEST_CASE("concurrency : double-checked locking") {
+	const int sample = 123;
+
+	class expensive_data {
+	public:
+		const int value;
+		expensive_data(const int v):value(v) { 
+		    std::this_thread::sleep_for(std::chrono::seconds(1));
+			LOG << "expensive data " << value << " created" << endl; 
+		}
+	};
+
+	class lazy_init_with_cache
+	{
+		mutable std::mutex m;
+		mutable std::shared_ptr<const expensive_data> data;
+
+	public:
+		//https://www.justsoftwaresolutions.co.uk/threading/multithreading-in-c++0x-part-6-double-checked-locking.html
+		std::shared_ptr<const expensive_data> get_data() const
+		{
+			std::shared_ptr<const expensive_data> result =
+				std::atomic_load_explicit(&data, std::memory_order_acquire);
+			if (!result)
+			{
+				std::lock_guard<std::mutex> lk(m);
+				result = data;
+				if (!result)
+				{
+					result.reset(new expensive_data(sample));
+					std::atomic_store_explicit(&data, result, std::memory_order_release);
+				}
+			}
+			return result;
+		}
+		void invalidate_cache()
+		{
+			std::lock_guard<std::mutex> lk(m);
+			std::shared_ptr<const expensive_data> dummy;
+			std::atomic_store_explicit(&data, dummy, std::memory_order_relaxed);
+		}
+	};
+
+	lazy_init_with_cache cache;
+    static std::mutex io_mutex;
+
+	auto f = [&cache]() {
+        std::lock_guard<std::mutex> lk(io_mutex); //todo: move IO sync to LOG
+		LOG << this_thread::get_id() << ":get data " << cache.get_data()->value << endl;
+	};
+
+	thread t1(f);
+	thread t2(f);
+
+	t1.join();
+	t2.join();
 }
 
 }
