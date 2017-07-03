@@ -10,65 +10,61 @@
 
 using namespace std;
 
-//classes and functions in anonymous namepsace are invisible to external units
-namespace { 
-
-struct Employee {
-    Employee(std::string id) : id(id) {}
-    std::string id;
-    std::vector<std::string> lunch_partners;
-    std::mutex m;
-    std::string output() const
-    {
-        std::string ret = "Employee " + id + " has lunch partners: ";
-        for( const auto& partner : lunch_partners )
-            ret += partner + " ";
-        return ret;
-    }
-};
-
-void send_mail(Employee &, Employee &)
-{
-    // simulate a time-consuming messaging operation
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-}
-
-void assign_lunch_partner(Employee &e1, Employee &e2)
-{
-    static std::mutex io_mutex;
-    {
-        std::lock_guard<std::mutex> lk(io_mutex);
-        LOG << e1.id << " and " << e2.id << " are waiting for locks" << std::endl;
-    }
- 
-    // use std::lock to acquire two locks without worrying about 
-    // other calls to assign_lunch_partner deadlocking us
-    {
-        std::lock(e1.m, e2.m);
-        std::lock_guard<std::mutex> lk1(e1.m, std::adopt_lock);
-        std::lock_guard<std::mutex> lk2(e2.m, std::adopt_lock);
-// Equivalent code (if unique_locks are needed, e.g. for condition variables)
-//        std::unique_lock<std::mutex> lk1(e1.m, std::defer_lock);
-//        std::unique_lock<std::mutex> lk2(e2.m, std::defer_lock);
-//        std::lock(lk1, lk2);
-        {
-            std::lock_guard<std::mutex> lk(io_mutex);
-            LOG << e1.id << " and " << e2.id << " got locks" << std::endl;
-        }
-        e1.lunch_partners.push_back(e2.id);
-        e2.lunch_partners.push_back(e1.id);
-    }
-    send_mail(e1, e2);
-    send_mail(e2, e1);
-}
-
- 
-
-}
-
 namespace Cxx11Test {
 
 TEST_CASE("concurrency : std::lock","[c++11]"){
+    struct Employee {
+        Employee(std::string id) : id(id) {}
+        std::string id;
+        std::vector<std::string> lunch_partners;
+        std::mutex m;
+        std::string output() const
+        {
+            std::string ret = "Employee " + id + " has lunch partners: ";
+            for( const auto& partner : lunch_partners )
+                ret += partner + " ";
+            return ret;
+        }
+    };
+    
+    struct send_mail //use functor to simulate a inner function
+    {
+    	void operator()(Employee &, Employee &) {
+    		// simulate a time-consuming messaging operation
+    		std::this_thread::sleep_for(std::chrono::seconds(1));
+    	}
+    };
+    
+    auto assign_lunch_partner = [](Employee &e1, Employee &e2)
+    {
+    		static std::mutex io_mutex;
+    		{
+    			std::lock_guard<std::mutex> lk(io_mutex);
+    			LOG << e1.id << " and " << e2.id << " are waiting for locks" << std::endl;
+    		}
+    
+    		// use std::lock to acquire two locks without worrying about 
+    		// other calls to assign_lunch_partner deadlocking us
+    		{
+    			std::lock(e1.m, e2.m);
+    			std::lock_guard<std::mutex> lk1(e1.m, std::adopt_lock);
+    			std::lock_guard<std::mutex> lk2(e2.m, std::adopt_lock);
+    			// Equivalent code (if unique_locks are needed, e.g. for condition variables)
+    			//        std::unique_lock<std::mutex> lk1(e1.m, std::defer_lock);
+    			//        std::unique_lock<std::mutex> lk2(e2.m, std::defer_lock);
+    			//        std::lock(lk1, lk2);
+    			{
+    				std::lock_guard<std::mutex> lk(io_mutex);
+    				LOG << e1.id << " and " << e2.id << " got locks" << std::endl;
+    			}
+    			e1.lunch_partners.push_back(e2.id);
+    			e2.lunch_partners.push_back(e1.id);
+    		}
+    		send_mail()(e1, e2);
+    		send_mail()(e2, e1);
+    };
+
+
 	Employee alice("alice"), bob("bob"), christina("christina"), dave("dave");
 
 	// assign in parallel threads because mailing users about lunch assignments
@@ -86,8 +82,7 @@ TEST_CASE("concurrency : std::lock","[c++11]"){
 
 
 TEST_CASE("thread : start thread with functor", "[c++11]") {
-	class SayHello {
-	public:
+	struct SayHello {
 		void operator()() { LOG << "Hello from functor!" << endl; }
 	};
 
@@ -95,11 +90,9 @@ TEST_CASE("thread : start thread with functor", "[c++11]") {
 	t.join();
 }
 
-static void thread_func(string const& msg) {
-	LOG << msg << endl;
-}
 
 TEST_CASE("thread : start thread with std::bind", "[c++11]") {
+	auto thread_func = [](string const& msg) {LOG << msg << endl; };
 	thread t(bind(thread_func,"Hello from std::bind!"));
 	t.join();
 }
@@ -148,13 +141,12 @@ TEST_CASE("concurrency : double-checked locking") {
 	};
 
 	lazy_init_with_cache cache;
-    static std::mutex io_mutex;
 
 	auto f = [&cache]() {
-        std::lock_guard<std::mutex> lk(io_mutex); //todo: move IO sync to LOG
 		LOG << this_thread::get_id() << ":get data " << cache.get_data()->value << endl;
 	};
 
+	LOG << "Start 2 threads to get expensive data" << endl;
 	thread t1(f);
 	thread t2(f);
 
