@@ -127,27 +127,21 @@ static void inorder_DFS_recursion(tree<int>::node* node, function<void(int)> out
 static void inorder_DFS_stack(tree<int>::node* node, function<void(int)> output) {
     stack<tree<int>::node*> s;
 
-    struct push_left {
-        stack<tree<int>::node*>& s;
-        push_left(stack<tree<int>::node*>& _s) :s(_s) {}
-        void operator()(tree<int>::node* n){
+    auto push_left = [&s](tree<int>::node* n){
             while (n != nullptr) {
                 s.push(n);
                 n = n->left;
             }
-        }
     };
     
-    push_left p(s);
-    
     auto n = node;
-    p(n);
+    push_left(n);
     while (s.size() > 0) {
         n = s.top();
         output(n->data);
         s.pop();
         if (n->right) {
-            p(n->right);
+            push_left(n->right);
         }
     }
 }
@@ -194,7 +188,6 @@ static void BFS_deque(tree<int>::node* node, function<void(int)> output) {
 }
 
 static void BFS_recursion(tree<int>::node* node, function<void(int)> output) {
-    //use a local functor class to simulate inner function
     struct bfs {
         enum {LEFT=0,RIGHT=10};
         //(level, accumulated position,node)

@@ -27,41 +27,43 @@ TEST_CASE("concurrency : std::lock","[c++11]"){
         }
     };
     
-    struct send_mail //use functor to simulate a inner function
-    {
-    	void operator()(Employee &, Employee &) {
-    		// simulate a time-consuming messaging operation
-    		std::this_thread::sleep_for(std::chrono::seconds(1));
-    	}
-    };
-    
+   
     auto assign_lunch_partner = [](Employee &e1, Employee &e2)
     {
-    		static std::mutex io_mutex;
-    		{
-    			std::lock_guard<std::mutex> lk(io_mutex);
-    			LOG << e1.id << " and " << e2.id << " are waiting for locks" << std::endl;
+	    struct send_mail //use functor to simulate a inner function
+		{
+    		void operator()(Employee &, Employee &) {
+    			// simulate a time-consuming messaging operation
+    			std::this_thread::sleep_for(std::chrono::seconds(1));
     		}
-    
-    		// use std::lock to acquire two locks without worrying about 
-    		// other calls to assign_lunch_partner deadlocking us
-    		{
-    			std::lock(e1.m, e2.m);
-    			std::lock_guard<std::mutex> lk1(e1.m, std::adopt_lock);
-    			std::lock_guard<std::mutex> lk2(e2.m, std::adopt_lock);
-    			// Equivalent code (if unique_locks are needed, e.g. for condition variables)
-    			//        std::unique_lock<std::mutex> lk1(e1.m, std::defer_lock);
-    			//        std::unique_lock<std::mutex> lk2(e2.m, std::defer_lock);
-    			//        std::lock(lk1, lk2);
-    			{
-    				std::lock_guard<std::mutex> lk(io_mutex);
-    				LOG << e1.id << " and " << e2.id << " got locks" << std::endl;
-    			}
-    			e1.lunch_partners.push_back(e2.id);
-    			e2.lunch_partners.push_back(e1.id);
-    		}
-    		send_mail()(e1, e2);
-    		send_mail()(e2, e1);
+		};
+
+        static std::mutex io_mutex;
+        {
+	        std::lock_guard<std::mutex> lk(io_mutex);
+		    LOG << e1.id << " and " << e2.id << " are waiting for locks" << std::endl;
+        }
+        
+        // use std::lock to acquire two locks without worrying about 
+        // other calls to assign_lunch_partner deadlocking us
+        {
+        std::lock(e1.m, e2.m);
+        std::lock_guard<std::mutex> lk1(e1.m, std::adopt_lock);
+        std::lock_guard<std::mutex> lk2(e2.m, std::adopt_lock);
+        // Equivalent code (if unique_locks are needed, e.g. for condition variables)
+        //        std::unique_lock<std::mutex> lk1(e1.m, std::defer_lock);
+        //        std::unique_lock<std::mutex> lk2(e2.m, std::defer_lock);
+        //        std::lock(lk1, lk2);
+        {
+        std::lock_guard<std::mutex> lk(io_mutex);
+        LOG << e1.id << " and " << e2.id << " got locks" << std::endl;
+        }
+        e1.lunch_partners.push_back(e2.id);
+        e2.lunch_partners.push_back(e1.id);
+        }
+		send_mail m;
+		m(e1, e2);
+        m(e2, e1);
     };
 
 
