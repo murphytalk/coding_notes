@@ -1,4 +1,5 @@
 #include "catch.hpp"
+#include <cstring>
 #include <memory>
 #include <iterator>
 #include <algorithm>
