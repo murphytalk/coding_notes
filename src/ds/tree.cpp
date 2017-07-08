@@ -66,7 +66,7 @@ class BST : public tree<T> {
 	}
 public:
 	node* insert(const T data) {
-		//gcc needs this to access parent template class member ...
+		//gcc needs "this" pointer to access parent template class member ...
 		//vc is more forgiving
 		//see https://stackoverflow.com/questions/6592512/templates-parent-class-member-variables-not-visible-in-inherited-class
 		auto p =_insert(this->root,data);
@@ -204,7 +204,8 @@ static void BFS_recursion(tree<int>::node* node, function<void(int)> output) {
     b(1,0,node);
     
     //sort by the following priority : level and then position. 
-    //note position is accumulated, so for the nodes on the same level, the node whose parent is its greatparent's left child would have higher accumulated position value
+    //note position is accumulated, so for the nodes on the same level, 
+	//the node whose parent is its greatparent's left child would have higher accumulated position value
     sort(b.nodes.begin(), b.nodes.end(), [](const bfs::NODE& n1, const bfs::NODE& n2) {
         const int n1_level = get<0>(n1);
         const int n2_level = get<0>(n2);
