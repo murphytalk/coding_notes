@@ -14,16 +14,20 @@ namespace Cxx11Test{
     public:
 		int id;
 		string s;
+		Rvalue() {
+           LOG<<"addr "<<this<< std::endl;
+		}
         Rvalue(int i,const char* p):id(i),s(p){
-           LOG<<"created id="<<id<<"(" <<s<<")" << std::endl;
+           LOG<<"addr "<<this<<",created id="<<id<<"(" <<s<<")" << std::endl;
         }
         ~Rvalue(){
-           LOG<<"deleted id=" << id <<"("<<s<< ")" << std::endl;
+           LOG<<"addr "<<this<<",deleted id=" << id <<"("<<s<< ")" << std::endl;
         }
 		Rvalue(const Rvalue& r) = delete;
         Rvalue(Rvalue&& r){
            LOG<<"move constructor,move resource ("<<r.s<< ") from id="<<r.id<<" to id="<<id << std::endl;
 		   id = r.id;
+		   r.id = -1;
 		   s = std::move(r.s);
         }
 		/* without move assignment operator, the following code won't compile
@@ -57,14 +61,13 @@ namespace Cxx11Test{
 
 	TEST_CASE("C++ 11 move assignment 1", "[c++11]") {
 		Rvalue r(200, "Orginal");
-		auto& v = r;
-		LOG << "orginal addr " << &r << endl;
-		LOG << "dest addr " << &v << endl;
+		auto v = std::move(r);
+		LOG << "orginal addr " << &r << ",s="<<r.s<< endl;
+		LOG << "dest addr " << &v << ",s="<<v.s << endl;
 	}
 
 
     TEST_CASE("C++ 11 move assignment 2","[c++11]"){
-        LOG<<"The destination:";
         Rvalue r(100,"Destination");
 		r = make_rvalue(1,"Source");
     }
@@ -99,6 +102,7 @@ namespace Cxx11Test{
 		Rvalue r2(20, "data20");
 
 		//won't compile if don't use std::move due to miss Rvalue(const RValue&) => needed by vector
+		//v.push_back(r1);
 		v.push_back(std::move(r1));
 		v.push_back(std::move(r2));
 	}
