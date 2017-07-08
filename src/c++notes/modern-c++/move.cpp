@@ -109,4 +109,60 @@ namespace Cxx11Test{
 		//if r is defined as const then the following won't compile
 		q.push(std::move(r));
 	}
+
+	TEST_CASE("C++ 11 move - default", "[c++11]") {
+		class UserDefined {
+		public:
+			string str;
+			UserDefined(const char*s) :str(s) {}
+		};
+
+		SECTION("no user defined data member") {
+			const char expected[] = "test1";
+			UserDefined t1(expected);
+			UserDefined copied = t1;
+			LOG << "After copied" << endl;
+			LOG << "t1:" << t1.str << endl;
+			LOG << "copied:" << copied.str << endl;
+			REQUIRE(t1.str == expected);
+			REQUIRE(copied.str == expected);
+
+			UserDefined moved = std::move(t1);
+			LOG << "After moved" << endl;
+			LOG << "t1:" << t1.str << endl;
+			LOG << "copied:" << copied.str << endl;
+			LOG << "moved:" << moved.str << endl;
+			REQUIRE(t1.str.empty());
+			REQUIRE(copied.str == expected);
+			REQUIRE(moved.str == expected);
+		}
+
+		SECTION("has user defined data member") {
+			class Test {
+			public:
+				UserDefined u;
+				Test(const char*s) :u(s) {}
+			};
+
+			const char expected[] = "test2";
+			Test u1(expected);
+			
+			Test copied = u1;
+			LOG << "After copied" << endl;
+			LOG << "u1:" << u1.u.str << endl;
+			LOG << "copied:" << copied.u.str << endl;
+			REQUIRE(u1.u.str == expected);
+			REQUIRE(copied.u.str == expected);
+
+			Test moved = std::move(u1);
+			LOG << "After moved" << endl;
+			LOG << "u1:" << u1.u.str << endl;
+			LOG << "copied:" << copied.u.str << endl;
+			LOG << "moved:" << moved.u.str << endl;
+			REQUIRE(u1.u.str.empty());
+			REQUIRE(copied.u.str == expected);
+			REQUIRE(moved.u.str == expected);
+		}
+	}
+
 }
