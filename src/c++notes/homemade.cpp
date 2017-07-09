@@ -178,6 +178,17 @@ public:
         auto p = strstr(_data.get()+pos, s);
         return p == nullptr? npos:  p - c_str();
     }
+
+    friend bool operator==(const string& lhs, const string& rhs) {
+        if (&lhs == &rhs) return true;
+        if (lhs._size != rhs._size) return false;
+        if (lhs._data.get() == rhs._data.get()) return true;
+        return strcmp(lhs._data.get(), rhs._data.get()) == 0;
+    }
+
+    friend bool operator!=(const string& lhs, const string& rhs) {
+        return !(lhs == rhs);
+    }
 };
 
 TEST_CASE("string: basic operations", "[homemade]") {
@@ -231,6 +242,17 @@ TEST_CASE("string: basic operations", "[homemade]") {
     SECTION("[]") {
         for (size_t i = 0; i < sizeof(source); ++i)
             REQUIRE(s[i] == source[i]);
+    }
+    SECTION("string == string") {
+        const string s2(source);
+        REQUIRE(s == s2);
+    }
+    SECTION("self == self") {
+        REQUIRE(s == s);
+    }
+    SECTION("string != string") {
+        const string s2("what is this?");
+        REQUIRE(s != s2);
     }
 }
 
