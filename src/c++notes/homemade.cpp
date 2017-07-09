@@ -2,7 +2,6 @@
 #include <memory>
 #include <iterator>
 #include <algorithm>
-
 /* Various home made implementations of STL classes
    This is purely for exercise. 
 */
@@ -136,15 +135,23 @@ public:
     iterator end() { return iterator(this,const_cast<char*>(c_str())+_size);} 
     
     const char* c_str() const { return _data.get(); }
-    size_t size() { return _size; }
-    size_t capacity() { return _capacity; }
-    bool empty() { return _size == 0; }
+    size_t size() const { return _size; }
+    size_t capacity() const { return _capacity; }
+    bool empty() const { return _size == 0; }
     char& operator[](size_t pos) { return _data[pos]; }
     char& front() { return _data[0]; }
+    const char& front() const { return _data[0]; }
     char& back() { return _data[_size-1]; }
+    const char& back() const{ return _data[_size-1]; }
 
-    friend string& operator+(const string& other) {
-        
+    friend string operator+(const string& lhs,const string& rhs) {
+        string temp;
+        temp._capacity = lhs.size() + rhs.size() + 1;
+        temp._size = temp._capacity;
+        temp._data.reset(new char[temp._capacity]);
+        strcpy(temp._data.get(), lhs.c_str());
+        strcat(temp._data.get(), rhs.c_str());
+        return temp;
     }
 };
 
@@ -190,6 +197,39 @@ TEST_CASE("string: basic operations", "[homemade]") {
     SECTION("[]") {
         for (size_t i = 0; i < strlen(source); ++i)
             REQUIRE(s[i] == source[i]);
+    }
+}
+
+TEST_CASE("string: concat", "[homemade]") {
+    const char source[] = "123456790";
+    string s(source);
+
+    #define DEF_EXPECTED std::unique_ptr<char[]> expected (new char[(strlen(source) << 1)+1])
+
+    SECTION("string + string") {
+        DEF_EXPECTED;
+        strcpy(expected.get(), source);
+        strcat(expected.get(), source);
+        REQUIRE(strcmp((s + s).c_str(),expected.get()) == 0);
+    }
+    SECTION("string + const char") {
+        DEF_EXPECTED;
+        strcpy(expected.get(), source);
+        strcat(expected.get(), source);
+        REQUIRE(strcmp((s + source).c_str(),expected.get()) == 0);
+    }
+    SECTION("const char + string") {
+        DEF_EXPECTED;
+        strcpy(expected.get(), source);
+        strcat(expected.get(), source);
+        REQUIRE(strcmp((source + s).c_str(),expected.get()) == 0);
+    }
+    SECTION("string + char") {
+        DEF_EXPECTED;
+        strcpy(expected.get(), source);
+        strcat(expected.get(), source);
+        char *p = const_cast<char*>(source);
+        REQUIRE(strcmp((s + p).c_str(),expected.get()) == 0);
     }
 }
 
