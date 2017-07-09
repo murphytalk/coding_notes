@@ -43,7 +43,7 @@ public:
 
         //===================================================
         //operators to satisfy InputIterator
-        friend bool operator == (const iterator& lhs, const iterator& rhs) { return lhs._str== rhs._str; }
+        friend bool operator == (const iterator& lhs, const iterator& rhs) { return lhs._current== rhs._current; }
         friend bool operator != (const iterator& lhs, const iterator& rhs) { return !(lhs == rhs); }
         reference operator *() {return *_current;}
         iterator& operator ++() {
@@ -167,8 +167,12 @@ TEST_CASE("string: iterator", "[homemade]") {
         end--;
         REQUIRE(*end == '0');
     }
+    SECTION("derenference") {
+        const char x = 'x';
+        *begin = x;
+        REQUIRE(s[0] == x);
+    }
 }
-#if 0
 TEST_CASE("string: use with algorith", "[homemade]") {
     char source[] = "123456789abc";
     string s(source);
@@ -180,5 +184,4 @@ TEST_CASE("string: use with algorith", "[homemade]") {
         REQUIRE(strcmp(source, s.c_str()) == 0);
     }
 }
-#endif
 }
