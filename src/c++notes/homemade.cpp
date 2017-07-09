@@ -3,7 +3,7 @@
 #include <iterator>
 #include <algorithm>
 
-/* Varoius home made implementations of STL classes
+/* Various home made implementations of STL classes
    This is purely for exercise. 
 */
 
@@ -11,17 +11,46 @@ namespace CxxHomemade {
 
 //only char version, no wchar
 class string{
-    const float FACTOR = 1.5;
     size_t _size;
     size_t _capacity;
     std::unique_ptr<char[]> _data;
-public:
-    string() :_size(0), _capacity(0){}
-    string(const char* str) {
-        _capacity = (size_t)(strlen(str)*FACTOR);
+
+    void copy(const char* src) {
+        const size_t len = strlen(src);
+        const size_t capacity = len<<1; //double the capacity
+        if (_capacity < capacity) {
+            _capacity = capacity;
+        }
         _data.reset(new char[_capacity]);
-        _size = strlen(str);
-        strcpy(_data.get(), str);
+        _size = len;
+        strcpy(_data.get(), src);
+    }
+
+    void swap(string& other) {
+        std::swap(_size, other._size);
+        std::swap(_capacity, other._capacity);
+        _data.swap(other._data);
+    }
+public:
+    string(const char* str = nullptr) {
+        _capacity = 0;
+        if (str) {
+            copy(str);
+        }
+        else {
+            _size = 0;
+        }
+    }
+    string(const string& other) {
+        _capacity = 0;
+        copy(other.c_str());
+    }
+    //Copy-and-swap idiom
+    string& operator = (string& other) {
+        //the orgininal resource will go down along with temp after the swap, no need to additionally check for self assigment
+        string temp(other);
+        swap(temp);
+        return *this;
     }
 
     //http://www.cplusplus.com/reference/iterator/
@@ -108,16 +137,39 @@ public:
     
     const char* c_str() const { return _data.get(); }
     size_t size() { return _size; }
+    size_t capacity() { return _capacity; }
     bool empty() { return _size == 0; }
     char& operator[](size_t pos) { return _data[pos]; }
     char& front() { return _data[0]; }
     char& back() { return _data[_size-1]; }
+
+    friend string& operator+(const string& other) {
+        
+    }
 };
 
 TEST_CASE("string: basic operations", "[homemade]") {
     const char source[] = "123456790";
     string s(source);
 
+    SECTION("Copy constructor") {
+        string s2(s);
+        REQUIRE(s.size() == s2.size());
+        REQUIRE(s.capacity() == s2.capacity());
+        REQUIRE(strcmp(s.c_str(), s2.c_str()) == 0);
+    }
+    SECTION("Copy assignment"){
+        string s2;
+        s2 = s;
+        REQUIRE(s.size() == s2.size());
+        REQUIRE(s.capacity() == s2.capacity());
+        REQUIRE(strcmp(s.c_str(), s2.c_str()) == 0);
+    }
+    SECTION("Copy self assignment") {
+        s = s;
+        REQUIRE(s.size() == strlen(source));
+        REQUIRE(strcmp(s.c_str(), source) == 0);
+    }
     SECTION("c_str()") {
         REQUIRE(strcmp(s.c_str(), source) == 0);
     }
