@@ -78,8 +78,8 @@ TEST_CASE("concurrency : std::lock","[c++11]"){
 	threads.emplace_back(assign_lunch_partner, std::ref(dave), std::ref(bob));
 
 	for (auto &thread : threads) thread.join();
-	LOG << alice.output() << '\n' << bob.output() << '\n'
-		<< christina.output() << '\n' << dave.output() << '\n';
+	LOG << alice.output() << "\n" << bob.output() << "\n"
+		<< christina.output() << "\n" << dave.output() << "\n";
 }
 
 
