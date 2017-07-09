@@ -110,6 +110,8 @@ public:
     size_t size() { return _size; }
     bool empty() { return _size == 0; }
     char& operator[](size_t pos) { return _data[pos]; }
+    char& front() { return _data[0]; }
+    char& back() { return _data[_size-1]; }
 };
 
 TEST_CASE("string: basic operations", "[homemade]") {
@@ -121,6 +123,12 @@ TEST_CASE("string: basic operations", "[homemade]") {
     }
     SECTION("size()") {
         REQUIRE(s.size() == strlen(source));
+    }
+    SECTION("front()") {
+        REQUIRE(s.front() == '1');
+    }
+    SECTION("back()") {
+        REQUIRE(s.back() == '0');
     }
     SECTION("empty()") {
         string em;
@@ -139,7 +147,7 @@ TEST_CASE("string: iterator", "[homemade]") {
     auto begin  = s.begin();
     auto end = s.end();
 
-    SECTION("iterate via for range") {
+    SECTION("iterate via for-range") {
         int i = 0;
         for (char c : s) {
             REQUIRE(c == source[i++]);
@@ -182,6 +190,14 @@ TEST_CASE("string: use with algorith", "[homemade]") {
         std::sort(source,source+strlen(source),cmp);
         std::sort(s.begin(), s.end(),cmp);
         REQUIRE(strcmp(source, s.c_str()) == 0);
+    }
+
+    SECTION("heap") {
+        std::make_heap(s.begin(), s.end());
+        REQUIRE(s.front()=='c');
+        std::pop_heap(s.begin(),s.end());
+        REQUIRE(s.front() == 'b');
+        REQUIRE(s.back() == 'c');
     }
 }
 }
