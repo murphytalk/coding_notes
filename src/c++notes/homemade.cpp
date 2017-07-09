@@ -6,6 +6,13 @@
 /* Various home made implementations of STL classes
    This is purely for exercise. 
 */
+#ifdef _MSC_VER
+#define STRCPY(dest,size,src) strcpy_s(dest,size,src)
+#define STRCAT(dest,size,src) strcat_s(dest,size,src)
+#else
+#define STRCPY(dest,size,src) strcpy(dest,src)
+#define STRCAT(dest,size,src) strcat(dest,src)
+#endif
 
 namespace CxxHomemade {
 
@@ -23,7 +30,7 @@ class string{
         }
         _data.reset(new char[_capacity]);
         _size = len;
-        strcpy(_data.get(), src);
+        STRCPY(_data.get(), _capacity, src);
     }
 
     void swap(string& other) {
@@ -150,8 +157,8 @@ public:
         temp._capacity = lhs.size() + rhs.size() + 1;
         temp._size = temp._capacity;
         temp._data.reset(new char[temp._capacity]);
-        strcpy(temp._data.get(), lhs.c_str());
-        strcat(temp._data.get(), rhs.c_str());
+        STRCPY(temp._data.get(), temp._capacity,lhs.c_str());
+        STRCAT(temp._data.get(), temp._capacity,rhs.c_str());
         return temp;
     }
 };
@@ -205,30 +212,31 @@ TEST_CASE("string: concat", "[homemade]") {
     const char source[] = "123456790";
     string s(source);
 
-    #define DEF_EXPECTED std::unique_ptr<char[]> expected (new char[(strlen(source) << 1)+1])
+    const size_t  BUFSIZE = (sizeof(source) << 1) + 1;
+    #define DEF_EXPECTED std::unique_ptr<char[]> expected(new char[BUFSIZE])
 
     SECTION("string + string") {
         DEF_EXPECTED;
-        strcpy(expected.get(), source);
-        strcat(expected.get(), source);
+        STRCPY(expected.get(), BUFSIZE,source);
+        STRCAT(expected.get(), BUFSIZE, source);
         REQUIRE(strcmp((s + s).c_str(),expected.get()) == 0);
     }
     SECTION("string + const char") {
         DEF_EXPECTED;
-        strcpy(expected.get(), source);
-        strcat(expected.get(), source);
+        STRCPY(expected.get(), BUFSIZE,source);
+        STRCAT(expected.get(), BUFSIZE,source);
         REQUIRE(strcmp((s + source).c_str(),expected.get()) == 0);
     }
     SECTION("const char + string") {
         DEF_EXPECTED;
-        strcpy(expected.get(), source);
-        strcat(expected.get(), source);
+        STRCPY(expected.get(), BUFSIZE,source);
+        STRCAT(expected.get(), BUFSIZE,source);
         REQUIRE(strcmp((source + s).c_str(),expected.get()) == 0);
     }
     SECTION("string + char") {
         DEF_EXPECTED;
-        strcpy(expected.get(), source);
-        strcat(expected.get(), source);
+        STRCPY(expected.get(), BUFSIZE,source);
+        STRCAT(expected.get(), BUFSIZE,source);
         char *p = const_cast<char*>(source);
         REQUIRE(strcmp((s + p).c_str(),expected.get()) == 0);
     }
