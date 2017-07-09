@@ -40,6 +40,9 @@ class string{
         _data.swap(other._data);
     }
 public:
+    const static size_t npos = std::numeric_limits<size_t>::max();
+    using size_type = size_t;
+
     string(const char* str = nullptr) {
         _capacity = 0;
         if (str) {
@@ -170,10 +173,15 @@ public:
         STRCAT(temp._data.get(), temp._capacity,rhs.c_str());
         return temp;
     }
+
+    size_type find(const char* s, size_type pos = 0) const {
+        auto p = strstr(_data.get()+pos, s);
+        return p == nullptr? npos:  p - c_str();
+    }
 };
 
 TEST_CASE("string: basic operations", "[homemade]") {
-    const char source[] = "123456790";
+    const char source[] = "1234567890";
     string s(source);
 
     SECTION("Copy constructor") {
@@ -227,7 +235,7 @@ TEST_CASE("string: basic operations", "[homemade]") {
 }
 
 TEST_CASE("string: concat", "[homemade]") {
-    const char source[] = "123456790";
+    const char source[] = "1234567890";
     string s(source);
 
     const size_t  BUFSIZE = (sizeof(source) << 1) + 1;
@@ -257,7 +265,7 @@ TEST_CASE("string: concat", "[homemade]") {
 }
 
 TEST_CASE("string: iterator", "[homemade]") {
-    const char source[] = "123456790";
+    const char source[] = "1234567890";
     string s(source);
     auto begin  = s.begin();
     auto end = s.end();
@@ -296,7 +304,7 @@ TEST_CASE("string: iterator", "[homemade]") {
         REQUIRE(s[0] == x);
     }
 }
-TEST_CASE("string: use with algorith", "[homemade]") {
+TEST_CASE("string: use with algorithm", "[homemade]") {
     char source[] = "123456789abc";
     string s(source);
 
@@ -315,4 +323,22 @@ TEST_CASE("string: use with algorith", "[homemade]") {
         REQUIRE(s.back() == 'c');
     }
 }
+TEST_CASE("string: substring", "[homemade]") {
+    char source[] = "123456789abc";
+    string s(source);
+
+    SECTION("find") {
+        REQUIRE(s.find("abc") == 9);
+    }
+    SECTION("find - no such substr") {
+        REQUIRE(s.find("ABC") == string::npos);
+    }
+    SECTION("find from middle") {
+        REQUIRE(s.find("abc",9) == 9);
+    }
+    SECTION("find from middle - overshot") {
+        REQUIRE(s.find("abc",10) == string::npos);
+    }
+}
+
 }
