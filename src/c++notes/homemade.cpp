@@ -191,7 +191,10 @@ public:
     }
 };
 
-TEST_CASE("string: basic operations", "[homemade]") {
+//VC++ let us get away with not defining this
+const size_t string::npos;
+
+TEST_CASE("string: basic operations", "[homemade][c++idioms]") {
     const char source[] = "1234567890";
     string s(source);
 
