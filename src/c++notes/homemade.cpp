@@ -2,6 +2,7 @@
 #include <cstring>
 #include <memory>
 #include <iterator>
+#include <utility> 
 #include <algorithm>
 /* Various home made implementations of STL classes
    This is purely for exercise. 
@@ -52,14 +53,22 @@ public:
         _capacity = 0;
         copy(other.c_str());
     }
+
     //Copy-and-swap idiom
-    string& operator = (string& other) {
+    //unifying assignment , see https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Copy-and-swap 
+    //section "copy elision and copy-and-swap idiom"
+    string& operator = (string temp) {
+        //the by-value parameter serves as the temp obj
         //the orgininal resource will go down along with temp after the swap, no need to additionally check for self assigment
-        string temp(other);
         swap(temp);
         return *this;
     }
-
+    string(string&& other) {
+        _size = std::move(other._size);
+        _capacity = std::move (other._capacity);
+        _data = std::move( other._data);
+        other._size = other._capacity = 0;
+    }
     //http://www.cplusplus.com/reference/iterator/
     //we need a random access iterator
     //http://en.cppreference.com/w/cpp/concept/RandomAccessIterator
@@ -176,6 +185,7 @@ TEST_CASE("string: basic operations", "[homemade]") {
     SECTION("Copy assignment"){
         string s2;
         s2 = s;
+        REQUIRE(strcmp(s.c_str(), source) == 0); //source preserves
         REQUIRE(s.size() == s2.size());
         REQUIRE(s.capacity() == s2.capacity());
         REQUIRE(strcmp(s.c_str(), s2.c_str()) == 0);
@@ -184,6 +194,14 @@ TEST_CASE("string: basic operations", "[homemade]") {
         s = s;
         REQUIRE(s.size() == strlen(source));
         REQUIRE(strcmp(s.c_str(), source) == 0);
+    }
+    SECTION("Move assignment") {
+        auto s2 = string(source);
+        auto s3 = std::move(s2);
+        REQUIRE(strcmp(s3.c_str(),source)==0);
+        REQUIRE(s2.size() == 0);
+        REQUIRE(s2.capacity() == 0);
+        REQUIRE(s2.c_str() == nullptr);
     }
     SECTION("c_str()") {
         REQUIRE(strcmp(s.c_str(), source) == 0);
@@ -203,7 +221,7 @@ TEST_CASE("string: basic operations", "[homemade]") {
         REQUIRE(!s.empty());
     }
     SECTION("[]") {
-        for (size_t i = 0; i < strlen(source); ++i)
+        for (size_t i = 0; i < sizeof(source); ++i)
             REQUIRE(s[i] == source[i]);
     }
 }
@@ -213,32 +231,28 @@ TEST_CASE("string: concat", "[homemade]") {
     string s(source);
 
     const size_t  BUFSIZE = (sizeof(source) << 1) + 1;
-    #define DEF_EXPECTED std::unique_ptr<char[]> expected(new char[BUFSIZE])
+    char expected[BUFSIZE];
 
     SECTION("string + string") {
-        DEF_EXPECTED;
-        STRCPY(expected.get(), BUFSIZE,source);
-        STRCAT(expected.get(), BUFSIZE, source);
-        REQUIRE(strcmp((s + s).c_str(),expected.get()) == 0);
+        STRCPY(expected, BUFSIZE,source);
+        STRCAT(expected, BUFSIZE, source);
+        REQUIRE(strcmp((s+s).c_str(),expected) == 0);
     }
     SECTION("string + const char") {
-        DEF_EXPECTED;
-        STRCPY(expected.get(), BUFSIZE,source);
-        STRCAT(expected.get(), BUFSIZE,source);
-        REQUIRE(strcmp((s + source).c_str(),expected.get()) == 0);
+        STRCPY(expected, BUFSIZE,source);
+        STRCAT(expected, BUFSIZE,source);
+        REQUIRE(strcmp((s + source).c_str(),expected) == 0);
     }
     SECTION("const char + string") {
-        DEF_EXPECTED;
-        STRCPY(expected.get(), BUFSIZE,source);
-        STRCAT(expected.get(), BUFSIZE,source);
-        REQUIRE(strcmp((source + s).c_str(),expected.get()) == 0);
+        STRCPY(expected, BUFSIZE,source);
+        STRCAT(expected, BUFSIZE,source);
+        REQUIRE(strcmp((source + s).c_str(),expected) == 0);
     }
     SECTION("string + char") {
-        DEF_EXPECTED;
-        STRCPY(expected.get(), BUFSIZE,source);
-        STRCAT(expected.get(), BUFSIZE,source);
+        STRCPY(expected, BUFSIZE,source);
+        STRCAT(expected, BUFSIZE,source);
         char *p = const_cast<char*>(source);
-        REQUIRE(strcmp((s + p).c_str(),expected.get()) == 0);
+        REQUIRE(strcmp((s + p).c_str(),expected) == 0);
     }
 }
 
