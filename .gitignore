@@ -40,4 +40,6 @@ build/
 kb/
 vc/
 .vs/
-
+\#*
+data/*.txt
+*.kate-swp

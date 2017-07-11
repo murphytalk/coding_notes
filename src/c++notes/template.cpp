@@ -85,7 +85,7 @@ class IsDerivedFromHelper
     static Yes Test(B*); //if D is derived from B, D* would be casted to B*
     static No Test(...); //any other parameter that is not derived from B
 public:
-    enum { Is = sizeof(Test(static_cast<D*>(0))) == sizeof(Yes) };
+    enum { Is = sizeof(Test(static_cast<D*>(nullptr))) == sizeof(Yes) };
 };
 
 
@@ -121,14 +121,14 @@ TEST_CASE("Staticly check inheritence", "[template]") {
     REQUIRE(a2a);
 
     //our implementation
-    REQUIRE( (is_base_of<A, B>::value) );
+    REQUIRE(  (is_base_of<A, B>::value) );
     REQUIRE( !(is_base_of<B, A>::value) );
     REQUIRE( !(is_base_of<C, A>::value) );
     REQUIRE( !(is_base_of<A, C>::value) );
     REQUIRE(  (is_base_of<A, A>::value) );
 
     //STL implementation
-    REQUIRE( (std::is_base_of<A, B>::value) );
+    REQUIRE(  (std::is_base_of<A, B>::value) );
     REQUIRE( !(std::is_base_of<B, A>::value) );
     REQUIRE( !(std::is_base_of<C, A>::value) );
     REQUIRE( !(std::is_base_of<A, C>::value) );

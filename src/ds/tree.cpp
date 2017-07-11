@@ -42,7 +42,9 @@ private:
 
 template<typename T>
 class BST : public tree<T> {
-	typedef typename tree<T>::node node; //gcc and clang needs this
+    //see https://isocpp.org/wiki/faq/templates#nondependent-name-lookup-types
+    //gcc and clang needs this, vc++ is more forgiving
+	typedef typename tree<T>::node node;
 	node* _insert(node* n,const T data) {
 		if (n == nullptr) return new node(data);
 		if (data < n->data) {
