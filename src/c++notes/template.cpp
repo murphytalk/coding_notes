@@ -1,6 +1,9 @@
 #include "catch.hpp"
-#include  <type_traits> 
+#include <type_traits> 
+#include <sstream>
+#include <string>
 #include "src/utils/utils.h"
+#include "src/compatible.h"
 
 namespace CxxTemplate{
 
@@ -76,22 +79,26 @@ TEST_CASE("CRTP:Static polymorphism","[template]"){
     Derived2::static_job();
 }    
         
-template<typename D, typename B>
+template<typename Derived, typename Base>
 class IsDerivedFromHelper
 {
     class No { };
     class Yes { /*No no[2]*/int dummy; }; //make it have different size than No
 
-    static Yes Test(B*); //if D is derived from B, D* would be casted to B*
-    static No Test(...); //any other parameter that is not derived from B
+    //function overloading
+    static Yes Test(Base*); 
+    static No Test(...); 
 public:
-    enum { Is = sizeof(Test(static_cast<D*>(nullptr))) == sizeof(Yes) };
+    //if Derived is derived from Base, nullptr => Derived* , then implicitly converted to Base*, then match Yes
+    //otherwise it matches No
+    //enum { Is = sizeof(Test(static_cast<Derived*>(nullptr))) == sizeof(Yes) };
+    const static bool Is = sizeof(Test(static_cast<Derived*>(nullptr))) == sizeof(Yes) ;
 };
 
 
-template <class C, class P>
+template <class Derived, class Base>
 bool IsDerivedFrom() {
-    return IsDerivedFromHelper<C, P>::Is;
+    return IsDerivedFromHelper<Derived, Base>::Is;
 }
 
 template <typename Base, typename Derived>
@@ -135,5 +142,62 @@ TEST_CASE("Staticly check inheritence", "[template]") {
     REQUIRE(  (std::is_base_of<A, A>::value) );
 }
 
-    
+template<typename T>
+T adder(T v) {
+    return v;
+}
+
+template<typename T, typename... Args>
+T adder(T first, Args... args) {
+    return first + adder(args...);
+}
+
+TEST_CASE("variadic template - simple", "[template][c++11]") {
+    SECTION("int") {
+        REQUIRE(adder(1, 2, 3, 4, 5) == 1 + 2 + 3 + 4 + 5);
+    }
+    SECTION("string") {
+        std::string a = "a", b = "b", c = "c";
+        REQUIRE(adder(a, b, c) == a + b + c);
+    }
+}
+
+void _sprintf(std::ostringstream& os, const char*s) {
+    while (s && *s) {
+        if(! (*s == '%' && *++s != '%') ){
+            os << *s++;
+        }
+    }
+}
+
+template<typename T, typename... ARGS>
+void _sprintf(std::ostringstream& os, const char*s, T v, ARGS... args) {
+    while (s && *s) {
+        if (*s == '%' && *++s != '%') {
+            os << v;
+            return _sprintf(os,++s, args...);
+        }
+        os << *s++;
+    }
+ }
+
+template<typename T, typename... ARGS>
+void sprintf(char* buf, size_t buf_size, const char*s, T v, ARGS... args) {
+    std::ostringstream os;
+    _sprintf(os,s, v, args...);
+    STRCPY(buf,buf_size,os.str().c_str());
+}
+
+TEST_CASE("variadic template - sprintf", "[template][c++11]") {
+    char buf1[128];
+    char buf2[128];
+
+    const char fmt[] = "this is a int %d and %s";
+    int v = 100;
+    char c[] = "I am a string";
+    SPRINTF(buf1, sizeof(buf1), fmt, v, c);
+    sprintf(buf2,sizeof(buf2),fmt, v, c);
+    REQUIRE(strcmp(buf1, buf2) == 0);
+}
+
 }

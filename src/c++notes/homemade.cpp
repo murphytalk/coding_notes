@@ -4,17 +4,11 @@
 #include <iterator>
 #include <utility> 
 #include <algorithm>
+#include "src/compatible.h"
+
 /* Various home made implementations of STL classes
    This is purely for exercise. 
 */
-#ifdef _MSC_VER
-#define STRCPY(dest,size,src) strcpy_s(dest,size,src)
-#define STRCAT(dest,size,src) strcat_s(dest,size,src)
-#else
-#define STRCPY(dest,size,src) strcpy(dest,src)
-#define STRCAT(dest,size,src) strcat(dest,src)
-#endif
-
 namespace CxxHomemade {
 
 //only char version, no wchar

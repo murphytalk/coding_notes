@@ -3,7 +3,7 @@
 #include "blocking_queue.h"
 #include <string>
 #include <thread>
-#include <iostream>
+#include <atomic>
 
 using namespace std;
 using namespace Utils;
@@ -117,7 +117,7 @@ TEST_CASE("blocking queue", "[utils]") {
 		q.push(Message(tag_end, 0)); // signal consumer thread to exit
 	};
 
-	uint32_t count1 = 0, count2 = 0;
+    atomic<uint32_t> count1 = { 0 }, count2 (0); //atmoic's assign operator is deleted
 
 	auto consumer_func = [
 		&q, &tag_end,
@@ -155,8 +155,19 @@ TEST_CASE("blocking queue", "[utils]") {
 			thread consumer(consumer_func);
 			LOG << "consumer started" << endl;
 
+    		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            REQUIRE(count1 == 0);
+            REQUIRE(count2 == 0);
+
 			thread publisher1(publisher_func, tag1, seed1);
+			LOG << "publisher1 started" << endl;
+
+    		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            REQUIRE(count1 > 0u);
+            REQUIRE(count2 == 0);
+
 			thread publisher2(publisher_func, tag2, seed2);
+			LOG << "publisher2 started" << endl;
 
 			publisher1.join();
 			LOG << "publisher1 done" << endl;

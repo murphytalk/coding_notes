@@ -27,7 +27,7 @@ public:
 	void push(const T& data) {
 		std::unique_lock<std::mutex> lock(_mutex);
 		_q.push(std::move(data));
-		lock.unlock();
+		//lock.unlock();
 		_cond.notify_one();
 	}
 };
