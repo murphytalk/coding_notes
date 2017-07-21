@@ -374,5 +374,50 @@ TEST_CASE("longest substring: long string", "[leetcode]") {
 	}
 }
 
+/*
+https://leetcode.com/problems/longest-consecutive-sequence/#/description
+
+Given an unsorted array of integers, find the length of the longest consecutive elements sequence.
+
+For example,
+Given [100, 4, 200, 1, 3, 2],
+The longest consecutive elements sequence is [1, 2, 3, 4]. Return its length: 4.
+*/
+static int longestConsecutive(vector<int>& nums) {
+    if(nums.empty()) return 0;
+    auto cmp = greater<int>();//[](int a, int b) {return a>b; };
+    make_heap(nums.begin(), nums.end(),cmp);
+    int longest = 0;
+    int cur = 1;
+    int last = nums.front();
+    pop_heap(nums.begin(), nums.end(),cmp);
+    nums.pop_back();
+    while (!nums.empty()) {
+        int n = nums.front();
+        if (n == last + 1) {
+            ++cur;
+        }
+        else if(n != last){
+            if (cur>longest) longest = cur;
+            cur = 1;
+        }
+        last = n;
+        pop_heap(nums.begin(), nums.end(),cmp);
+        nums.pop_back();
+    }
+    return max(cur, longest);
+}
+
+TEST_CASE("longest consecutive sequence: 100,4,200,1,3,2","[leetcode]") {
+    vector<int> nums = { 100,4,200,1,3,2 };
+    REQUIRE(longestConsecutive(nums) == 4);
+}
+
+TEST_CASE("longest consecutive sequence: 1,2,0,1","[leetcode]") {
+    vector<int> nums = { 1,2,0,1 };
+    REQUIRE(longestConsecutive(nums) == 3);
+}
+
+
 }; //namespace LeetCode
 
