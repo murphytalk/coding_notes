@@ -1,6 +1,8 @@
 #include "catch.hpp"
 #include <vector>
 #include <map>
+#include <unordered_map>
+#include <unordered_set>
 #include <string>
 #include <algorithm>
 #include <set>
@@ -9,6 +11,7 @@
 #include <deque>
 #include <list>
 #include <memory>
+#include <limits>
 #include "src/utils/utils.h"
 #include "src/ds/list.h"
 
@@ -385,5 +388,48 @@ TEST_CASE("Attending workshops : Test Case 11", "[hackerrank]") {
 	REQUIRE("716" == r.second);
 }
 
+/*
+https://www.hackerrank.com/challenges/longest-increasing-subsequent?h_r=internal-search
+*/
+static int longest_increasing_seq(vector<int>& nums) {
+    vector<unordered_set<int>> paths; //paths from element ? to element #i
+    const auto N = nums.size();
+    paths.resize(N);
+    for (auto i = 0;i<N;++i) {
+        const int& n = nums[i];
+        for (auto k = i; k < N; ++k) {
+            if(nums[k]>n){
+                paths[k].insert(i);
+            }
+        }
+    }
+
+    //longest path to element #i
+    vector<int> longest;
+    longest.resize(N);
+    int overall_max = 0;
+    for (auto i = 0; i < N; ++i) {
+        const auto& p = paths[i];
+        int max = 0;
+        for (int k : p) {
+            int l = longest[k] + 1;
+            if (l > max) max = l;
+        }
+        longest[i] = max;
+        if (max > overall_max) overall_max = max;
+    }
+
+    return overall_max + 1; //overall_max is the number of paths, need to +1 to count the nodes 
+}
+
+TEST_CASE("Longest increasing sequence : 5, 2, 8, 6, 3, 6, 9, 7","[dp][hackerrank]") {
+    vector<int> data = {5, 2, 8, 6, 3, 6, 9, 7};
+    REQUIRE(longest_increasing_seq(data) == 4);
+}
+
+TEST_CASE("Longest increasing sequence : 15, 27, 14, 38, 26, 55, 46, 65, 85","[dp][hackerrank]") {
+    vector<int> data = { 15, 27, 14, 38, 26, 55, 46, 65, 85};
+    REQUIRE(longest_increasing_seq(data) == 6);
+}
 
 }

@@ -409,6 +409,26 @@ static int longestConsecutive(vector<int>& nums) {
     return max(cur, longest);
 }
 
+static int longestConsecutive_sort(vector<int>& nums) {
+    if (nums.empty()) return 0;
+    sort(nums.begin(), nums.end());
+    int longest = 0;
+    int cur = 1;
+    int last = nums.front();
+    for (size_t i = 1; i < nums.size();++i){
+        int n = nums[i];
+        if (n == last + 1) {
+            ++cur;
+        }
+        else if (n != last) {
+            if (cur > longest) longest = cur;
+            cur = 1;
+        }
+        last = n;
+    }
+    return max(cur, longest);
+}
+
 static int longestConsecutive_map(vector<int>& nums) {
     unordered_map<int,int> m;
     int ret = 0;
@@ -485,7 +505,7 @@ TEST_CASE("longest consecutive sequence: long seq","[leetcode]") {
         REQUIRE(false);
     }
     else {
-        static int h, m;
+        static int h, m, s;
         SECTION("Use heap") {
             h = longestConsecutive(nums);
             LOG << "result=" << h << endl;;
@@ -494,14 +514,24 @@ TEST_CASE("longest consecutive sequence: long seq","[leetcode]") {
             m = longestConsecutive_map(nums);
             LOG << "result=" << m << endl;
         }
+        SECTION("Use sort") {
+            s = longestConsecutive_sort(nums);
+            LOG << "result=" << s << endl;
+        }
         /* 
-        map version performs better if there's no consecutive sequence, otherwise heap version performs better
+        map version performs better if there's no consecutive sequence, otherwise sort/heap version performs better
         */
-        SECTION("heap == map") {
+        SECTION("heap == map == sort") {
             REQUIRE(h == m);
+            REQUIRE(m == s);
         }
     }
 }
+
+/*
+https://leetcode.com/problems/longest-increasing-subsequence/#/description
+see  
+*/
 
 
 }; //namespace LeetCode
