@@ -389,9 +389,11 @@ TEST_CASE("Attending workshops : Test Case 11", "[hackerrank]") {
 }
 
 /*
+Longest increasing subsequence
 https://www.hackerrank.com/challenges/longest-increasing-subsequent?h_r=internal-search
 */
-static int longest_increasing_seq(vector<int>& nums) {
+static int longest_increasing_subseq_dp(const vector<int>& nums) {
+#if 0
     vector<unordered_set<int>> paths; //paths from element ? to element #i
     const auto N = nums.size();
     paths.resize(N);
@@ -405,8 +407,7 @@ static int longest_increasing_seq(vector<int>& nums) {
     }
 
     //longest path to element #i
-    vector<int> longest;
-    longest.resize(N);
+    vector<int> longest(N);
     int overall_max = 0;
     for (auto i = 0; i < N; ++i) {
         const auto& p = paths[i];
@@ -420,16 +421,68 @@ static int longest_increasing_seq(vector<int>& nums) {
     }
 
     return overall_max + 1; //overall_max is the number of paths, need to +1 to count the nodes 
+#else
+    const auto N = nums.size();
+    vector<int> longest(N);//longest increasing subsequence ends at #i
+    int overall_max = 0;
+
+    //note the order : build up from smaller n
+    for (auto i = 0; i < N; ++i) {
+        int max = 0;
+        for (auto k = 0; k < i; ++k) {
+            if (nums[k] < nums[i]) {
+                //add one more hop is the size of the new increasing subsequence to k
+                int l = longest[k] + 1;
+                if (l > max) max = l;
+            }
+        }
+        longest[i] = max;
+        if (max > overall_max) overall_max = max;
+    }
+
+    return overall_max + 1; //overall_max is the number of paths, need to +1 to count the nodes 
+#endif
 }
 
-TEST_CASE("Longest increasing sequence : 5, 2, 8, 6, 3, 6, 9, 7","[dp][hackerrank]") {
+//A nlog(n) solution
+//http://www.geeksforgeeks.org/?p=9591
+
+TEST_CASE("Longest increasing subsequence : 5, 2, 8, 6, 3, 6, 9, 7","[dp][hackerrank]") {
     vector<int> data = {5, 2, 8, 6, 3, 6, 9, 7};
-    REQUIRE(longest_increasing_seq(data) == 4);
+    REQUIRE(longest_increasing_subseq_dp(data) == 4);
 }
 
-TEST_CASE("Longest increasing sequence : 15, 27, 14, 38, 26, 55, 46, 65, 85","[dp][hackerrank]") {
+TEST_CASE("Longest increasing subsequence : 15, 27, 14, 38, 26, 55, 46, 65, 85","[dp][hackerrank]") {
     vector<int> data = { 15, 27, 14, 38, 26, 55, 46, 65, 85};
-    REQUIRE(longest_increasing_seq(data) == 6);
+    REQUIRE(longest_increasing_subseq_dp(data) == 6);
 }
+
+static pair<string, string> LIS_test(const char* iff, function<int(vector<int>&)> func) {
+    return hacker_rank_tester(iff, nullptr, [&func](ifstream& f, ostringstream& o) {
+        long n; // number of numbers
+        f >> n;
+        LOG << "loading " << n << " int" << endl;
+        vector<int> nums(n);
+        for (long i = 0; i < n; ++i) {
+            f >> nums[i];
+        }
+        LOG << "loaded " << n << " int" << endl;
+
+        o << func(nums);
+    });
+}
+
+TEST_CASE("Longest increasing subsequence : Test 1","[dp][hackerrank]") {
+    auto r = LIS_test("hackerrank-longest-increasing-seq-1-input.txt",longest_increasing_subseq_dp);
+    REQUIRE("185" == r.second);
+}
+
+#if 0
+TEST_CASE("Longest increasing subsequence : Test 4","[dp][hackerrank]") {
+    auto r = LIS_test("hackerrank-longest-increasing-seq-4-input.txt",longest_increasing_subseq_dp);
+    REQUIRE("1950" == r.second);
+}
+#endif
+
 
 }
