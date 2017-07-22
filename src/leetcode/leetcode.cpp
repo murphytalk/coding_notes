@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <algorithm>
+#include <functional>
 #include <memory>
 #include <iterator>
 #include <bitset>
@@ -384,30 +385,31 @@ Given [100, 4, 200, 1, 3, 2],
 The longest consecutive elements sequence is [1, 2, 3, 4]. Return its length: 4.
 */
 static int longestConsecutive(vector<int>& nums) {
-#if 0    
-    if(nums.empty()) return 0;
+    if (nums.empty()) return 0;
     auto cmp = greater<int>();//[](int a, int b) {return a>b; };
-    make_heap(nums.begin(), nums.end(),cmp);
+    make_heap(nums.begin(), nums.end(), cmp);
     int longest = 0;
     int cur = 1;
     int last = nums.front();
-    pop_heap(nums.begin(), nums.end(),cmp);
+    pop_heap(nums.begin(), nums.end(), cmp);
     nums.pop_back();
     while (!nums.empty()) {
         int n = nums.front();
         if (n == last + 1) {
             ++cur;
         }
-        else if(n != last){
-            if (cur>longest) longest = cur;
+        else if (n != last) {
+            if (cur > longest) longest = cur;
             cur = 1;
         }
         last = n;
-        pop_heap(nums.begin(), nums.end(),cmp);
+        pop_heap(nums.begin(), nums.end(), cmp);
         nums.pop_back();
     }
     return max(cur, longest);
-#else
+}
+
+static int longestConsecutive_map(vector<int>& nums) {
     unordered_map<int,int> m;
     int ret = 0;
     for(auto & n: nums){
@@ -461,7 +463,6 @@ static int longestConsecutive(vector<int>& nums) {
         ret = max(ret,r);
     }
     return ret;    
-#endif
 }
 
 TEST_CASE("longest consecutive sequence: 100,4,200,1,3,2","[leetcode]") {
@@ -472,6 +473,34 @@ TEST_CASE("longest consecutive sequence: 100,4,200,1,3,2","[leetcode]") {
 TEST_CASE("longest consecutive sequence: 1,2,0,1","[leetcode]") {
     vector<int> nums = { 1,2,0,1 };
     REQUIRE(longestConsecutive(nums) == 3);
+}
+
+TEST_CASE("longest consecutive sequence: long seq","[leetcode]") {
+    const char f[] = "leetcode-int-seq.txt";
+	string file = Utils::get_data_file_path(f);
+    vector<int> nums;
+    if(!Utils::load_test_data(file.c_str(), [&nums](string& s){ nums.push_back(atoi(s.c_str())); })){
+        INFO("Cannot find test file "<<file);
+		INFO("To generate it run: scripts/" << f <<" > " << file);
+        REQUIRE(false);
+    }
+    else {
+        static int h, m;
+        SECTION("Use heap") {
+            h = longestConsecutive(nums);
+            LOG << "result=" << h << endl;;
+        }
+        SECTION("Use map") {
+            m = longestConsecutive_map(nums);
+            LOG << "result=" << m << endl;
+        }
+        /* 
+        map version performs better if there's no consecutive sequence, otherwise heap version performs better
+        */
+        SECTION("heap == map") {
+            REQUIRE(h == m);
+        }
+    }
 }
 
 
