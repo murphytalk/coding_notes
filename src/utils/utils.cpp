@@ -1,4 +1,5 @@
 #include "utils.h"
+#include <sstream>
 #include <boost/filesystem/path.hpp>
 namespace fs = boost::filesystem;
 namespace Utils{
@@ -43,6 +44,28 @@ std::string get_data_file_path(const char* filename)
 	const auto& mypath = fs::path(__FILE__);
 	auto path = mypath.parent_path().parent_path().parent_path() / "data"/ filename;
 	return path.string();
+}
+
+//todo: use boost path
+std::string normalize_path(const std::string what)
+{
+    std::stringstream oss;
+    const char path_sep = '/';
+
+    for (auto it = what.cbegin(); it != what.cend(); ++it) {
+        const char& curr = *it;
+        if (curr == path_sep) {
+            const std::string& str = oss.str();
+            if (!str.empty() && *str.rbegin() == path_sep) continue;
+        }
+        oss << curr;
+    }
+
+    const std::string& str = oss.str();
+    if (!str.empty() && *str.rbegin() == path_sep) {
+        return std::string(str, 0, str.size()-1);
+    }
+    else return str;
 }
 
 }

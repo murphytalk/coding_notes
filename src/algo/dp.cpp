@@ -170,7 +170,7 @@ TEST_CASE("consecutive num sum dp : big number", "[dp][algo]") {
 		n1 = find_consecutive_num_sum_dp(N);
 	}
 	SECTION("non-DP") {
-		n2 = find_consecutive_num_sum_dp(N);
+		n2 = find_consecutive_num_sum(N);
 	}
 	SECTION("compare") {
 		REQUIRE(n1==n2);

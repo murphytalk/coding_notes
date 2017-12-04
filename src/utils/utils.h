@@ -182,5 +182,7 @@ bool load_test_data(char const *file_name,LINE line_callback,const char comment 
     return true;
 }
 
+std::string normalize_path(const std::string what);
+
 }
 

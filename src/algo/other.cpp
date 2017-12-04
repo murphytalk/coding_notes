@@ -18,7 +18,8 @@ static int find_duplicates(const vector<int>& nums) {
 	const int N = find_duplicates_max - find_duplicates_min + 1;
 	//one bitset to check if a given num has already been spot
 	bitset<N> seen;
-	//another bitset to check if a given num has already been confirmed to have duplicates, so we won't count it more than once
+	//another bitset to check if a given num has already been confirmed to have duplicates, 
+    //so we won't count it more than once
 	bitset<N> duplicates;
 
 	int count = 0;
