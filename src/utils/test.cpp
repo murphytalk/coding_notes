@@ -181,12 +181,12 @@ TEST_CASE("blocking queue", "[utils]") {
 }
 
 TEST_CASE("nomralize path - consecutive forward slash", "[utils][file]") {
-    auto s = normalize_path("/root/abc//efg");
+    auto s = Utils::normalize_path("/root/abc//efg");
     REQUIRE(s == "/root/abc/efg");
 }
 
 TEST_CASE("nomralize path - tailing slash", "[utils][file]") {
-    auto s = normalize_path("/root/abc/efg/");
+    auto s = Utils::normalize_path("/root/abc/efg/");
     REQUIRE(s == "/root/abc/efg");
 }
 
