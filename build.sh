@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -x
+#set -x
 
 SOURCE_DIR=`pwd`
 BUILD_DIR=${BUILD_DIR:-build}
@@ -25,5 +25,6 @@ mkdir -p $BUILD_DIR/$BUILD_TYPE \
   && make $*
 
 
-# cd $SOURCE_DIR && doxygen
+cd $SOURCE_DIR && ./gen_readme.py
+
 

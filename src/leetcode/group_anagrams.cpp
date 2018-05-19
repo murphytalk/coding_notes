@@ -11,7 +11,18 @@
 using namespace std;
 
 namespace LeetCode{
+/*README START
+# <<Group Anagrams>>
 
+[Leetcode #49](https://leetcode.com/problems/anagrams/).
+
+Use a hash map to group anagrams, but instead of using a sorted string as key (so the default string hash code function would return same hash code for all subjects of the same anagram, it will work but the run time will be penalized for the sorting of every key), the solution implments a customized hash code function which uses the first 26 prime numbers to represent the 26 lower case letters and calculates the hash code by mulitplying them, to reflect the fact that 1) we only care about different letters 2) ordering does not matter.
+
+Beats 99.75% of C++ submissions.
+
+ ![Screenshot](img/leetcode/Anagrams.PNG)
+
+README END*/
 /*
   https://leetcode.com/problems/anagrams/
 

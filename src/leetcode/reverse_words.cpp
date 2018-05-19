@@ -8,8 +8,16 @@
 using namespace std;
 
 namespace LeetCode{
+/*README START
+# <<Reverse words in a string>>
 
-/*
+[Leetcode #151](https://leetcode.com/problems/reverse-words-in-a-string/)
+
+An in-place `O(1)` space solution, beats 94.29% of C++ submissions.
+
+ ![Screenshot](img/leetcode/RevserseWordsInString.PNG)
+README END
+
    https://leetcode.com/problems/reverse-words-in-a-string/
 
    Given an input string, reverse the string word by word.
