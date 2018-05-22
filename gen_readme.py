@@ -5,15 +5,52 @@ import re
 from datetime import datetime
 from json import load
 
+# Scan c++ source code to generate README
+# The following marks in source code comments will be detected and used
+
+"""
+<<this line will be replaced by hyper link to the source code at this line>>
+
+//README START
+
+Mark down contents
+
+/*README END*/
+
+//<<
+void c_code_that_will_be_included_in_code_blocks_in_README()
+{
+
+}
+//>>
+
+
+/*README START
+
+more mark down contents
+//README END
+"""
+
+
 CC = frozenset(['.cc', '.cpp', '.h', '.hh', 'hpp'])
 TOP = os.path.dirname(os.path.realpath(__file__))
 
 MD_START = re.compile(r'README *START')
 MD_END = re.compile(r'README *END')
 LINK = re.compile(r'<<(.*)>>')
+CODE_START = re.compile(r'^ *//<< *$')
+CODE_END = re.compile(r'^ *//>> *$')
+
+CPP_SINGLE_COMMENT = re.compile(r'^ *//.*$')
+CPP_COMMENT_OPEN = re.compile(r'^ */\*.*$')
+CPP_COMMENT_CLOSE = re.compile(r'.*\*/.*$')
 
 # set of (level, title)
 HEADERS_WRITTEN = set()
+
+
+def is_comment_line(line):
+    return re.match(CPP_SINGLE_COMMENT, line) or re.match(CPP_COMMENT_OPEN, line) or re.match(CPP_COMMENT_CLOSE, line)
 
 
 def get_files():
@@ -22,6 +59,8 @@ def get_files():
             continue
         for f in files:
             fn, fe = os.path.splitext(f)
+            if '.' in fn or '#' in fn:
+                continue
             if fe in CC:
                 yield os.path.join(dirpath, f)
 
@@ -83,13 +122,26 @@ def make_headers(paths):
 def decorate_content(src, content):
     dir = os.path.dirname(src)
     level, decorated = make_headers(dir)
+    inside_code_block = False
     for lineno, line in content:
         if line[0] == '#':
             line = '#' * level + line
+
+        # is there LINK mark?
         search = re.search(LINK, line)
         if search:
             line = re.sub(LINK, "[{}]({}#L{})".format(search.group(1), src, lineno),
                           line)
+        elif re.match(CODE_START, line):
+            line = "```c++\n"
+            inside_code_block = True
+        elif re.match(CODE_END, line):
+            line = "```\n"
+            inside_code_block = False
+        elif not inside_code_block and is_comment_line(line):
+            # ignore comments
+            continue
+
         decorated.append(line)
     return decorated
 
