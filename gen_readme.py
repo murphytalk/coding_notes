@@ -133,10 +133,10 @@ def decorate_content(src, content):
             line = re.sub(LINK, "[{}]({}#L{})".format(search.group(1), src, lineno),
                           line)
         elif re.match(CODE_START, line):
-            line = "```c++\n"
+            line = "\n```c++\n"
             inside_code_block = True
         elif re.match(CODE_END, line):
-            line = "```\n"
+            line = "\n```\n"
             inside_code_block = False
         elif not inside_code_block and is_comment_line(line):
             # ignore comments

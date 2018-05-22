@@ -1,10 +1,49 @@
 #include "catch.hpp"
+#include <cstddef>
 #include <functional>
 
 using namespace std;
 
 namespace Cxx11Test {
 
+/*README START
+# static assert
+
+ `static_assert` is a new C++ keyword, the assertion happens at compile time, if the assertion is true the static assert expression has no effect.
+*/
+
+//<<
+namespace{
+    struct MyAlignmentSensitiveStuff{
+        uint8_t i;
+        uint32_t d;
+    };
+
+    void do_stuff(){
+        // if data type of i is changed to something else with a different size, the following won't compile
+        static_assert(offsetof(MyAlignmentSensitiveStuff, d) == 4, "Wrong offset of d in MyAlignmentSensitiveStuff");
+    }
+}
+//>>
+/*
+  `static_assert` can also be used to generate <<meaningful compile error>> if an unmatched partial template specialization is detected.
+ */
+//<<
+namespace{
+    template <typename T> class MyTemplatedClass{
+        // called if non of the specialized version is matched
+        // and the following guruantees a compiler error with user defined error message
+        static_assert(sizeof(T) == 0,
+                      "Not sepcialized for this data type");
+    };
+    template <typename T> class MyTemplatedClass<T*>{};
+
+    MyTemplatedClass<int*> ptr;
+    // uncomment the following line to get a compile error
+    //MyTemplatedClass<int> not_specialized;
+}
+//>>
+//README END
 static void increment(int& v) { ++v; }
 TEST_CASE("std::ref", "[c++11]") {
     int i = 0;
@@ -47,7 +86,7 @@ TEST_CASE("inheritance") {
 
     CC cc;
     cc.BB1::a = 1;
-    
+
 
 
     A* paa = &aa;
@@ -55,7 +94,7 @@ TEST_CASE("inheritance") {
     //A* pb2 = &b2; 
     A* pc = &c; pc;
     D* pd = &d; pd;
-    
+
     paa = &aaa;
     AAA* paaa = static_cast<AAA*>(&aa);
     REQUIRE(paaa != nullptr);

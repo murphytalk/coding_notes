@@ -1,4 +1,4 @@
-*Generated at Sat May 19 17:34:16 2018*
+*Generated at Tue May 22 22:46:35 2018*
 
 [![Build Status](https://travis-ci.org/murphytalk/coding_notes.svg?branch=master)](https://travis-ci.org/murphytalk/coding_notes)
 
@@ -25,6 +25,45 @@ This will run all examples/tests whose name start with "Add" and are tagged with
 ./notes 'Add*' '[leetcode]'  -d y
 ```
 
+# C++ Notes
+## Modern C++
+### static assert
+
+ `static_assert` is a new C++ keyword, the assertion happens at compile time, if the assertion is true the static assert expression has no effect.
+
+
+```c++
+namespace{
+    struct MyAlignmentSensitiveStuff{
+        uint8_t i;
+        uint32_t d;
+    };
+
+    void do_stuff(){
+        // if data type of i is changed to something else with a different size, the following won't compile
+        static_assert(offsetof(MyAlignmentSensitiveStuff, d) == 4, "Wrong offset of d in MyAlignmentSensitiveStuff");
+    }
+}
+
+```
+  `static_assert` can also be used to generate [meaningful compile error](src/c++notes/modern-c++/cxx11.cpp#L29) if an unmatched partial template specialization is detected.
+
+```c++
+namespace{
+    template <typename T> class MyTemplatedClass{
+        // called if non of the specialized version is matched
+        // and the following guruantees a compiler error with user defined error message
+        static_assert(sizeof(T) == 0,
+                      "Not sepcialized for this data type");
+    };
+    template <typename T> class MyTemplatedClass<T*>{};
+
+    MyTemplatedClass<int*> ptr;
+    // uncomment the following line to get a compile error
+    //MyTemplatedClass<int> not_specialized;
+}
+
+```
 # [Leetcode](https://leetcode.com/)
 ## [Group Anagrams](src/leetcode/group_anagrams.cpp#L15)
 
