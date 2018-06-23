@@ -1,4 +1,4 @@
-*Generated at Tue May 22 22:46:35 2018*
+*Generated at Sun Jun  3 10:48:45 2018 by [gen_readme.py](gen_readme.py)*
 
 [![Build Status](https://travis-ci.org/murphytalk/coding_notes.svg?branch=master)](https://travis-ci.org/murphytalk/coding_notes)
 
@@ -40,19 +40,22 @@ namespace{
     };
 
     void do_stuff(){
-        // if data type of i is changed to something else with a different size, the following won't compile
-        static_assert(offsetof(MyAlignmentSensitiveStuff, d) == 4, "Wrong offset of d in MyAlignmentSensitiveStuff");
+        // if data type of i is changed to something else with a different size,
+        // or more member is inserted in the front of it
+        // the following won't compile
+        static_assert(offsetof(MyAlignmentSensitiveStuff, d) == 4,
+                      "Wrong offset of d in MyAlignmentSensitiveStuff");
     }
 }
 
 ```
-  `static_assert` can also be used to generate [meaningful compile error](src/c++notes/modern-c++/cxx11.cpp#L29) if an unmatched partial template specialization is detected.
+  `static_assert` can also be used to generate [meaningful compile error](src/c++notes/modern-c++/cxx11.cpp#L32) if an unmatched partial template specialization is detected.
 
 ```c++
 namespace{
     template <typename T> class MyTemplatedClass{
-        // called if non of the specialized version is matched
-        // and the following guruantees a compiler error with user defined error message
+        // called if none of the specialized version is matched
+        // and the following guarantees a compiler error with user defined error message
         static_assert(sizeof(T) == 0,
                       "Not sepcialized for this data type");
     };

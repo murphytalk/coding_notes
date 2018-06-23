@@ -87,7 +87,7 @@ namespace Cxx11Test{
 		LOG << "end of calling accept_rvalue()" << endl;
 		LOG << "END" << endl;
     }
-    
+
 	TEST_CASE("C++ 11 move constructor 1", "[c++11]") {
 		vector<Rvalue> v;
 		//temp object will trigger rvalue move constructor
@@ -150,7 +150,7 @@ namespace Cxx11Test{
 
 			const char expected[] = "test2";
 			Test u1(expected);
-			
+
 			Test copied = u1;
 			LOG << "After copied" << endl;
 			LOG << "u1:" << u1.u.str << endl;

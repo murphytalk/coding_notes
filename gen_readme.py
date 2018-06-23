@@ -150,7 +150,7 @@ def main():
     readme = os.path.join(TOP, 'README.md')
 
     with open(readme, 'w+t') as f:
-        f.write('*Generated at {}*\n'.format(datetime.now().strftime('%c')))
+        f.write('*Generated at {} by [gen_readme.py](gen_readme.py)*\n'.format(datetime.now().strftime('%c')))
         with open(os.path.join(TOP, '_readme'), 'rt') as template:
             f.write(template.read())
         for source_file in get_files():

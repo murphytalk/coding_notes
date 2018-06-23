@@ -24,7 +24,6 @@ mkdir -p $BUILD_DIR/$BUILD_TYPE \
            $SOURCE_DIR \
   && make $*
 
-
-cd $SOURCE_DIR && ./gen_readme.py
+[ $? -eq 0 ] && cd $SOURCE_DIR && ./gen_readme.py
 
 

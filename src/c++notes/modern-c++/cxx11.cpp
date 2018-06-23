@@ -20,8 +20,11 @@ namespace{
     };
 
     void do_stuff(){
-        // if data type of i is changed to something else with a different size, the following won't compile
-        static_assert(offsetof(MyAlignmentSensitiveStuff, d) == 4, "Wrong offset of d in MyAlignmentSensitiveStuff");
+        // if data type of i is changed to something else with a different size,
+        // or more member is inserted in the front of it
+        // the following won't compile
+        static_assert(offsetof(MyAlignmentSensitiveStuff, d) == 4,
+                      "Wrong offset of d in MyAlignmentSensitiveStuff");
     }
 }
 //>>
@@ -31,8 +34,8 @@ namespace{
 //<<
 namespace{
     template <typename T> class MyTemplatedClass{
-        // called if non of the specialized version is matched
-        // and the following guruantees a compiler error with user defined error message
+        // if none of the specialized version is matched T's size will be zero
+        // and the following guarantees a compiler error with user defined error message
         static_assert(sizeof(T) == 0,
                       "Not sepcialized for this data type");
     };

@@ -30,10 +30,10 @@ macro(add_src_libs_ target)
   ################################
   unset(the_SRC)
   file(GLOB_RECURSE the_SRC
-    "src/*.h"
-    "src/*.cpp"
+    "src/[a-zA-Z]*.h"
+    "src/[a-zA-Z]*.cpp"
     )
   add_executable(${target} ${the_SRC})
-  
+
   target_link_libraries(${target} ${Boost_LIBRARIES} ${EXTRA_LIB})
 endmacro()
