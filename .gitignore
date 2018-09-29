@@ -40,7 +40,7 @@ build/
 kbuild/
 kb/
 vc/
-<<<<<<< HEAD
+build_dir/
 .vs/
 \#*
 *.kate-swp
@@ -51,3 +51,4 @@ data/*.txt
 .cquery_cached_index/
 .vscode/
 compile_commands.json
+
