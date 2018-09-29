@@ -45,7 +45,7 @@ before_install:
 
 before_script:
     - (cd data; for i in *.7z;do 7z x $i;done) && chmod +x scripts/* && scripts/gen.sh
-    - ./build.sh VERBOSE=1
+    - ./b VERBOSE=1
 
 script: build/release/notes -d y
 
