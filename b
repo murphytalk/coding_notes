@@ -32,19 +32,16 @@ fi
 
 pushd `pwd `> /dev/null
 
-cd $BUILD_DIR/$BUILD_TYPE && \
-    cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE $SOURCE_DIR && \
-    make $@
+if [ `basename $0` == "t" ];then
+    $BUILD_DIR/$BUILD_TYPE/notes $@
+else
+    cd $BUILD_DIR/$BUILD_TYPE && \
+        cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE $SOURCE_DIR && \
+        make $@
 
-if [ $? -eq 0 ];then
-    if [ `basename $0` == "t" ];then
-        $BUILD_DIR/$BUILD_TYPE/notes $@
-    else
-        [ ! -z "$GENDOC" ] && cd $SOURCE_DIR && ./gen_readme.py
-    fi
+    [ $? -eq 0 ] && [ ! -z "$GENDOC" ] && cd $SOURCE_DIR && ./gen_readme.py
 fi
 
 popd > /dev/null
-
 
 
