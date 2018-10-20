@@ -158,10 +158,6 @@ TEST_CASE("concurrency : double-checked locking") {
 
 }
 
-//gcc does not have decsent C++17 support yet
-#ifdef _MSC_VER
-#if _MSC_VER >= 1910 //VC2017
-
 namespace Cxx17Test{ 
 
 TEST_CASE("concurrency : shared mutex","[c++17]") {
@@ -214,5 +210,3 @@ TEST_CASE("concurrency : shared mutex","[c++17]") {
 }
 
 }
-#endif
-#endif

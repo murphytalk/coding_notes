@@ -1,4 +1,4 @@
-*Generated at Sun Jun  3 10:48:45 2018 by [gen_readme.py](gen_readme.py)*
+*Generated at Fri Oct 19 22:01:45 2018 by [gen_readme.py](gen_readme.py)*
 
 [![Build Status](https://travis-ci.org/murphytalk/coding_notes.svg?branch=master)](https://travis-ci.org/murphytalk/coding_notes)
 
@@ -25,48 +25,6 @@ This will run all examples/tests whose name start with "Add" and are tagged with
 ./notes 'Add*' '[leetcode]'  -d y
 ```
 
-# C++ Notes
-## Modern C++
-### static assert
-
- `static_assert` is a new C++ keyword, the assertion happens at compile time, if the assertion is true the static assert expression has no effect.
-
-
-```c++
-namespace{
-    struct MyAlignmentSensitiveStuff{
-        uint8_t i;
-        uint32_t d;
-    };
-
-    void do_stuff(){
-        // if data type of i is changed to something else with a different size,
-        // or more member is inserted in the front of it
-        // the following won't compile
-        static_assert(offsetof(MyAlignmentSensitiveStuff, d) == 4,
-                      "Wrong offset of d in MyAlignmentSensitiveStuff");
-    }
-}
-
-```
-  `static_assert` can also be used to generate [meaningful compile error](src/c++notes/modern-c++/cxx11.cpp#L32) if an unmatched partial template specialization is detected.
-
-```c++
-namespace{
-    template <typename T> class MyTemplatedClass{
-        // called if none of the specialized version is matched
-        // and the following guarantees a compiler error with user defined error message
-        static_assert(sizeof(T) == 0,
-                      "Not sepcialized for this data type");
-    };
-    template <typename T> class MyTemplatedClass<T*>{};
-
-    MyTemplatedClass<int*> ptr;
-    // uncomment the following line to get a compile error
-    //MyTemplatedClass<int> not_specialized;
-}
-
-```
 # [Leetcode](https://leetcode.com/)
 ## [Group Anagrams](src/leetcode/group_anagrams.cpp#L15)
 
@@ -85,3 +43,93 @@ Beats 99.75% of C++ submissions.
 An in-place `O(1)` space solution, beats 94.29% of C++ submissions.
 
  ![Screenshot](img/leetcode/RevserseWordsInString.PNG)
+# C++ Notes
+## Boost Library
+### Use `in_place` with `optional`
+
+`optional` may or may not hold a valid object, it overrides `bool` operator to indicate if a valid object is being held or not. 
+It also overrides operator `.` and `->` so the underlying object can be operated as pointer, if it is valid.
+
+The underlying object held by `optional` can be initialized in-place by using Boost's in place factory. 
+`optional` overrides `=` operator which has a in-place factory as right hand argument.
+
+For example, for the following class
+
+```c++
+struct Arg1{
+    Arg1(int v):value_(v){}
+    int value_;
+    int value() {return value_;}
+};
+
+struct Arg2{
+    Arg2(int v):value_(v){}
+    int value_;
+    int value() {return value_;}
+};
+
+template<typename T1, typename T2>
+struct Test2Arg
+{
+    Test2Arg(const Test2Arg&) = delete;
+    Test2Arg(T1& v1, T2 v2):m1(v1.value()),m2(v2.value()){}
+    int m1,m2;
+    int f1() {return m1;}
+    int f2() {return m2;}
+};
+```
+
+Declare two instances.
+
+```c++
+    Arg1 a1(100);
+    Arg2 a2(200);
+```
+`t1` below is an optional but is initialized with an `Test2Arg` instance in place:
+- Note `Test2Arg` does not have copy constructor, so the value is not intialized in temp object and then copied
+- Note `Test2Arg` expects the first parameter of its constructor be non-const reference, but `boost::in_place()` only accepts either const reference
+  or by-value as parameter
+```c++
+    boost::optional<typename CxxBoost::Test2Arg<Arg1, Arg2>> t1(boost::in_place(boost::ref(a1), a2));
+```
+The following code cannot compile
+```c++
+    Test2Arg t2(t1);
+```
+## Modern C++
+### static assert
+
+ `static_assert` is a new C++ keyword, the assertion happens at compile time, if the assertion is true the static assert expression has no effect.
+
+```c++
+namespace{
+    struct MyAlignmentSensitiveStuff{
+        uint8_t i;
+        uint32_t d;
+    };
+
+    void do_stuff(){
+        // if data type of i is changed to something else with a different size,
+        // or more member is inserted in the front of it
+        // the following won't compile
+        static_assert(offsetof(MyAlignmentSensitiveStuff, d) == 4,
+                      "Wrong offset of d in MyAlignmentSensitiveStuff");
+    }
+}
+```
+  `static_assert` can also be used to generate [meaningful compile error](src/c++notes/modern-c++/cxx11.cpp#L32) if an unmatched partial template specialization is detected.
+```c++
+namespace{
+    template <typename T> class MyTemplatedClass{
+        // if none of the specialized version is matched T's size will be zero
+        // and the following guarantees a compiler error with user defined error message
+        static_assert(sizeof(T) == 0,
+                      "Not sepcialized for this data type");
+    };
+    template <typename T> class MyTemplatedClass<T*>{};
+
+    MyTemplatedClass<int*> ptr;
+    // uncomment the following line to get a compile error
+    //MyTemplatedClass<int> not_specialized;
+}
+```

@@ -120,9 +120,12 @@ def make_headers(paths):
 
 
 def decorate_content(src, content):
+    CODE_BLOCK_START = "```c++\n"
+    CODE_BLOCK_END = "```\n"
     dir = os.path.dirname(src)
     level, decorated = make_headers(dir)
     inside_code_block = False
+
     for lineno, line in content:
         if line[0] == '#':
             line = '#' * level + line
@@ -133,10 +136,13 @@ def decorate_content(src, content):
             line = re.sub(LINK, "[{}]({}#L{})".format(search.group(1), src, lineno),
                           line)
         elif re.match(CODE_START, line):
-            line = "\n```c++\n"
             inside_code_block = True
+            if decorated[-1] == CODE_BLOCK_END:
+                del decorated[-1]
+                continue
+            line = CODE_BLOCK_START
         elif re.match(CODE_END, line):
-            line = "\n```\n"
+            line = CODE_BLOCK_END
             inside_code_block = False
         elif not inside_code_block and is_comment_line(line):
             # ignore comments

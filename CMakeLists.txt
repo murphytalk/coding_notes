@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.1)
-
+SET(CMAKE_CXX_COMPILER /usr/bin/g++-8)
 project( CodingNotes )
 enable_testing()
 
-# We need C++14
+# We need C++17
 set (CMAKE_CXX_STANDARD 17)
 
 # Find includes in corresponding build directories

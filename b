@@ -26,22 +26,22 @@ if [ ! -z "$CLANG" ];then
     export CXX=clang++
 fi
 
-[ ! -z "$CXX" ] && echo "CXX is set as $CXX"
 
 [ -d $BUILD_DIR/$BUILD_TYPE ] || mkdir -p $BUILD_DIR/$BUILD_TYPE
 
-pushd `pwd `> /dev/null
 
 if [ `basename $0` == "t" ];then
     $BUILD_DIR/$BUILD_TYPE/notes $@
 else
+    pushd `pwd `> /dev/null
+    [ ! -z "$CXX" ] && echo "CXX is set as $CXX"
     cd $BUILD_DIR/$BUILD_TYPE && \
         cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE $SOURCE_DIR && \
         make $@
 
     [ $? -eq 0 ] && [ ! -z "$GENDOC" ] && cd $SOURCE_DIR && ./gen_readme.py
+    popd > /dev/null
 fi
 
-popd > /dev/null
 
 
