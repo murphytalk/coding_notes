@@ -1,4 +1,4 @@
-*Generated at Fri Oct 19 22:01:45 2018 by [gen_readme.py](gen_readme.py)*
+*Generated at Sat Oct 20 20:50:16 2018 by [gen_readme.py](gen_readme.py)*
 
 [![Build Status](https://travis-ci.org/murphytalk/coding_notes.svg?branch=master)](https://travis-ci.org/murphytalk/coding_notes)
 
@@ -45,7 +45,7 @@ An in-place `O(1)` space solution, beats 94.29% of C++ submissions.
  ![Screenshot](img/leetcode/RevserseWordsInString.PNG)
 # C++ Notes
 ## Boost Library
-### Use `in_place` with `optional`
+### [Use `in_place` with `optional`](src/c++notes/boost.cpp#L17)
 
 `optional` may or may not hold a valid object, it overrides `bool` operator to indicate if a valid object is being held or not. 
 It also overrides operator `.` and `->` so the underlying object can be operated as pointer, if it is valid.
@@ -86,9 +86,9 @@ Declare two instances.
     Arg2 a2(200);
 ```
 `t1` below is an optional but is initialized with an `Test2Arg` instance in place:
-- Note `Test2Arg` does not have copy constructor, so the value is not intialized in temp object and then copied
+- Note `Test2Arg` does not have copy constructor, so the value is not intialized in temp object and then copied.
 - Note `Test2Arg` expects the first parameter of its constructor be non-const reference, but `boost::in_place()` only accepts either const reference
-  or by-value as parameter
+  or by-value as parameter, so we wrap `a1` inside `boost::inplace` to make it a by-value parameter.
 ```c++
     boost::optional<typename CxxBoost::Test2Arg<Arg1, Arg2>> t1(boost::in_place(boost::ref(a1), a2));
 ```
