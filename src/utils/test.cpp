@@ -14,14 +14,14 @@ namespace Utils{
 TEST_CASE("conditonal log : log", "[utils]"){
 	std::stringstream ss1, ss2;
 	const char log [] = "SEE THIS";
-	conditional_log(true, ss1) << log << 1234 << 12.34;
+	conditional_log<std::stringstream>(true, ss1) << log << 1234 << 12.34;
 	ss2 << log << 1234 << 12.34;
 	REQUIRE(ss1.str() == ss2.str());
 }
 
 TEST_CASE("conditonal log : do not log", "[utils]"){
 	std::stringstream ss;
-	conditional_log(false,ss) << "YOU SHOULD NOT SEE THIS" << 1234 << 12.34;
+	conditional_log<std::stringstream>(false, ss) << "YOU SHOULD NOT SEE THIS" << 1234 << 12.34;
 	REQUIRE(ss.str().size() == 0);
 }
 
