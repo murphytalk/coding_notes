@@ -1,13 +1,29 @@
 #include "catch.hpp"
 #include "utils.h"
+#include "cond_log.h"
 #include "blocking_queue.h"
 #include <string>
 #include <thread>
 #include <atomic>
+#include <sstream>
 
 using namespace std;
 
-namespace UtilsTest {
+namespace Utils{
+
+TEST_CASE("conditonal log : log", "[utils]"){
+	std::stringstream ss1, ss2;
+	const char log [] = "SEE THIS";
+	conditional_log(true, ss1) << log << 1234 << 12.34;
+	ss2 << log << 1234 << 12.34;
+	REQUIRE(ss1.str() == ss2.str());
+}
+
+TEST_CASE("conditonal log : do not log", "[utils]"){
+	std::stringstream ss;
+	conditional_log(false,ss) << "YOU SHOULD NOT SEE THIS" << 1234 << 12.34;
+	REQUIRE(ss.str().size() == 0);
+}
 
 TEST_CASE("bitset: even numbers under 101 are set", "[utils]") {
 	const int bitsize = 101;
