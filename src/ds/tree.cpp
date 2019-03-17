@@ -55,7 +55,7 @@ class BST : public tree<T> {
 		}
 		return n;
 	}
-	
+
 	node* _search(node* n, const T data) {
 		if (n == nullptr) return nullptr;
 		if (data < n->data) {
@@ -94,7 +94,7 @@ public:
         2     3
        / \     \
       4   5     6
-     /   / \    / 
+     /   / \    /
     7   8   9  10
 */
 
@@ -135,7 +135,7 @@ static void inorder_DFS_stack(tree<int>::node* node, function<void(int)> output)
                 n = n->left;
             }
     };
-    
+
     auto n = node;
     push_left(n);
     while (s.size() > 0) {
@@ -204,9 +204,9 @@ static void BFS_recursion(tree<int>::node* node, function<void(int)> output) {
 
     bfs b;
     b(1,0,node);
-    
-    //sort by the following priority : level and then position. 
-    //note position is accumulated, so for the nodes on the same level, 
+
+    //sort by the following priority : level and then position.
+    //note position is accumulated, so for the nodes on the same level,
 	//the node whose parent is its greatparent's left child would have higher accumulated position value
     sort(b.nodes.begin(), b.nodes.end(), [](const bfs::NODE& n1, const bfs::NODE& n2) {
         const int n1_level = get<0>(n1);
@@ -220,7 +220,7 @@ static void BFS_recursion(tree<int>::node* node, function<void(int)> output) {
         }
         return false;
     });
-    
+
     for_each(b.nodes.begin(), b.nodes.end(), [&output](const bfs::NODE& n) {output(get<2>(n)->data); });
 }
 
@@ -228,7 +228,7 @@ static void BFS_recursion(tree<int>::node* node, function<void(int)> output) {
 TEST_CASE("Tree : BFS"){
     const tree<int> tree(create_tree());
     const char expected[] = "1 2 3 4 5 6 7 8 9 10 ";
-    
+
     SECTION("Use recursion") {
         Output<int> output;
         BFS_recursion(tree.root, ref(output));
@@ -246,10 +246,10 @@ TEST_CASE("Tree : BFS"){
            1                          1
          /   \                      /   \
         2     3                    3     2
-       / \     \                 /      / \ 
-      4   5     6      ==>      6      5   4 
+       / \     \                 /      / \
+      4   5     6      ==>      6      5   4
      /   / \    /                \    / \   \
-    7   8   9  10                10  9   8   7 
+    7   8   9  10                10  9   8   7
 */
 TEST_CASE("Tree : mirror") {
 	struct mirror {
@@ -284,12 +284,12 @@ TEST_CASE("Tree : mirror") {
 }
 
 TEST_CASE("Tree : BST insert/search/delete") {
-/* 
+/*
 	    50
 	  /     \
 	30      70
-   /  \    /  \ 
- 20   40  60   80 
+   /  \    /  \
+ 20   40  60   80
 */
 	BST<int> bst;
 	int data[] = {50, 30, 20, 40, 70, 60, 80};
