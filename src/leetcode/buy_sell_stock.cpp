@@ -1,6 +1,7 @@
 #include "catch.hpp"
 #include <bitset>
 #include <vector>
+#include <iterator>
 
 using namespace std;
 
@@ -61,13 +62,13 @@ static int max_profit_I(const vector<int>& prices){
 #endif
 }
 
-TEST_CASE("best time to bull and sell stock I : 7, 1, 5, 3, 6, 4", "[leetcode]") {
+TEST_CASE("Stock max profit I : 7, 1, 5, 3, 6, 4", "[leetcode]") {
     const vector<int> prices = { 7, 1, 5, 3, 6, 4 };
     REQUIRE(max_profit_I(prices) == 5);
 }
 
 
-TEST_CASE("best time to bull and sell stock I : 7, 6, 4, 3, 1", "[leetcode]") {
+TEST_CASE("Stock max profit I : 7, 6, 4, 3, 1", "[leetcode]") {
     const vector<int> prices = { 7, 6, 4, 3, 1};
     REQUIRE(max_profit_I(prices) == 0);
 }
@@ -77,13 +78,50 @@ https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/#/description
 
 Say you have an array for which the ith element is the price of a given stock on day i.
 
-Design an algorithm to find the maximum profit. You may complete as many transactions as you like 
-(ie, buy one and sell one share of the stock multiple times). 
+Design an algorithm to find the maximum profit. You may complete as many transactions as you like
+(ie, buy one and sell one share of the stock multiple times).
 However, you may not engage in multiple transactions at the same time (ie, you must sell the stock before you buy again).
 */
 
-static int max_profit_II(const vector<int>& prices) {
-    const auto N = prices.size();
+namespace
+{
+static int max_profit_II_recursive(vector<int>::iterator begin, vector<int>::iterator end)
+{
+    if (begin == end) return 0;
+    int max = 0;
+    for(auto buy = begin; buy!=end; ++buy){
+        for (auto sell = std::next(buy); sell!=end; ++sell){
+            int profit = *sell - *buy;
+            if ( profit > 0){
+                max = std::max(max, profit + max_profit_II_recursive(std::next(sell), end));
+            }
+        }
+    }
+    return max;
+}
+
+static int max_profit_II(vector<int>& prices) {
+    int profit = 0;
+    for(auto buy=prices.begin(); buy!=prices.end(); ++buy){
+        profit = std::max(profit, max_profit_II_recursive(buy, prices.end()));
+    }
+    return profit;
+}
+
+TEST_CASE("Stock max profit II : 7, 1, 5, 3, 6, 4", "[leetcode]") {
+    vector<int> prices = { 7, 1, 5, 3, 6, 4 };
+    REQUIRE(max_profit_II(prices) == 7);
+}
+
+TEST_CASE("Stock max profit II : 1, 2, 3, 4, 5", "[leetcode]") {
+    vector<int> prices = { 1, 2, 3, 4, 5 };
+    REQUIRE(max_profit_II(prices) == 4);
+}
+
+TEST_CASE("Stock max profit II : 7, 6, 4, 3, 1", "[leetcode]") {
+    vector<int> prices = { 7, 6, 4, 3, 1 };
+    REQUIRE(max_profit_II(prices) == 0);
+}
 
 }
 

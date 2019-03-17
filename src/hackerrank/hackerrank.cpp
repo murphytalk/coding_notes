@@ -197,14 +197,14 @@ TEST_CASE("LRU Cache", "[hackerrank]"){
 	}
 }
 
-/* 
+/*
 Max value in contiguous subarray
 https://www.hackerrank.com/challenges/deque-stl
 
 Given a set of arrays of size and an integer , you have to find the maximum integer for each and every contiguous subarray of size for each of the given arrays.
 
 Input Format:
-First line of input will contain the number of test cases T. 
+First line of input will contain the number of test cases T.
 For each test case, you will be given the size of array N and the size of subarray to be used K.
 This will be followed by the elements of the array Ai.
 
@@ -218,12 +218,16 @@ Sample Input:
 Sample Output:
 4 6 6 4
 8 8 8 10
+
+For the first case, the contiguous subarrays of size 2 are {3,4},{4,6},{6,3} and {3,4}. The 4 maximum elements of subarray of size 2 are: 4 6 6 4.
+
+For the second case,the contiguous subarrays of size 4 are {3,4,5,8},{4,5,8,1},{5,8,1,4} and {8,1,4,10}. The 4 maximum element of subarray of size 4 are: 8 8 8 10.
 */
 static void printKMax(int arr[], int n, int k,ostringstream& out) {
 	deque<int> q;
 	//slide the window along with the sub-array
 
-	//the first window, only value larger than the last seen value will survive and are sorted in descending order 
+	//the first window, only value larger than the last seen value will survive and are sorted in descending order
 	int i;
 	for (i = 0; i < k; ++i) {
 		while(!q.empty() && arr[q.back()] <= arr[i]) {
@@ -234,8 +238,8 @@ static void printKMax(int arr[], int n, int k,ostringstream& out) {
 	// the head is the index of the max value
 	/* Examples:
 	   1) if the first sub-array is [4 1 2 3], then what's left in the queue is [4 3]
-	      4 will be evicted as window slides, 1,2 does not even enter the queue but that does not matter as 
-		    a) they are smaller than 3 and 
+	      4 will be evicted as window slides, 1,2 does not even enter the queue but that does not matter as
+		    a) they are smaller than 3 and
 			b) they will be evicted before 3 so they will never have chance
 
 			Note while loop is important otherwise in the above case 1 will survive in the queue while it is smaller than 3
