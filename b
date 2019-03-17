@@ -17,6 +17,7 @@ BUILD_DIR=${BUILD_DIR:-"$SOURCE_DIR/build_dir"}
 
 if [ -z "$DEBUG" ];then
     BUILD_TYPE=${BUILD_TYPE:-release}
+    SANIZIZER='-DCMAKE_CXX_FLAGS="-fsanitize=address  -fsanitize=leak -g" -DCMAKE_C_FLAGS="-fsanitize=address  -fsanitize=leak -g" -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address  -fsanitize=leak" -DCMAKE_MODULE_LINKER_FLAGS="-fsanitize=address  -fsanitize=leak"'
 else
     BUILD_TYPE=${BUILD_TYPE:-debug}
 fi
@@ -24,6 +25,7 @@ fi
 if [ ! -z "$CLANG" ];then
     export CC=clang
     export CXX=clang++
+    unset SANIZIZER
 fi
 
 
@@ -37,7 +39,7 @@ else
     [ ! -z "$CXX" ] && echo "CXX is set as $CXX"
     # TODO only enable addr santizier in DEBUG
     cd $BUILD_DIR/$BUILD_TYPE && \
-        cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE $SOURCE_DIR -DCMAKE_CXX_FLAGS="-fsanitize=address  -fsanitize=leak -g" -DCMAKE_C_FLAGS="-fsanitize=address  -fsanitize=leak -g" -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address  -fsanitize=leak" -DCMAKE_MODULE_LINKER_FLAGS="-fsanitize=address  -fsanitize=leak"  && \
+        cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE $SANIZIZER $SOURCE_DIR && \
         make $@
 
     [ $? -eq 0 ] && [ ! -z "$GENDOC" ] && cd $SOURCE_DIR && ./gen_readme.py
