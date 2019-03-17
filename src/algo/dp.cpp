@@ -44,7 +44,7 @@ TEST_CASE("fibocacci", "[dp]") {
 TEST_CASE("fibonacci : long", "[dp]") {
     static vector<int> r1;
     static vector<int> r2;
-    const size_t N = 10000; 
+    const size_t N = 10000;
     r1.resize(N);
     r2.resize(N);
     SECTION("recursive") { //stack overflow if N is too big
@@ -62,9 +62,9 @@ TEST_CASE("fibonacci : long", "[dp]") {
    e.g. for 15 , the answer is 3 because:
    1) 15 = 7 + 8
    2) 15 = 4 + 5 + 6
-   3) 15 = 1 + 2 + 3 + 4 + 5 
+   3) 15 = 1 + 2 + 3 + 4 + 5
 
-   e.g. for 15, ther answer is 1 : 10 = 1 + 2 + 3 + 4
+   e.g. for 10, ther answer is 1 : 10 = 1 + 2 + 3 + 4
 */
 //#define VERBOSE_find_consecutive_num_sum
 static int find_consecutive_num_sum(long long N)
@@ -72,13 +72,20 @@ static int find_consecutive_num_sum(long long N)
 	int count = 0;
 	long long start, end;
 	for (auto parts = 2; parts < N; ++parts) {
+        // parts: number of the consecutive numbers
 		auto half = parts / 2;
+        // the numer in the middle of consecutive numbers
+        // e.g. if parts == 3 then
+        // middle = (int)(N/3) <= N/3
+        // because the numbers are required to be consecutive
+        // we extend to each side of middle for ceiling(3/2)=2
+        // if add them together the result should be >=N
 		auto middle = N / parts;
 		if (parts % 2 == 0) {
 			start = middle - (half - 1);
 			end = middle + half;
 		}
-		else {			
+		else {
 			start = middle - half;
 			end = middle + half;
 		}
@@ -110,12 +117,17 @@ static int find_consecutive_num_sum_dp(long long N)
 	long long start = 1, end = 1;
 	long long sum = 1;
 
+    // a sliding window, window left is the first number of the consecutive numbers while window right is the last
+    // intially start from 1 , window size is 1
 	while (start <= N / 2){
+        // start sould neve exceed half of N as N/2 + (N/2 + 1) > N
 		if (sum < N){
+            // increase the window right to the next consecutive number
 			++end;
 			sum += end;
 		}
 		else if (sum > N){
+            // window right strech too far, sum exceeded N, drop the first number and shrink window to the right
 			sum -= start;
 			++start;
 		}else if (sum == N){
