@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+
 #if 0
 #include <boost/chrono/include.hpp>
 #define LOG std::cout<<boost::chrono::system_clock::now()
@@ -168,7 +169,7 @@ uint32_t comb_index(const uint32_t comb);
 std::string get_data_file_path(const char* filename);
 
 template<typename LINE>
-bool load_test_data(char const *file_name,LINE line_callback,const char comment = '#'){    
+bool load_test_data(char const *file_name,LINE line_callback,const char comment = '#'){
     std::ifstream infile(file_name);
     if(!infile.is_open())  return false;
 
@@ -178,11 +179,34 @@ bool load_test_data(char const *file_name,LINE line_callback,const char comment 
             line_callback(line);
         }
     }
-    
+
     return true;
 }
 
 std::string normalize_path(const std::string what);
 
+template<typename T, char sep=','>
+struct comma_sep { //type used for temporary input
+    T t; //where data is temporarily read to
+    operator const T&() const {return t;} //acts like an int in most cases
+};
+template<typename T, char sep>
+std::istream& operator>>(std::istream& in, comma_sep<T,sep>& t)
+{
+    if (!(in >> t.t)) //if we failed to read the int
+        return in; //return failure state
+    if (in.peek()==sep) //if next character is a comma
+        in.ignore(); //extract it from the stream and we're done
+    else //if the next character is anything else
+        in.clear(); //clear the EOF state, read was successful
+    return in;
+}
+
+template<template<typename> class C, class T>
+C<T> read_to_container(std::istream& in)
+{
+    typedef std::istream_iterator<comma_sep<int>> istrit;
+    return C<T>(istrit(in), istrit());
+}
 }
 

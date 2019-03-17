@@ -179,5 +179,29 @@ class MinimumCoins2(MinimumCoins1):
         self.assertEqual(self.solve(7, [2, 1]), 4)
 
 
+class MaxProfit(unittest.TestCase):
+    """
+    see src/leetcode/buy_sell_stock.cpp
+    """
+    def test_brute_force(self):
+        def solve(stocks):
+            size = len(stocks)
+            maxv = 0
+            buy = 0
+            while buy < size:
+                sell = buy + 1
+                while sell < size:
+                    profit = stocks[sell] - stocks[buy]
+                    if profit > 0:
+                        maxv = max(maxv, profit + solve(stocks[sell+1:]))
+                    sell += 1
+                buy += 1
+            return maxv
+
+        self.assertEqual(solve([7, 1, 5, 3, 6, 4]), 7)
+        self.assertEqual(solve([1, 2, 3, 4, 5]), 4)
+        self.assertEqual(solve([7, 6, 4, 3, 1]), 0)
+
+
 if __name__ == "__main__":
     unittest.main()

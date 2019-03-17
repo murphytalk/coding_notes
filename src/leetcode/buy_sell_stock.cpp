@@ -2,6 +2,9 @@
 #include <bitset>
 #include <vector>
 #include <iterator>
+//#include <iostream>
+//#include <algorithm>
+#include "src/utils/utils.h"
 
 using namespace std;
 
@@ -32,23 +35,6 @@ In this case, no transaction is done, i.e. max profit = 0.
 */
 static int max_profit_I(const vector<int>& prices){
     const auto N = prices.size();
-#if 0
-    vector<int> max_profit(N); 
-    int overall_max = 0;
-    for (auto i = 0; i < N;++i) {
-        const int& price = prices[i];
-        int max = 0;
-        for (auto k = 0; k < i; ++k) {
-            if (prices[k] < price) {
-                int profit = max_profit[k] + price - prices[k];
-                if (profit > max) max = profit;
-            }
-        }
-        max_profit[i] = max;
-        if (max > overall_max) overall_max = max;
-    }
-    return  overall_max;
-#else
     if (N <= 1) return 0;
 
     int min_price = min(prices[0], prices[1]);
@@ -59,7 +45,6 @@ static int max_profit_I(const vector<int>& prices){
         if (price < min_price) min_price = price;
     }
     return profit<0?0:profit;
-#endif
 }
 
 TEST_CASE("Stock max profit I : 7, 1, 5, 3, 6, 4", "[leetcode]") {
@@ -100,27 +85,72 @@ static int max_profit_II_recursive(vector<int>::iterator begin, vector<int>::ite
     return max;
 }
 
-static int max_profit_II(vector<int>& prices) {
+static int peak_valley(vector<int>& prices){
     int profit = 0;
-    for(auto buy=prices.begin(); buy!=prices.end(); ++buy){
-        profit = std::max(profit, max_profit_II_recursive(buy, prices.end()));
+    for (auto valley = prices.begin(), peak = std::next(valley); peak != prices.end() && valley != prices.end();){
+        if (*valley >= *peak){
+            ++valley;
+            ++peak;
+        }
+        else{
+            auto next_peak = std::next(peak);
+            for(;next_peak != prices.end() && *next_peak > *peak; ++next_peak);
+            peak = std::prev(next_peak);
+            profit += *peak - *valley;
+            valley = next_peak;
+            peak = std::next(valley);
+        }
     }
     return profit;
 }
 
+static int max_profit_II(vector<int>& prices) {
+    
+}
+
+TEST_CASE("Stock max profit II : 1,2,7,4", "[leetcode]") {
+    vector<int> prices = { 1,2,7,4 };
+    REQUIRE(max_profit_II_recursive(prices.begin(), prices.end()) == 6);
+    REQUIRE(peak_valley(prices) == 6);
+}
+
 TEST_CASE("Stock max profit II : 7, 1, 5, 3, 6, 4", "[leetcode]") {
     vector<int> prices = { 7, 1, 5, 3, 6, 4 };
-    REQUIRE(max_profit_II(prices) == 7);
+    REQUIRE(max_profit_II_recursive(prices.begin(), prices.end()) == 7);
+    REQUIRE(peak_valley(prices) == 7);
 }
 
 TEST_CASE("Stock max profit II : 1, 2, 3, 4, 5", "[leetcode]") {
     vector<int> prices = { 1, 2, 3, 4, 5 };
-    REQUIRE(max_profit_II(prices) == 4);
+    REQUIRE(max_profit_II_recursive(prices.begin(), prices.end()) == 4);
+    REQUIRE(peak_valley(prices) == 4);
 }
 
 TEST_CASE("Stock max profit II : 7, 6, 4, 3, 1", "[leetcode]") {
     vector<int> prices = { 7, 6, 4, 3, 1 };
-    REQUIRE(max_profit_II(prices) == 0);
+    REQUIRE(max_profit_II_recursive(prices.begin(), prices.end()) == 0);
+    REQUIRE(peak_valley(prices) == 0);
+}
+
+TEST_CASE("Stock max profit II : big", "[leetcode]") {
+    std::ifstream f(Utils::get_data_file_path("buy_sell_stock.txt"), ifstream::in);
+    typedef std::istream_iterator<Utils::comma_sep<int>> istrit;
+    std::vector<int> //prices = Utils::read_to_container<std::vector<int>, int>(s);
+        prices((istrit(f)), istrit());
+    //typedef std::ostream_iterator<int> ostrit;
+    //std::copy(prices.begin(), prices.end(), ostrit(std::cout, ";"));
+
+    int a1 = 0;
+    SECTION("Recursive"){
+        //a1 = max_profit_II_recursive(prices.begin(), prices.end());
+    }
+
+    int a2 = 0;
+    SECTION("Peak Valley"){
+        a2 = peak_valley(prices);
+    }
+
+    
 }
 
 }
