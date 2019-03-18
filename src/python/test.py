@@ -193,7 +193,7 @@ class MaxProfit(unittest.TestCase):
                 while sell < size:
                     profit = stocks[sell] - stocks[buy]
                     if profit > 0:
-                        maxv = max(maxv, profit + solve(stocks[sell+1:]))
+                        maxv = max(maxv, profit + solve(stocks[sell + 1:]))
                     sell += 1
                 buy += 1
             return maxv
@@ -201,6 +201,7 @@ class MaxProfit(unittest.TestCase):
         self.assertEqual(solve([7, 1, 5, 3, 6, 4]), 7)
         self.assertEqual(solve([1, 2, 3, 4, 5]), 4)
         self.assertEqual(solve([7, 6, 4, 3, 1]), 0)
+        self.assertEqual(solve([1, 2, 7, 4]), 6)
 
 
 if __name__ == "__main__":

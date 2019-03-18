@@ -94,42 +94,49 @@ static int peak_valley(vector<int>& prices){
         }
         else{
             auto next_peak = std::next(peak);
-            for(;next_peak != prices.end() && *next_peak > *peak; ++next_peak);
-            peak = std::prev(next_peak);
+            for(;next_peak != prices.end() && *next_peak > *peak; peak=next_peak,++next_peak);
             profit += *peak - *valley;
             valley = next_peak;
             peak = std::next(valley);
         }
     }
-    return profit;
+    return profit >=0 ? profit : 0;
 }
 
-static int max_profit_II(vector<int>& prices) {
-    
+static int peak_valley2(vector<int>& prices) {
+    int ans=0;
+    for(int i=1;i<prices.size();++i){
+        ans+=max(0,prices[i]-prices[i-1]);
+    }
+    return ans;
 }
 
-TEST_CASE("Stock max profit II : 1,2,7,4", "[leetcode]") {
+TEST_CASE("Stock max profit II test 1", "[leetcode]") {
     vector<int> prices = { 1,2,7,4 };
     REQUIRE(max_profit_II_recursive(prices.begin(), prices.end()) == 6);
     REQUIRE(peak_valley(prices) == 6);
+    REQUIRE(peak_valley2(prices) == 6);
 }
 
 TEST_CASE("Stock max profit II : 7, 1, 5, 3, 6, 4", "[leetcode]") {
     vector<int> prices = { 7, 1, 5, 3, 6, 4 };
     REQUIRE(max_profit_II_recursive(prices.begin(), prices.end()) == 7);
     REQUIRE(peak_valley(prices) == 7);
+    REQUIRE(peak_valley2(prices) == 7);
 }
 
 TEST_CASE("Stock max profit II : 1, 2, 3, 4, 5", "[leetcode]") {
     vector<int> prices = { 1, 2, 3, 4, 5 };
     REQUIRE(max_profit_II_recursive(prices.begin(), prices.end()) == 4);
     REQUIRE(peak_valley(prices) == 4);
+    REQUIRE(peak_valley2(prices) == 4);
 }
 
 TEST_CASE("Stock max profit II : 7, 6, 4, 3, 1", "[leetcode]") {
     vector<int> prices = { 7, 6, 4, 3, 1 };
     REQUIRE(max_profit_II_recursive(prices.begin(), prices.end()) == 0);
     REQUIRE(peak_valley(prices) == 0);
+    REQUIRE(peak_valley2(prices) == 0);
 }
 
 TEST_CASE("Stock max profit II : big", "[leetcode]") {
@@ -140,17 +147,13 @@ TEST_CASE("Stock max profit II : big", "[leetcode]") {
     //typedef std::ostream_iterator<int> ostrit;
     //std::copy(prices.begin(), prices.end(), ostrit(std::cout, ";"));
 
-    int a1 = 0;
-    SECTION("Recursive"){
-        //a1 = max_profit_II_recursive(prices.begin(), prices.end());
+    SECTION("Peak Valley 1"){
+        REQUIRE(peak_valley(prices) == 1697678);
     }
 
-    int a2 = 0;
-    SECTION("Peak Valley"){
-        a2 = peak_valley(prices);
+    SECTION("Peak Valley 2"){
+        REQUIRE(peak_valley2(prices) == 1697678);
     }
-
-    
 }
 
 }
