@@ -18,7 +18,7 @@ BUILD_DIR=${BUILD_DIR:-"$SOURCE_DIR/build_dir"}
 if [ -z "$DEBUG" ];then
     BUILD_TYPE=${BUILD_TYPE:-release}
 else
-    SANIZIZER='-DCMAKE_CXX_FLAGS="-fsanitize=address  -fsanitize=leak -g" -DCMAKE_C_FLAGS="-fsanitize=address  -fsanitize=leak -g" -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address  -fsanitize=leak" -DCMAKE_MODULE_LINKER_FLAGS="-fsanitize=address  -fsanitize=leak"'
+    SANIZIZER=-DCMAKE_CXX_FLAGS="-fsanitize=address  -fsanitize=leak -g" -DCMAKE_C_FLAGS="-fsanitize=address  -fsanitize=leak -g" -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address  -fsanitize=leak" -DCMAKE_MODULE_LINKER_FLAGS="-fsanitize=address  -fsanitize=leak"
     BUILD_TYPE=${BUILD_TYPE:-debug}
 fi
 

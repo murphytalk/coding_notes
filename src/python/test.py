@@ -204,5 +204,44 @@ class MaxProfit(unittest.TestCase):
         self.assertEqual(solve([1, 2, 7, 4]), 6)
 
 
+class MaxSum(MyTestCase):
+    """
+    find a sub-array in an array that has the maxium sum of all elements
+
+    Kadane's algorithm: https://en.wikipedia.org/wiki/Maximum_subarray_problem
+    """
+    def solve1D_dp(self, A):
+        """
+        We need to track 2 subarraies:
+        1 - the one moves with i, always includes A[i], As we need contiguous elements to be a subarray,
+            there are two possiblities:
+            - (the subarray that i-1 has) + A[i]
+            - A[i] itself (when i-i's subarray sum is negative)
+        2 - As A[i] could be negative, as i moves the array that ends might have a smaller sum, we track a best subarray that ends before i
+
+        So when we move to i, the max sum subarray is the bigger one in above 1) and 2)
+
+        Kadane's algorithm calls 1) max_ending_here and 2) max_so_far
+        """
+        max_ending_here = max_so_far = A[0]
+        for a in A[1:]:
+            max_ending_here = max(max_ending_here + a, a)
+            max_so_far = max(max_ending_here, max_so_far)
+        return max_so_far
+
+    def test_1D(self):
+        self.assertEqual(self.solve1D_dp([-2, -3, 4, -1, -2, 1, 5, -3]), 7)
+
+    """
+    find a sub-matrix in a matrix that has the maxium sum of all elements
+    """
+    def solve2D(self, M):
+        pass
+
+
+    """
+    https://www.hackerrank.com/challenges/max-array-sum/forum
+    """
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
