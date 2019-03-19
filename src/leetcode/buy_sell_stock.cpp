@@ -142,17 +142,18 @@ TEST_CASE("Stock max profit II : 7, 6, 4, 3, 1", "[leetcode]") {
 TEST_CASE("Stock max profit II : big", "[leetcode]") {
     std::ifstream f(Utils::get_data_file_path("buy_sell_stock.txt"), ifstream::in);
     typedef std::istream_iterator<Utils::comma_sep<int>> istrit;
-    std::vector<int> //prices = Utils::read_to_container<std::vector<int>, int>(s);
+    std::vector<int> //prices = Utils::read_to_container<std::vector<int>, int>(f); //TODO
         prices((istrit(f)), istrit());
     //typedef std::ostream_iterator<int> ostrit;
     //std::copy(prices.begin(), prices.end(), ostrit(std::cout, ";"));
+    const int result = 1697678;
 
     SECTION("Peak Valley 1"){
-        REQUIRE(peak_valley(prices) == 1697678);
+        REQUIRE(peak_valley(prices) == result);
     }
 
     SECTION("Peak Valley 2"){
-        REQUIRE(peak_valley2(prices) == 1697678);
+        REQUIRE(peak_valley2(prices) == result);
     }
 }
 
