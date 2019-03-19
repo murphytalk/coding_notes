@@ -233,11 +233,46 @@ class MaxSum(MyTestCase):
         self.assertEqual(self.solve1D_dp([-2, -3, 4, -1, -2, 1, 5, -3]), 7)
 
     """
-    find a sub-matrix in a matrix that has the maxium sum of all elements
+    find a sub-matrix in a COLxROW matrix M that has the maxium sum of all elements
     """
     def solve2D(self, M):
-        pass
+        COL = len(M[0])
 
+        max_so_far = -sys.maxint #M[0][0]
+
+        for i in range(COL):
+            for k in range(i, COL):
+                # we are testing this between every pair of columns
+                # to form a matrix need to count the whole row
+                # so we can redue the matrix to an 1-D array
+                # where each element in the array represents sum of a whole row
+                # start and end of the array are the pair of columns respectively
+                A = []
+                for row in M:
+                    A.append(sum(row[i: k + 1]))
+                # print(i, k, A)
+                max_so_far = max(max_so_far, self.solve1D_dp(A))
+
+        return max_so_far
+
+    def test_2D(self):
+        M = [[1, 2, -1, -4, -20],
+             [-8, -3, 4, 2, 1],
+             [3, 8, 10, 1, 3],
+             [-4, -1, 1, 7, -6]]
+        # print(M)
+        self.assertEquals(self.solve2D(M), 29)
+
+        M = [[-10, -21, 5],
+             [-15, 4, 13],
+             [17, -16, -4],
+             [24, 0, -7],
+             [-4, -22, -6],
+             [-20, -12, -12],
+             [12, 24, 18],
+             [-21, 7, -9],
+             [-6, 24, -11]]
+        self.assertEquals(self.solve2D(M), 55)
 
     """
     https://www.hackerrank.com/challenges/max-array-sum/forum
