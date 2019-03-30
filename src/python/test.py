@@ -278,5 +278,6 @@ class MaxSum(MyTestCase):
     https://www.hackerrank.com/challenges/max-array-sum/forum
     """
 
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
