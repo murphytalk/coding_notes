@@ -28,6 +28,28 @@ class MyTestCase(unittest.TestCase):
                         read_lines(f)
 
 
+class Math(MyTestCase):
+    def prime(self, N):
+        """
+        get the first N prime numbers
+        """
+        res = [2]
+        n = 3
+        while len(res) < N:
+            try:
+                for i in range(2, n):
+                    if n % i == 0:
+                        raise Exception
+                res.append(n)
+            except Exception:
+                pass
+            n += 1
+        return res
+
+    def test_first_26_prime_numbers(self):
+        self.assertEqual(self.prime(26), [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101])
+
+
 class UnionOfTwoArrays(MyTestCase):
     """
     https://practice.geeksforgeeks.org/problems/union-of-two-arrays/0
