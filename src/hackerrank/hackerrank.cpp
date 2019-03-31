@@ -299,6 +299,9 @@ https://www.youtube.com/watch?v=2P-yW7LQr08
 
 A student signed up for workshops and wants to attend the maximum number of workshops where no two workshops overlap.
 
+Wighted interval
+https://courses.cs.washington.edu/courses/cse521/13wi/slides/06dp-sched.pdf
+
 Input Format
 
 Input from stdin is handled by the locked code in the editor; you simply need to write your functions to meet the specifications of the problem statement above.
@@ -338,7 +341,7 @@ static int CalculateMaxWorkshops(Available_Workshops* ptr) {
 
 	int selected = 0;
 	sort(candidates.begin(), candidates.end(), [&ptr](int w1, int w2) {return ptr->workshops[w1].end_time < ptr->workshops[w2].end_time;});
-	
+
 	while (!candidates.empty()) {
 		int earliest_end = candidates.front(); //select the one that ends earliest
 		++selected;
@@ -347,7 +350,7 @@ static int CalculateMaxWorkshops(Available_Workshops* ptr) {
 		//remove all those clashing with the new selected workshop
 		candidates.erase(remove_if(candidates.begin(), candidates.end(), [&](int w) {return clashing(ptr->workshops[earliest_end], ptr->workshops[w]); }), candidates.end());
 	}
-	
+
 	return selected;
 }
 
@@ -395,6 +398,9 @@ TEST_CASE("Attending workshops : Test Case 11", "[hackerrank]") {
 /*
 Longest increasing subsequence
 https://www.hackerrank.com/challenges/longest-increasing-subsequent?h_r=internal-search
+
+Find the length of the longest subsequence in a given array of integers such that
+all elements of the subsequence are sorted in strictly ascending order.
 */
 static int longest_increasing_subseq_dp(const vector<int>& nums) {
 #if 0
@@ -424,7 +430,7 @@ static int longest_increasing_subseq_dp(const vector<int>& nums) {
         if (max > overall_max) overall_max = max;
     }
 
-    return overall_max + 1; //overall_max is the number of paths, need to +1 to count the nodes 
+    return overall_max + 1; //overall_max is the number of paths, need to +1 to count the nodes
 #else
     const auto N = nums.size();
     vector<int> longest(N);//longest increasing subsequence ends at #i
@@ -444,7 +450,7 @@ static int longest_increasing_subseq_dp(const vector<int>& nums) {
         if (max > overall_max) overall_max = max;
     }
 
-    return overall_max + 1; //overall_max is the number of paths, need to +1 to count the nodes 
+    return overall_max + 1; //overall_max is the number of paths, need to +1 to count the nodes
 #endif
 }
 

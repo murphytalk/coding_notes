@@ -21,22 +21,26 @@ public:
         T data;
         node(node *l, node *r, T d) :left(l), right(r), data(d) {}
         node(T d) :node(nullptr, nullptr, d) {}
-        ~node() { LOG << "Deleted tree node " << data <<endl; }
+        ~node() { LOG << "Freed tree node " << data <<endl; }
     };
 
-    node* root;
-    tree(node* r = nullptr) :root(r) {}
+    tree(node* r = nullptr) :_root(r) {}
     ~tree(){
-        free_tree(root);
-        LOG << "Tree deleted" << endl;
+        free_tree(_root);
+        LOG << "Tree freed" << endl;
     }
-private:
+
+    inline node* root() const{
+        return _root;
+    }
+protected:
+    node* _root;
+
     void free_tree(node* node){
         if (node == nullptr) return;
         if (node->left) free_tree(node->left);
         if (node->right) free_tree(node->right);
         delete node;
-
     }
 };
 
@@ -66,25 +70,52 @@ class BST : public tree<T> {
 		}
 		else return n;
 	}
+
+    node* _delete_node(node *root, const T data){
+        if (root == nullptr) return nullptr;
+
+        if (data < root->data){
+            root->left = _delete_node(root->left, data);
+        }
+        else if (data > root->data){
+            root->right = _delete_node(root->right, data);
+        }
+        else{
+            if (root->left == nullptr || root->right == nullptr){
+                auto new_root = root->left == nullptr ? root->right : root->left;
+                delete root;
+                return new_root;
+            }
+
+            // two children, get the inorder sucessor (smallest in right sub-tree)
+            auto right_min = _min_node(root->right);
+            root->data = right_min->data;
+            root->right = _delete_node(root->right, right_min->data);
+        }
+        return root;
+    }
+
+    node * _min_node(node* root){
+        auto n = root;
+        for(;n->left != nullptr;n=n->left);
+        return n;
+    }
 public:
 	node* insert(const T data) {
 		//gcc needs "this" pointer to access parent template class member ...
 		//vc is more forgiving
 		//see https://stackoverflow.com/questions/6592512/templates-parent-class-member-variables-not-visible-in-inherited-class
-		auto p =_insert(this->root,data);
-		if (this->root == nullptr) this->root = p;
+		auto p =_insert(this->_root, data);
+		if (this->_root == nullptr) this->_root = p;
 		return p;
 	}
 
 	void del(const T data) {
-		auto p = search(data);
-		if (p) {
-
-		}
+       this->_root = this->_delete_node(this->_root, data);
 	}
 
 	node* search(const T data) {
-		return _search(this->root, data);
+		return _search(this->_root, data);
 	}
 };
 
@@ -120,16 +151,16 @@ static tree<int>::node* create_tree() {
     return root;
 }
 
-static void inorder_DFS_recursion(tree<int>::node* node, function<void(int)> output){
+static void inorder_DFS_recursion(const tree<int>::node* node, function<void(int)> output){
     if (node->left)  inorder_DFS_recursion(node->left ,output);
     output(node->data);
     if (node->right) inorder_DFS_recursion(node->right,output);
 }
 
-static void inorder_DFS_stack(tree<int>::node* node, function<void(int)> output) {
-    stack<tree<int>::node*> s;
+static void inorder_DFS_stack(const tree<int>::node* node, function<void(int)> output) {
+    stack<const tree<int>::node*> s;
 
-    auto push_left = [&s](tree<int>::node* n){
+    auto push_left = [&s](const tree<int>::node* n){
             while (n != nullptr) {
                 s.push(n);
                 n = n->left;
@@ -160,13 +191,13 @@ TEST_CASE("Tree : inorder DFS"){
 
     SECTION("Use recursion") {
         Output<int> output;
-        inorder_DFS_recursion(tree.root, ref(output));
+        inorder_DFS_recursion(tree.root(), ref(output));
         REQUIRE(output.s.str() == expected );
     }
 
     SECTION("Use stack") {
         Output<int> output;
-        inorder_DFS_stack(tree.root, ref(output));
+        inorder_DFS_stack(tree.root(), ref(output));
         REQUIRE(output.s.str() == expected);
     }
 }
@@ -231,13 +262,13 @@ TEST_CASE("Tree : BFS"){
 
     SECTION("Use recursion") {
         Output<int> output;
-        BFS_recursion(tree.root, ref(output));
+        BFS_recursion(tree.root(), ref(output));
         REQUIRE(output.s.str() == expected);
     }
 
     SECTION("Use deque") {
         Output<int> output;
-        BFS_deque(tree.root, ref(output));
+        BFS_deque(tree.root(), ref(output));
         REQUIRE(output.s.str() == expected);
     }
 }
@@ -266,20 +297,20 @@ TEST_CASE("Tree : mirror") {
 	tree<int> tree(create_tree());
 
 	mirror m;
-	m(tree.root);
+	m(tree.root());
 
 
     Output<int> output;
-    BFS_deque(tree.root, ref(output));
+    BFS_deque(tree.root(), ref(output));
     REQUIRE(output.s.str() == "1 3 2 6 5 4 10 9 8 7 ");
 
-	auto n6 = tree.root->left->left;
+	auto n6 = tree.root()->left->left;
 	REQUIRE(n6->data == 6);
 	REQUIRE(n6->left == nullptr);
 	REQUIRE( (n6->right != nullptr && n6->right->data == 10));
 
     Output<int> output2;
-    inorder_DFS_recursion(tree.root, ref(output2));
+    inorder_DFS_recursion(tree.root(), ref(output2));
     REQUIRE(output2.s.str() == "6 10 3 1 9 5 8 2 4 7 " );
 }
 
@@ -297,28 +328,34 @@ TEST_CASE("Tree : BST insert/search/delete") {
 
 	SECTION("insert") {
 		Output<int> output;
-		BFS_deque(bst.root, ref(output));
+		BFS_deque(bst.root(), ref(output));
 		REQUIRE(output.s.str() == "50 30 70 20 40 60 80 ");
 	}
 
 	SECTION("search") {
-		REQUIRE(bst.search(50) == bst.root);
-		REQUIRE(bst.search(30) == bst.root->left);
-		REQUIRE(bst.search(20) == bst.root->left->left);
-		REQUIRE(bst.search(80) == bst.root->right->right);
+		REQUIRE(bst.search(50) == bst.root());
+		REQUIRE(bst.search(30) == bst.root()->left);
+		REQUIRE(bst.search(20) == bst.root()->left->left);
+		REQUIRE(bst.search(80) == bst.root()->right->right);
 		REQUIRE(bst.search(99) == nullptr);
 	}
-#if 0
-	SECTION("delete 20") {
+
+	SECTION("delete 20, 30, 50") {
 		Output<int> output;
 		bst.del(20);
-		BFS_deque(bst.root, ref(output));
+		BFS_deque(bst.root(), ref(output));
 		REQUIRE(output.s.str() == "50 30 70 40 60 80 ");
+
 		Output<int> output2;
-		inorder_DFS_recursion(bst.root, ref(output));
-		REQUIRE(output.s.str() == "30 40 50 60 70 80 ");
+		bst.del(30);
+		BFS_deque(bst.root(), ref(output2));
+		REQUIRE(output2.s.str() == "50 40 70 60 80 ");
+
+		Output<int> output3;
+		bst.del(50);
+		BFS_deque(bst.root(), ref(output3));
+		REQUIRE(output3.s.str() == "60 40 70 80 ");
 	}
-#endif
 }
 
 

@@ -260,7 +260,7 @@ class MaxSum(MyTestCase):
     def solve2D(self, M):
         COL = len(M[0])
 
-        max_so_far = -sys.maxint #M[0][0]
+        max_so_far = - sys.maxsize
 
         for i in range(COL):
             for k in range(i, COL):
@@ -283,7 +283,7 @@ class MaxSum(MyTestCase):
              [3, 8, 10, 1, 3],
              [-4, -1, 1, 7, -6]]
         # print(M)
-        self.assertEquals(self.solve2D(M), 29)
+        self.assertEqual(self.solve2D(M), 29)
 
         M = [[-10, -21, 5],
              [-15, 4, 13],
@@ -294,11 +294,12 @@ class MaxSum(MyTestCase):
              [12, 24, 18],
              [-21, 7, -9],
              [-6, 24, -11]]
-        self.assertEquals(self.solve2D(M), 55)
+        self.assertEqual(self.solve2D(M), 55)
 
     """
     https://www.hackerrank.com/challenges/max-array-sum/forum
     """
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
