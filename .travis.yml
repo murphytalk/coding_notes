@@ -25,7 +25,6 @@ matrix:
             - g++-7
             - libboost-all-dev
             - p7zip-full
-            - unzip
       env:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
 
