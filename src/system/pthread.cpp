@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include "utils/utils.h"
+#include "../utils/utils.h"
 #include <pthread.h>
 #include <set>
 #include <stdexcept>
@@ -72,13 +72,14 @@ class Test{
         }
 };
 
-Test t;
+Test t(1);
 ThreadLocalPtr<Test> local_t(&t);
 
 void *myThreadFun(void *vargp){
     LOG << "Thread ID[" << pthread_self() << "] started"<<std::endl;
     t.report();
     LOG << "Thread ID[" << pthread_self() << "] ended"<<std::endl;
+    return 0;
 }
 
 }
