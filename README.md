@@ -1,4 +1,4 @@
-*Generated at Sat Oct 20 20:50:16 2018 by [gen_readme.py](gen_readme.py)*
+*Generated at Sun Oct 24 00:49:43 2021 by [gen_readme.py](gen_readme.py)*
 
 [![Build Status](https://travis-ci.org/murphytalk/coding_notes.svg?branch=master)](https://travis-ci.org/murphytalk/coding_notes)
 
@@ -25,24 +25,6 @@ This will run all examples/tests whose name start with "Add" and are tagged with
 ./notes 'Add*' '[leetcode]'  -d y
 ```
 
-# [Leetcode](https://leetcode.com/)
-## [Group Anagrams](src/leetcode/group_anagrams.cpp#L15)
-
-[Leetcode #49](https://leetcode.com/problems/anagrams/).
-
-Use a hash map to group anagrams, but instead of using a sorted string as key (so the default string hash code function would return same hash code for all subjects of the same anagram, it will work but the run time will be penalized for the sorting of every key), the solution implments a customized hash code function which uses the first 26 prime numbers to represent the 26 lower case letters and calculates the hash code by mulitplying them, to reflect the fact that 1) we only care about different letters 2) ordering does not matter.
-
-Beats 99.75% of C++ submissions.
-
- ![Screenshot](img/leetcode/Anagrams.PNG)
-
-## [Reverse words in a string](src/leetcode/reverse_words.cpp#L12)
-
-[Leetcode #151](https://leetcode.com/problems/reverse-words-in-a-string/)
-
-An in-place `O(1)` space solution, beats 94.29% of C++ submissions.
-
- ![Screenshot](img/leetcode/RevserseWordsInString.PNG)
 # C++ Notes
 ## Boost Library
 ### [Use `in_place` with `optional`](src/c++notes/boost.cpp#L17)
@@ -96,6 +78,10 @@ The following code cannot compile
 ```c++
     Test2Arg t2(t1);
 ```
+## Interesting C++ stuff learned from Internet
+cppcon | [2017 Curiously Recurring C++ Bugs at Facebook](https://www.youtube.com/watch?v=3MB2iiCkGxg&t=184s)
+
+//[bug #1 - implicitly insert new element](src/c++notes/cpp-con/fb-recurring-bugs.cpp#L11)
 ## Modern C++
 ### static assert
 
@@ -133,3 +119,21 @@ namespace{
     //MyTemplatedClass<int> not_specialized;
 }
 ```
+# [Leetcode](https://leetcode.com/)
+## [Reverse words in a string](src/leetcode/reverse_words.cpp#L12)
+
+[Leetcode #151](https://leetcode.com/problems/reverse-words-in-a-string/)
+
+An in-place `O(1)` space solution, beats 94.29% of C++ submissions.
+
+ ![Screenshot](img/leetcode/RevserseWordsInString.PNG)
+## [Group Anagrams](src/leetcode/group_anagrams.cpp#L15)
+
+[Leetcode #49](https://leetcode.com/problems/anagrams/).
+
+Use a hash map to group anagrams, but instead of using a sorted string as key (so the default string hash code function would return same hash code for all subjects of the same anagram, it will work but the run time will be penalized for the sorting of every key), the solution implments a customized hash code function which uses the first 26 prime numbers to represent the 26 lower case letters and calculates the hash code by mulitplying them, to reflect the fact that 1) we only care about different letters 2) ordering does not matter.
+
+Beats 99.75% of C++ submissions.
+
+ ![Screenshot](img/leetcode/Anagrams.PNG)
+

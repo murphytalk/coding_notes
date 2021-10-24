@@ -5,9 +5,11 @@
 
 namespace CxxSTL{
 
-// cppcon | 2017 Curiously Recurring C++ Bugs at Facebook
-// https://www.youtube.com/watch?v=3MB2iiCkGxg&t=184s
-// bug #1
+/*README START
+CppCon 2017 [Curiously Recurring C++ Bugs at Facebook](https://www.youtube.com/watch?v=3MB2iiCkGxg&t=184s)
+
+<<bug #1 - Implicitly insert new element>>
+README END */
 TEST_CASE("map [] implicitly insert new element", "[stl][fb-bug]") {
 	std::map<char, int> occ;
 	std::string str("abcdedfg");
