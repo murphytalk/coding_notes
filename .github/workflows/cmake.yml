@@ -37,10 +37,11 @@ jobs:
         ./b VERBOSE=1
 
     - name: Test
-      working-directory: ${{github.workspace}}/build
+      working-directory: ${{github.workspace}}
       run: |
         pwd
-        find . -type f -name notes -print
+        EXE=$(find . -type f -name notes -print)
+        echo $EXE
         build_dir/Release/nodes -d y
         
         
