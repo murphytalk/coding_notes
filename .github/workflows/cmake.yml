@@ -40,9 +40,8 @@ jobs:
       working-directory: ${{github.workspace}}/build
       run: |
         pwd
-        EXE=$(find . -type f -name notes -print)
-        echo $EXE
-        $EXE -d y
+        find . -type f -name notes -print
+        build_dir/Release/nodes -d y
         
         
       
