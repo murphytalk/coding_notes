@@ -1,6 +1,6 @@
 *Generated at Sun Oct 24 00:49:43 2021 by [gen_readme.py](gen_readme.py)*
 
-[![Build Status](https://travis-ci.org/murphytalk/coding_notes.svg?branch=master)](https://travis-ci.org/murphytalk/coding_notes)
+![Build Status](https://github.com/murphytalk/coding_notes/actions/workflows/cmake.yml/badge.svg)
 
 Collection of my notes on coding and solutions to various small problems, a reminder to myself.
 
