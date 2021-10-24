@@ -48,13 +48,36 @@ CPP_COMMENT_CLOSE = re.compile(r'.*\*/.*$')
 # set of (level, title)
 HEADERS_WRITTEN = set()
 
+class Comment:
+    def __init__(self) -> None:
+        self.inside_comment_block = False
 
-def is_comment_line(line):
-    return re.match(CPP_SINGLE_COMMENT, line) or re.match(CPP_COMMENT_OPEN, line) or re.match(CPP_COMMENT_CLOSE, line)
+    def is_comment_line(self, line) -> bool:
+        is_open = re.match(CPP_COMMENT_OPEN, line) is not None
+        is_close = re.match(CPP_COMMENT_CLOSE, line) is not None
+        if is_open or is_close:
+            # print(f"C2 {is_open} {is_close}")
+            self.inside_comment_block = is_open
+            return True
+        elif self.inside_comment_block or re.match(CPP_SINGLE_COMMENT, line):
+            # print(f"C1 {line}")
+            return True
+        return False
+    
+    def remove_comment_char(self, line) -> str:
+        # todo: use python 3.10 pattern match
+        if re.match(CPP_SINGLE_COMMENT, line):
+            return line.replace('//', '')
+        elif re.match(CPP_COMMENT_OPEN, line):
+            return line.replace('/*', '')
+        elif re.match(CPP_COMMENT_CLOSE, line):
+            return line.replace('*/', '')
+        else:
+            return line
 
 
 def get_files():
-    for dirpath, dirs, files in os.walk(os.path.join(TOP, 'src')):
+    for dirpath, _ , files in os.walk(os.path.join(TOP, 'src')):
         if TOP == dirpath or len(files) == 0:
             continue
         for f in files:
@@ -72,12 +95,18 @@ def scrap_markdown_contents(source):
     print("Scan {} ".format(source))
     contents = []
     recording = False
+
+    def add_md_open_close_line(l, ln, pattern):
+        contents.append((ln, re.sub(pattern, '', l)))
+
     with open(source, 'r') as f:
         lineno = 1
         for line in f:
             if re.search(MD_START, line):
                 recording = True
+                add_md_open_close_line(line, lineno, MD_START)
             elif re.search(MD_END, line):
+                add_md_open_close_line(line, lineno, MD_END)
                 recording = False
             elif recording:
                 contents.append((lineno, line))
@@ -126,6 +155,7 @@ def decorate_content(src, content):
     level, decorated = make_headers(dir)
     inside_code_block = False
 
+    c = Comment()
     for lineno, line in content:
         if line[0] == '#':
             line = '#' * level + line
@@ -138,15 +168,23 @@ def decorate_content(src, content):
         elif re.match(CODE_START, line):
             inside_code_block = True
             if decorated[-1] == CODE_BLOCK_END:
+                # two conesctive code blocks
                 del decorated[-1]
                 continue
             line = CODE_BLOCK_START
         elif re.match(CODE_END, line):
             line = CODE_BLOCK_END
             inside_code_block = False
-        elif not inside_code_block and is_comment_line(line):
-            # ignore comments
+            decorated.append(line)
             continue
+
+        if not inside_code_block:
+            if c.is_comment_line(line):
+                line = c.remove_comment_char(line)
+                # print(f'REMOVED COMMET CHAR {line}')
+            else:
+                # print(f'IGNORE {line}')
+                continue
 
         decorated.append(line)
     return decorated
@@ -163,7 +201,8 @@ def main():
             src = source_file.replace(TOP + os.sep, '')
             content = scrap_markdown_contents(src)
             if content:
-                print("\tFound MD content in {}".format(src))
+                print(f"\tFound MD content in {src}")
+                # print(content)
                 f.writelines(decorate_content(src, content))
 
 
