@@ -35,7 +35,8 @@ jobs:
 
     - name: Test
       working-directory: ${{github.workspace}}/build
-      # Execute tests defined by the CMake configuration.  
-      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      run: release/noteds -d y
+      run: |
+        pwd
+        find . -type f -name notes -print
+        
       
