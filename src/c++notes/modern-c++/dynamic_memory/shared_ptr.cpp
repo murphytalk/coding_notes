@@ -50,13 +50,15 @@ TEST_CASE("shared_ptr circular refrence","[c++11][smartptr]"){
     INFO("Both CycleA and CycleB won't be freed!");
 }
 
-/*  
- * A stock factory which can return the same Stock object for the same stock symbol
- * 
- * There are several generations of attempts trying to solve problems the previous attempt didn't solve.
- * See the test cases below the factory implementations
- * 
- */
+/*README START  
+
+# 
+ A stock factory which can return the same Stock object for the same stock symbol
+ 
+ There are several generations of attempts trying to solve problems the previous attempt didn't solve.
+ See the test cases below the factory implementations
+ 
+ README END*/
 
 class Stock{
 public:

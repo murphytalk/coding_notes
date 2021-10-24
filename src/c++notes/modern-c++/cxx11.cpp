@@ -12,27 +12,27 @@ namespace Cxx11Test {
  `static_assert` is a new C++ keyword, the assertion happens at compile time, if the assertion is true the static assert expression has no effect.
 */
 
-//<<
 namespace{
-    struct MyAlignmentSensitiveStuff{
-        uint8_t i;
-        uint32_t d;
-    };
+//<<
+struct MyAlignmentSensitiveStuff{
+    uint8_t i;
+    uint32_t d;
+};
 
-    void do_stuff(){
-        // if data type of i is changed to something else with a different size,
-        // or more member is inserted in the front of it
-        // the following won't compile
-        static_assert(offsetof(MyAlignmentSensitiveStuff, d) == 4,
-                      "Wrong offset of d in MyAlignmentSensitiveStuff");
-    }
+void do_stuff(){
+    // if data type of i is changed to something else with a different size,
+    // or more member is inserted in the front of it
+    // the following won't compile
+    static_assert(offsetof(MyAlignmentSensitiveStuff, d) == 4,
+                  "Wrong offset of d in MyAlignmentSensitiveStuff");
 }
 //>>
+}
 /*
   `static_assert` can also be used to generate <<meaningful compile error>> if an unmatched partial template specialization is detected.
  */
-//<<
 namespace{
+//<<
     template <typename T> class MyTemplatedClass{
         // if none of the specialized version is matched T's size will be zero
         // and the following guarantees a compiler error with user defined error message
@@ -44,9 +44,30 @@ namespace{
     MyTemplatedClass<int*> ptr;
     // uncomment the following line to get a compile error
     //MyTemplatedClass<int> not_specialized;
-}
 //>>
+}
+/*README START
+# constexpr specifier
+`constexpr`  declares that it is possible to evaluate the value of the function or variable at compile time.
+
+The following function is evaluabled at compile time when is called with parameter 10. Note `static_assert` is used to check that value is evalulated correctly at compile time.
+*/
+namespace{
+//<<
+constexpr int factorial(int n)
+{
+    return n <= 1 ? 1 : (n * factorial(n - 1));
+}
+
+static_assert(factorial(10) == 3628800);
+
+//>> 
+}
 //README END
+
+
+
+
 static void increment(int& v) { ++v; }
 TEST_CASE("std::ref", "[c++11]") {
     int i = 0;

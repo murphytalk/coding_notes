@@ -8,7 +8,7 @@ for arg do
   shift
   case $arg in
     (-doc) GENDOC="y" ;;
-       (*) set -- "$@" "$arg" ;;
+    (*) set -- "$@" "$arg" ;;
   esac
 done
 
