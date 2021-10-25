@@ -1,4 +1,4 @@
-*Generated at Sun Oct 24 23:35:15 2021 by [gen_readme.py](gen_readme.py)*
+*Generated at Sun Oct 24 23:44:15 2021 by [gen_readme.py](gen_readme.py)*
 
 ![Build Status](https://github.com/murphytalk/coding_notes/actions/workflows/cmake.yml/badge.svg)
 
@@ -121,17 +121,16 @@ void do_stuff(){
   `static_assert` can also be used to generate [meaningful compile error](src/c++notes/modern-c++/cxx11.cpp#L32) if an unmatched partial template specialization is detected.
  
 ```c++
-    template <typename T> class MyTemplatedClass{
-        // if none of the specialized version is matched T's size will be zero
-        // and the following guarantees a compiler error with user defined error message
-        static_assert(sizeof(T) == 0,
-                      "Not sepcialized for this data type");
-    };
-    template <typename T> class MyTemplatedClass<T*>{};
+template <typename T> class MyTemplatedClass{
+    // if none of the specialized version is matched T's size will be zero
+    // and the following guarantees a compiler error with user defined error message
+    static_assert(sizeof(T) == 0,"Not sepcialized for this data type");
+};
+template <typename T> class MyTemplatedClass<T*>{};
 
-    MyTemplatedClass<int*> ptr;
-    // uncomment the following line to get a compile error
-    //MyTemplatedClass<int> not_specialized;
+MyTemplatedClass<int*> ptr;
+// uncomment the following line to get a compile error
+//MyTemplatedClass<int> not_specialized;
 ```
 
 ### constexpr specifier

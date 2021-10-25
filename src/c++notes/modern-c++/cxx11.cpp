@@ -33,24 +33,26 @@ void do_stuff(){
  */
 namespace{
 //<<
-    template <typename T> class MyTemplatedClass{
-        // if none of the specialized version is matched T's size will be zero
-        // and the following guarantees a compiler error with user defined error message
-        static_assert(sizeof(T) == 0,
-                      "Not sepcialized for this data type");
-    };
-    template <typename T> class MyTemplatedClass<T*>{};
+template <typename T> class MyTemplatedClass{
+    // if none of the specialized version is matched T's size will be zero
+    // and the following guarantees a compiler error with user defined error message
+    static_assert(sizeof(T) == 0,"Not sepcialized for this data type");
+};
+template <typename T> class MyTemplatedClass<T*>{};
 
-    MyTemplatedClass<int*> ptr;
-    // uncomment the following line to get a compile error
-    //MyTemplatedClass<int> not_specialized;
+MyTemplatedClass<int*> ptr;
+// uncomment the following line to get a compile error
+//MyTemplatedClass<int> not_specialized;
 //>>
 }
-/*README START
+
+
+/*
 # constexpr specifier
 `constexpr`  declares that it is possible to evaluate the value of the function or variable at compile time.
 
-The following function is evaluabled at compile time when is called with parameter 10. Note `static_assert` is used to check that value is evalulated correctly at compile time.
+The following function is evaluabled at compile time when is called with parameter 10. 
+Note `static_assert` is used to check that value is evalulated correctly at compile time.
 */
 namespace{
 //<<
