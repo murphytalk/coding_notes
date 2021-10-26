@@ -1,4 +1,4 @@
-*Generated at Sun Oct 24 23:44:15 2021 by [gen_readme.py](gen_readme.py)*
+*Generated at Tue Oct 26 23:53:35 2021 by [gen_readme.py](gen_readme.py)*
 
 ![Build Status](https://github.com/murphytalk/coding_notes/actions/workflows/cmake.yml/badge.svg)
 
@@ -136,7 +136,8 @@ MyTemplatedClass<int*> ptr;
 ### constexpr specifier
 `constexpr`  declares that it is possible to evaluate the value of the function or variable at compile time.
 
-The following function is evaluabled at compile time when is called with parameter 10. Note `static_assert` is used to check that value is evalulated correctly at compile time.
+The following function is evaluabled at compile time when is called with parameter 10. 
+Note `static_assert` is used to check that value is evalulated correctly at compile time.
 
 ```c++
 constexpr int factorial(int n)
@@ -146,6 +147,34 @@ constexpr int factorial(int n)
 
 static_assert(factorial(10) == 3628800);
 
+```
+
+
+### Variable Templates
+
+Use together with `constexpr`, we can cast variable to wanted data type at compile time.
+
+
+```c++
+template <typename T>
+constexpr T pi = T(3.14159265358973238462643383);
+
+static_assert( pi<int> == 3);
+static_assert( pi<float> == float(3.14159265358973238462643383));
+static_assert( pi<float> != double(3.14159265358973238462643383));
+static_assert( pi<double> == double(3.14159265358973238462643383));
+```
+ The template can be speicalized.
+
+```c++
+template <typename T> constexpr T maxValue = T(10000);
+
+template <> constexpr double maxValue<double> = 2000;
+template <> constexpr char maxValue<char> = 'Z';
+
+static_assert( maxValue<int> == 10000);
+static_assert( maxValue<double> == 2000);
+static_assert( maxValue<char> == 'Z');
 ```
 
 ### Memory and pointers
@@ -160,15 +189,6 @@ static_assert(factorial(10) == 3628800);
  
 # [Leetcode](https://leetcode.com/)
 
-## [Reverse words in a string](src/leetcode/reverse_words.cpp#L12)
-
-[Leetcode #151](https://leetcode.com/problems/reverse-words-in-a-string/)
-
-An in-place `O(1)` space solution, beats 94.29% of C++ submissions.
-
- ![Screenshot](img/leetcode/RevserseWordsInString.PNG)
-
-
 ## [Group Anagrams](src/leetcode/group_anagrams.cpp#L15)
 
 [Leetcode #49](https://leetcode.com/problems/anagrams/).
@@ -179,4 +199,13 @@ Beats 99.75% of C++ submissions.
 
  ![Screenshot](img/leetcode/Anagrams.PNG)
 
+
+
+## [Reverse words in a string](src/leetcode/reverse_words.cpp#L12)
+
+[Leetcode #151](https://leetcode.com/problems/reverse-words-in-a-string/)
+
+An in-place `O(1)` space solution, beats 94.29% of C++ submissions.
+
+ ![Screenshot](img/leetcode/RevserseWordsInString.PNG)
 
