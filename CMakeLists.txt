@@ -1,10 +1,15 @@
 cmake_minimum_required(VERSION 3.1)
-# SET(CMAKE_CXX_COMPILER /usr/bin/g++-8)
-project( CodingNotes )
+
+set(NOTES notes)
+project(${NOTES} CXX)
 enable_testing()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # We need C++17
 set (CMAKE_CXX_STANDARD 17)
+
+set (CATCH_BUILD_STATIC_LIBRARY ON)
+add_subdirectory(Catch2)
 
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -44,7 +49,7 @@ else(CMAKE_COMPILER_IS_GNUCXX)
     set(EXTRA_LIB "c++")
   endif(APPLE)
 endif(CMAKE_COMPILER_IS_GNUCXX)
+set(EXTRA_LIB "${EXTRA_LIB}")
+message(STATUS "Using extra libs: ${EXTRA_LIB}")
 
-set(NOTES notes)
-project(${NOTES} CXX)
 add_src_libs_ (${NOTES})

@@ -1,4 +1,4 @@
-#include "catch.hpp"
+#include "catch2/catch.hpp"
 #include <vector>
 #include <algorithm>
 #include <string>
@@ -8,7 +8,7 @@ using namespace std;
 namespace Cxx{
 
 TEST_CASE("Get private data member", "[trick]") {
-    /* This is dirty but demostrates C++ data model.
+    /* This is dirty but demonstrates C++ data model.
      * Question : given a Data type object instance, how to get its _private_data ?
     */
     class Data {

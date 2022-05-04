@@ -1,4 +1,4 @@
-#include "catch.hpp"
+#include "catch2/catch.hpp"
 #include "../utils/utils.h"
 #include <pthread.h>
 #include <set>

@@ -1,4 +1,4 @@
-#include "catch.hpp"
+#include "catch2/catch.hpp"
 #include "utils.h"
 #include "cond_log.h"
 #include "blocking_queue.h"
