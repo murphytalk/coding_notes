@@ -49,4 +49,25 @@ TEST_CASE("temp obj returned as const ref is not copied", "[c++]") {
     std::cout<<"after scope" << std::endl;
 }
 
+class Interface{
+public:
+    virtual int v() = 0;    
+};
+
+template<typename T> class Impl : public Interface{
+public:
+    T value;
+    Impl(T v):value(v){}
+    virtual int v(){
+        return static_cast<int>(value);
+    }
+};
+
+TEST_CASE("virtual class interface", "[c++]"){
+    Impl<long> a(1000);
+    Interface *i = &a;
+    REQUIRE(i->v() == 1000);
+}
+
+
 }

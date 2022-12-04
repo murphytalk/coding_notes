@@ -60,9 +60,9 @@ namespace Cxx11Test{
 
 
 	TEST_CASE("C++ 11 move assignment 1", "[c++11]") {
-		Rvalue r(200, "Orginal");
+		Rvalue r(200, "Original");
 		auto v = std::move(r);
-		LOG << "orginal addr " << &r << ",s="<<r.s<< endl;
+		LOG << "original addr " << &r << ",s="<<r.s<< endl;
 		LOG << "dest addr " << &v << ",s="<<v.s << endl;
 	}
 
