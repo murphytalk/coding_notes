@@ -1,10 +1,10 @@
-*Generated at Wed May  4 00:27:29 2022 by [gen_readme.py](gen_readme.py)*
+*Generated at Sat Apr 20 23:01:46 2024 by [gen_readme.py](gen_readme.py)*
 
 ![Build Status](https://github.com/murphytalk/coding_notes/actions/workflows/cmake.yml/badge.svg)
 
 Collection of my notes on coding and solutions to various small problems, a reminder to myself.
 
-The language used is C++ (C++ 14 features used), the dependencies are:
+The language used is C++ 20, the dependencies are:
 
  1. [boost](http://www.boost.org/).
  1. [Catch](https://github.com/philsquared/Catch) unit test. See Catch's docs on [command line options and arguments](https://github.com/philsquared/Catch/blob/master/docs/command-line.md).
@@ -30,7 +30,7 @@ This will run all examples/tests whose name start with "Add" and are tagged with
 ## Boost Library
 
 
-### [Use `in_place` with `optional`](src/c++notes/boost.cpp#L17)
+### [Use `in_place` with `optional`](src/c++notes/boost.cpp#L18)
 
 `optional` may or may not hold a valid object, it overrides `bool` operator to indicate if a valid object is being held or not. 
 It also overrides operator `.` and `->` so the underlying object can be operated as pointer, if it is valid.
@@ -177,6 +177,19 @@ static_assert( maxValue<double> == 2000);
 static_assert( maxValue<char> == 'Z');
 ```
 
+ 
+### 3-way comparison operator
+
+ `<=>`, AKA speceship operator, is a new C++ operator.
+   
+```c++
+    int i {11};
+    // the data type is strong_ordering
+    auto result { i <=> 0};
+    if (result == strong_ordering::less) { cout<<"less"<<std::endl; }
+    if (result == strong_ordering::greater) { INFO("greater"); }
+    if (result == strong_ordering::equal) { cout<<"equal"<<std::endl; }
+```
 ### Memory and pointers
   
 
@@ -189,6 +202,15 @@ static_assert( maxValue<char> == 'Z');
  
 # [Leetcode](https://leetcode.com/)
 
+## [Reverse words in a string](src/leetcode/reverse_words.cpp#L12)
+
+[Leetcode #151](https://leetcode.com/problems/reverse-words-in-a-string/)
+
+An in-place `O(1)` space solution, beats 94.29% of C++ submissions.
+
+ ![Screenshot](img/leetcode/RevserseWordsInString.PNG)
+
+
 ## [Group Anagrams](src/leetcode/group_anagrams.cpp#L15)
 
 [Leetcode #49](https://leetcode.com/problems/anagrams/).
@@ -199,13 +221,4 @@ Beats 99.75% of C++ submissions.
 
  ![Screenshot](img/leetcode/Anagrams.PNG)
 
-
-
-## [Reverse words in a string](src/leetcode/reverse_words.cpp#L12)
-
-[Leetcode #151](https://leetcode.com/problems/reverse-words-in-a-string/)
-
-An in-place `O(1)` space solution, beats 94.29% of C++ submissions.
-
- ![Screenshot](img/leetcode/RevserseWordsInString.PNG)
 

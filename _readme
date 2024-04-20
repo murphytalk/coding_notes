@@ -3,7 +3,7 @@
 
 Collection of my notes on coding and solutions to various small problems, a reminder to myself.
 
-The language used is C++ (C++ 14 features used), the dependencies are:
+The language used is C++ 20, the dependencies are:
 
  1. [boost](http://www.boost.org/).
  1. [Catch](https://github.com/philsquared/Catch) unit test. See Catch's docs on [command line options and arguments](https://github.com/philsquared/Catch/blob/master/docs/command-line.md).
