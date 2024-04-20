@@ -1,4 +1,4 @@
-#include "catch2/catch.hpp"
+#include <catch2/catch_test_macros.hpp>
 #include <string>
 #include <map>
 #include <memory> //C++ 11 smart pointers

@@ -7,6 +7,6 @@ if(WIN32)
     message(STATUS "Using Boost from ${BOOST_ROOT}")
 
     # Add the path where Boost CMake modules might be installed
-    set(Boost_NO_SYSTEM_PATHS TRUE)
+    list(APPEND CMAKE_MODULE_PATH "${BOOST_ROOT}/lib/camke/Boost-1.84.0")
   endif()
 endif()

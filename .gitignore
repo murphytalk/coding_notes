@@ -51,4 +51,4 @@ data/*.txt
 .cquery_cached_index/
 .vscode/
 compile_commands.json
-
+.cache/

@@ -51,7 +51,7 @@ macro(add_src_libs_ target)
     "src/[a-zA-Z]*.hh"
     "src/[a-zA-Z]*.cc"
     )
-  filter_items(the_SRC "\.cquery_cached_index")  
+  filter_items(the_SRC "\.cquery_cached_index")
   add_executable(${target} ${the_SRC})
 
   target_link_libraries(${target} ${Boost_LIBRARIES} ${EXTRA_LIB} Catch2::Catch2WithMain)

@@ -43,6 +43,7 @@ FetchContent_Declare(
   URL https://github.com/catchorg/Catch2/archive/refs/tags/v3.5.4.tar.gz
 )
 FetchContent_MakeAvailable(Catch2)
+list(APPEND CMAKE_MODULE_PATH "${Catch2_SOURCE_DIR}/CMake")
 
 if(CMAKE_COMPILER_IS_GNUCXX)
    set(EXTRA_LIB "pthread")
