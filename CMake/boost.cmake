@@ -1,16 +1,12 @@
 if(WIN32)
-  FIND_PATH(P "boost\\config.hpp"
-    PATHS
-    "$ENV{BOOST_ROOT}"
-    "${CMAKE_CURRENT_SOURCE_DIR}\\..\\boost"
-    NO_DEFAULT_PATH
-    )
-  if(P)
-    set(BOOST_ROOT ${P})
-    # On Windows, VC++ supports auto-linking, it will know which library to link from the boost header file included.
-    # Only need to tell VC++ where to find the lib
-    link_directories("${BOOST_ROOT}\\stage\\lib")
+  if(NOT DEFINED ENV{BOOST_ROOT})
+    message(FATAL_ERROR "BOOST_ROOT environment variable is not defined. Please set BOOST_ROOT to your Boost installation path.")
   else()
-    MESSAGE(FATAL_ERROR "** Cannot find boost, please setup environment variable BOOST_ROOT **")
+    # Set the BOOST_ROOT variable within CMake
+    set(BOOST_ROOT $ENV{BOOST_ROOT})
+    message(STATUS "Using Boost from ${BOOST_ROOT}")
+
+    # Add the path where Boost CMake modules might be installed
+    set(Boost_NO_SYSTEM_PATHS TRUE)
   endif()
 endif()

@@ -1,15 +1,10 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.28)
 
 set(NOTES notes)
 project(${NOTES} CXX)
-enable_testing()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# We need C++17
-set (CMAKE_CXX_STANDARD 17)
-
-set (CATCH_BUILD_STATIC_LIBRARY ON)
-add_subdirectory(Catch2)
+set (CMAKE_CXX_STANDARD 20)
 
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -30,17 +25,24 @@ fix_default_compiler_settings_()
 ################################
 #### FIND REQUIRED PACKAGES ####
 ################################
-SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake" ${CMAKE_MODULE_PATH})
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
 #
 # Boost
 #
 include(CMake/boost.cmake)
-if(WIN32)
-    INCLUDE_DIRECTORIES(${BOOST_ROOT})
-else(WIN32)
-    find_package(Boost COMPONENTS timer system filesystem date_time REQUIRED)
-    INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})	
-endif(WIN32)
+find_package(Boost COMPONENTS timer system filesystem date_time REQUIRED)
+INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
+
+Include(FetchContent)
+
+set(BUILD_TESTING OFF)
+set(CATCH_INSTALL_DOCS OFF)
+set(CATCH_INSTALL_EXTRAS OFF)
+FetchContent_Declare(
+  Catch2
+  URL https://github.com/catchorg/Catch2/archive/refs/tags/v3.5.4.tar.gz
+)
+FetchContent_MakeAvailable(Catch2)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
    set(EXTRA_LIB "pthread")
