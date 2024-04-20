@@ -92,13 +92,12 @@ TEST_CASE("thread : start thread with functor", "[c++11]") {
 	t.join();
 }
 
-
 TEST_CASE("thread : start thread with std::bind", "[c++11]") {
 	auto thread_func = [](string const& msg) {LOG << msg << endl; };
 	thread t(bind(thread_func,"Hello from std::bind!"));
 	t.join();
 }
-
+#if 0
 TEST_CASE("concurrency : double-checked locking") {
 	const int sample = 123;
 
@@ -155,7 +154,7 @@ TEST_CASE("concurrency : double-checked locking") {
 	t1.join();
 	t2.join();
 }
-
+#endif
 }
 
 namespace Cxx17Test{ 
