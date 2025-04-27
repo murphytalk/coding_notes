@@ -1,4 +1,4 @@
-*Generated at Sat Apr 20 23:01:46 2024 by [gen_readme.py](gen_readme.py)*
+*Generated at Sun Apr 21 00:20:40 2024 by [gen_readme.py](gen_readme.py)*
 
 ![Build Status](https://github.com/murphytalk/coding_notes/actions/workflows/cmake.yml/badge.svg)
 
@@ -187,9 +187,24 @@ static_assert( maxValue<char> == 'Z');
     // the data type is strong_ordering
     auto result { i <=> 0};
     if (result == strong_ordering::less) { cout<<"less"<<std::endl; }
-    if (result == strong_ordering::greater) { INFO("greater"); }
+    if (result == strong_ordering::greater) { cout <<"greater"<<std::endl; }
     if (result == strong_ordering::equal) { cout<<"equal"<<std::endl; }
+
+    // <compare> provides named comparison functions to interpret the result of an ordering.
+    if (is_lt(result)) { cout<<"less"<<std::endl; }
+    if (is_gt(result)) { cout<<"greater"<<std::endl; }
+    if (is_eq(result)) { cout<<"equal"<<std::endl; }
 ```
+
+### Structured bindings
+
+```c++
+    pair v {1,2};
+    const auto&  [v1,v2] {v};
+    REQUIRE(v1 == 1);
+    REQUIRE(v2 == 2);
+```
+
 ### Memory and pointers
   
 

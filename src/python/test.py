@@ -300,6 +300,66 @@ class MaxSum(MyTestCase):
     https://www.hackerrank.com/challenges/max-array-sum/forum
     """
 
+class LengthOfLongestSubstring(MyTestCase):
+    """
+    https://leetcode.com/problems/longest-substring-without-repeating-characters/
+    """
+    def lengthOfLongestSubstring(self, s: str) -> int:
+        if not s:
+            return 0
+
+        max_len = 1
+        start = 0
+        end = 1
+        while end < len(s):
+            if s[end] in s[start:end]:
+                max_len = max(max_len, end - start)
+                start = s[start:end].rfind(s[end]) + 1 + start
+            end += 1
+        return max(max_len, end - start)
+    
+    def lengthOfLongestSubstring0(self,inputs: str) -> str:
+        ascii_map = [-1] * 255
+        longest = ""
+        cur = ""
+    
+        for i,c in enumerate(inputs):
+            pos = ascii_map[ord(c)]
+            if pos < 0:
+                cur += c
+                ascii_map[ord(c)] = i
+            else:
+                if len(cur) > len(longest):
+                    longest = cur
+                cur = inputs[pos+1:i+1]
+                
+
+            
+        return max(len(cur),len(longest))    
+
+    def test_1(self):
+        self.assertEqual(self.lengthOfLongestSubstring("abcabcbb"), 3)
+
+    def test_2(self):
+        self.assertEqual(self.lengthOfLongestSubstring("bbbbb"), 1)
+
+    def test_3(self):
+        self.assertEqual(self.lengthOfLongestSubstring("pwwkew"), 3)
+
+    def test_4(self):
+        self.assertEqual(self.lengthOfLongestSubstring(""), 0)
+
+    def test_5(self):
+        self.assertEqual(self.lengthOfLongestSubstring(" "), 1)
+
+    def test_6(self):
+        self.assertEqual(self.lengthOfLongestSubstring("au"), 2)
+
+    def test_7(self):
+        self.assertEqual(self.lengthOfLongestSubstring("dvdf"), 3)
+
+    def test_8(self):
+        self.assertEqual(self.lengthOfLongestSubstring("abba"), 2)
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
